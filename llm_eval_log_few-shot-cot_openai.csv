@@ -1,0 +1,551 @@
+transaction_id,engine_used,true_label,predicted_label,is_correct,latency_ms,cost_usd,cot_output
+tx_9bf5f27eda,OPENAI,Carding,Carding,True,2378.28,0.00021674999999999998,"<scratchpad>
+1. Cryptographic Signals: The transaction failed with a CVV match but was declined due to Insufficient Funds (Code 51). This indicates that the card was likely valid but had no available balance.
+2. Velocity Profile: The narrative mentions high velocity, specifically that the session has rotated through 11 different cards in under a minute. This suggests an automated attempt to validate multiple cards quickly.
+3. Identity Risk: The identity profile indicates a brand-new guest checkout session with zero historical trust, which raises concerns about the legitimacy of the identity being used.
+4. Logistics Risk: There is a high logistics risk as the billing ZIP matches the cardholder, but the shipping ZIP is different and consistent with drop-house patterns. This suggests an attempt to obscure the true delivery location.
+</scratchpad>
+
+<classification>Carding</classification>"
+tx_124a253353,OPENAI,Legitimate,Legitimate,True,2161.55,0.00019050000000000002,"<scratchpad>
+1. Cryptographic Signals: The transaction was authorized successfully, with both CVV and billing address checks passing.
+2. Velocity Profile: The narrative indicates normal velocity, with only 1-2 cards attempted from the IP recently, which does not suggest any automated attack.
+3. Identity Risk: The identity profile shows an established user account that has been active for 689 days, indicating a legitimate user rather than a synthetic identity.
+4. Logistics Risk: The billing and shipping ZIP codes match, which further reduces the risk of fraudulent activity.
+
+Based on the analysis, all signals point towards a standard, valid transaction with no malicious intent.
+</scratchpad>
+
+<classification>Legitimate</classification>"
+tx_b992025a28,OPENAI,Synthetic_Identity,Synthetic_Identity,True,1692.55,0.0002064,"<scratchpad>
+1. Cryptographic Signals: The transaction was authorized successfully, with both CVV and billing address checks passing.
+2. Velocity Profile: The narrative indicates normal velocity, with only 1-2 cards attempted from the IP recently, which does not suggest high-speed automated attacks.
+3. Identity Risk: The account is highly suspicious, created recently with a disposable email, and has a critically high synthetic identity score (0.946).
+4. Logistics Risk: There is low logistics risk as the billing and shipping ZIP codes match, indicating a legitimate shipping address.
+
+Based on the analysis, the transaction shows signs of a synthetic identity due to the high synthetic identity score and the use of a disposable email, despite the successful authorization and normal velocity.
+</scratchpad>
+
+<classification>Synthetic_Identity</classification>"
+tx_45e5aadd45,OPENAI,BIN_Testing,BIN_Testing,True,2100.49,0.00022304999999999997,"<scratchpad>
+1. Cryptographic Signals: The transaction failed with a CVV Mismatch (Code N7), indicating that the CVV provided did not match the one on file for the card.
+2. Velocity Profile: The narrative mentions an extreme velocity anomaly with 41 distinct card numbers attempted in the last 60 seconds, specifically targeting BIN 578361. This indicates a high-speed automated attack.
+3. Identity Risk: The identity profile indicates a brand-new guest checkout session with zero historical trust, which raises concerns but does not directly indicate synthetic identity use.
+4. Logistics Risk: There is no physical delivery address provided, which is typical for digital transactions, but does not indicate a drop-house pattern.
+
+Based on the analysis, the transaction shows characteristics of BIN Testing due to the high-speed attempts at validating card numbers and the explicit CVV mismatch.
+</scratchpad>
+
+<classification>BIN_Testing</classification>"
+tx_71b60813fb,OPENAI,Synthetic_Identity,Synthetic_Identity,True,1709.24,0.00021194999999999997,"<scratchpad>
+1. Cryptographic Signals: The transaction was authorized successfully, with both CVV and billing address checks passing.
+2. Velocity Profile: The narrative indicates normal velocity, with only 1-2 cards attempted from the IP recently, which does not suggest high-speed automated attempts.
+3. Identity Risk: The account is highly suspicious, created using a disposable email and has a critically high synthetic identity score (0.966), indicating a high risk of being a synthetic identity.
+4. Logistics Risk: There is low logistics risk as the billing and shipping ZIP codes match, which is a positive sign for legitimacy.
+
+Based on the analysis, the key factor is the high synthetic identity score and the use of a disposable email, which strongly indicates that this transaction is tied to a synthetic identity.
+</scratchpad>
+
+<classification>Synthetic_Identity</classification>"
+tx_144223243b,OPENAI,BIN_Testing,BIN_Testing,True,2050.67,0.00022155,"<scratchpad>
+1. Cryptographic Signals: The transaction failed with a CVV Mismatch (Code N7 - CVV Mismatch).
+2. Velocity Profile: The narrative mentions an extreme velocity anomaly with 33 distinct card numbers attempted in the last 60 seconds, specifically targeting BIN 535539.
+3. Identity Risk: The identity profile indicates a brand-new guest checkout session with zero historical platform trust, which raises concerns but does not directly indicate synthetic identity.
+4. Logistics Risk: There is no physical delivery address provided, indicating a digital transaction, but this alone does not confirm any specific risk category.
+
+Based on the analysis:
+- The failed authorization due to a CVV mismatch and the extreme velocity anomaly targeting a specific BIN strongly indicate BIN Testing. The high number of attempts and the specific BIN being targeted align with the characteristics of BIN Testing.
+</scratchpad>
+
+<classification>BIN_Testing</classification>"
+tx_92c3158354,OPENAI,Stolen_Card,Stolen_Card,True,2312.53,0.00023595,"<scratchpad>
+1. Cryptographic Signals: The transaction was authorized successfully, with both CVV and billing address checks passing.
+2. Velocity Profile: The narrative indicates normal velocity, with only 1-2 cards attempted from the IP recently, which does not suggest high-speed automated attempts.
+3. Identity Risk: The identity profile shows an established user account that has been active for 273 days, which does not indicate a synthetic identity.
+4. Logistics Risk: There is a high logistics risk as the billing ZIP matches the cardholder, but the shipping ZIP is different and consistent with drop-house patterns.
+
+Based on the analysis, while the transaction was authorized and appears legitimate in terms of user account history and velocity, the high logistics risk due to the mismatch in shipping and billing addresses raises concerns. This suggests that the transaction may not be entirely legitimate, as it aligns with patterns often seen in fraudulent activities, particularly those involving drop-houses.
+
+Final classification: Stolen_Card
+</scratchpad>
+
+<classification>Stolen_Card</classification>"
+tx_3bc8b693f1,OPENAI,Carding,Carding,True,2603.13,0.0002673,"<scratchpad>
+1. Cryptographic Signals: The transaction failed with a CVV match but was declined due to ""Do Not Honor,"" indicating insufficient funds. This suggests that the card is likely compromised or has been emptied.
+2. Velocity Profile: The narrative mentions a high velocity with 20 different cards being rotated through in under a minute, which is indicative of automated attacks rather than legitimate transactions.
+3. Identity Risk: The account is newly created and only active for one day, and the email domain is from a disposable email service (temp-mail.org), which raises red flags for synthetic identity creation.
+4. Logistics Risk: There is a mismatch between the billing ZIP code (73774) and the shipping ZIP code (14366), which is consistent with drop-house patterns, indicating potential fraudulent activity.
+
+Based on the analysis, the transaction shows characteristics of both Carding (due to the CVV match and insufficient funds) and Synthetic Identity (due to the newly created account and disposable email). However, the high velocity and the use of multiple cards strongly suggest that this is a case of Carding, as it aligns with the behavior of validating stolen credentials through low-value transactions.
+
+Final classification: Carding
+</scratchpad>
+
+<classification>Carding</classification>"
+tx_1c846e38a9,OPENAI,BIN_Testing,BIN_Testing,True,2473.02,0.00024165,"<scratchpad>
+1. Cryptographic Signals: The transaction failed with a CVV Mismatch (Code N7 - CVV Mismatch).
+2. Velocity Profile: The narrative mentions an extreme velocity anomaly with 54 distinct card numbers attempted in the last 60 seconds, specifically targeting BIN 500412.
+3. Identity Risk: The identity profile indicates a brand-new guest checkout session with zero historical platform trust, which raises concerns but does not directly indicate synthetic identity.
+4. Logistics Risk: There is no physical delivery address provided, as this is a digital/pre-auth transaction, which is typical for testing scenarios.
+
+Based on the analysis:
+- The failure due to CVV Mismatch indicates an attempt to validate card details.
+- The extreme velocity and targeting of a specific BIN suggest a systematic approach to testing card numbers.
+
+This aligns with the characteristics of BIN Testing, where multiple attempts are made to validate card details against a specific BIN prefix, often resulting in CVV mismatches.
+
+Final classification: BIN_Testing
+</scratchpad>
+
+<classification>BIN_Testing</classification>"
+tx_dde01d0e34,OPENAI,Carding,Carding,True,2627.22,0.00025755,"<scratchpad>
+1. Cryptographic Signals: The transaction failed with a CVV match but was declined due to Insufficient Funds (Code 51). This indicates that the card is likely empty or blocked, which is a common characteristic of carding.
+2. Velocity Profile: The narrative mentions high velocity, with the session rotating through 17 different cards in under a minute. This is indicative of carding behavior, where multiple cards are tested quickly to find one that works.
+3. Identity Risk: The account is newly created and only active for 2 days, and the email domain is from a disposable email service (10minutemail.com). This suggests a high risk of synthetic identity usage.
+4. Logistics Risk: The billing ZIP code matches the cardholder, but the shipping ZIP code is different and consistent with drop-house patterns. This adds to the suspicion but is not definitive on its own.
+
+Given the combination of a CVV match with a decline due to insufficient funds, the high velocity of transactions through multiple cards, and the use of a disposable email, this transaction aligns most closely with carding behavior.
+</scratchpad>
+
+<classification>Carding</classification>"
+tx_8244e90dcf,OPENAI,BIN_Testing,BIN_Testing,True,22667.55,0.00020564999999999998,"<scratchpad>
+1. Cryptographic Signals: The transaction failed with a CVV Mismatch (Code N7), indicating that the CVV provided did not match the one on file for the card.
+2. Velocity Profile: The narrative mentions an extreme velocity anomaly with 23 distinct card numbers attempted in the last 60 seconds, specifically targeting BIN 446390. This indicates a high-speed automated attack.
+3. Identity Risk: The identity profile indicates a brand-new guest checkout session with zero historical platform trust, which raises concerns but does not directly indicate synthetic identity use.
+4. Logistics Risk: There is no physical delivery address provided, which is typical for digital transactions but does not indicate a drop-house pattern.
+</scratchpad>
+
+<classification>BIN_Testing</classification>"
+tx_6d88b819c8,OPENAI,BIN_Testing,BIN_Testing,True,2294.88,0.00024045000000000002,"<scratchpad>
+1. Cryptographic Signals: The transaction failed with a CVV Mismatch (Code N7 - CVV Mismatch).
+2. Velocity Profile: The narrative mentions an extreme velocity anomaly with 45 distinct card numbers attempted in the last 60 seconds, specifically targeting BIN 547827.
+3. Identity Risk: The identity profile indicates a brand-new guest checkout session with zero historical platform trust, which raises concerns but does not directly indicate synthetic identity.
+4. Logistics Risk: There is no physical delivery address provided, as this is a digital/pre-auth transaction, which is typical for testing scenarios.
+
+Based on the analysis:
+- The failed authorization due to a CVV mismatch indicates an attempt to validate card details.
+- The extreme velocity and targeting of a specific BIN suggest a systematic approach to testing card numbers.
+
+This aligns with the characteristics of BIN Testing, where the goal is to validate card numbers and CVVs through rapid attempts, leading to mismatches.
+
+Final classification: BIN_Testing
+</scratchpad>
+
+<classification>BIN_Testing</classification>"
+tx_b8bbae551f,OPENAI,BIN_Testing,BIN_Testing,True,1916.96,0.00021975,"<scratchpad>
+1. Cryptographic Signals: The transaction failed with a CVV Mismatch (Code N7), indicating that the CVV provided did not match the card number.
+2. Velocity Profile: The narrative mentions an extreme velocity anomaly with 30 distinct card numbers attempted in the last 60 seconds, specifically targeting BIN 465561. This indicates a high-speed automated attack.
+3. Identity Risk: The identity profile indicates a brand-new guest checkout session with zero historical platform trust, which raises concerns but does not directly indicate synthetic identity use.
+4. Logistics Risk: There is no physical delivery address provided, which is typical for digital transactions but does not indicate a drop-house pattern.
+
+Based on the analysis, the transaction shows characteristics of BIN Testing due to the high-speed attempts at different card numbers and the explicit CVV mismatch.
+</scratchpad>
+
+<classification>BIN_Testing</classification>"
+tx_47a3122388,OPENAI,Stolen_Card,Stolen_Card,True,2096.97,0.0002418,"<scratchpad>
+1. Cryptographic Signals: The transaction was authorized successfully, with both CVV and billing address checks passing.
+2. Velocity Profile: The narrative indicates normal velocity, with only 1-2 cards attempted from the IP recently, which does not suggest high-speed automated attempts.
+3. Identity Risk: The identity profile shows an established user account that has been active for 410 days, which does not indicate a synthetic identity.
+4. Logistics Risk: There is a high logistics risk as the billing ZIP matches the cardholder, but the shipping ZIP is different and consistent with drop-house patterns.
+
+Based on the analysis, while the transaction was authorized and appears legitimate in terms of the user account, the high logistics risk due to the mismatch in shipping and billing addresses raises significant concerns. This suggests that the transaction may not be entirely legitimate, as it aligns with patterns often seen in fraudulent activities.
+
+Final classification will lean towards Stolen_Card due to the high-value order and the logistics risk indicating potential misuse of card details.
+</scratchpad>
+
+<classification>Stolen_Card</classification>"
+tx_5008de09de,OPENAI,Stolen_Card,Stolen_Card,True,2568.25,0.00026055,"<scratchpad>
+1. Cryptographic Signals: The transaction was authorized successfully, with both CVV and billing address checks passing.
+2. Velocity Profile: The narrative indicates normal velocity, with only 1-2 cards attempted from the IP recently, which does not suggest high-speed automated attempts.
+3. Identity Risk: The identity profile shows an established user account that has been active for 245 days, which does not indicate a synthetic identity.
+4. Logistics Risk: There is a high logistics risk as the billing ZIP matches the cardholder, but the shipping ZIP is different and consistent with drop-house patterns.
+
+Based on the analysis:
+- The transaction is authorized and appears legitimate in terms of the user account and velocity.
+- However, the logistics risk raises a red flag due to the mismatch in shipping and billing ZIP codes, which is a common indicator of fraudulent activity.
+
+Given the combination of a successful authorization and the high logistics risk, this transaction does not fit neatly into the legitimate category due to the drop-house pattern. Therefore, it suggests a potential Stolen_Card scenario, as the transaction is high-value and involves a mismatch in shipping logistics.
+
+Final classification: Stolen_Card
+</scratchpad>
+
+<classification>Stolen_Card</classification>"
+tx_b1f4d05a77,OPENAI,Synthetic_Identity,Legitimate,False,1708.69,0.00019065,"<scratchpad>
+1. Cryptographic Signals: The transaction was authorized successfully, with both CVV and billing address checks passing.
+2. Velocity Profile: The narrative indicates normal velocity, with only 1-2 cards attempted from the IP recently, which does not suggest any automated attack.
+3. Identity Risk: The identity profile shows an established user account that has been active for 245 days, indicating a legitimate user rather than a synthetic identity.
+4. Logistics Risk: The billing and shipping ZIP codes match, which further reduces the risk of fraudulent activity.
+
+Based on the analysis, all signals point towards a standard, valid transaction with no malicious intent.
+</scratchpad>
+
+<classification>Legitimate</classification>"
+tx_ea22d9dac6,OPENAI,BIN_Testing,BIN_Testing,True,1878.98,0.00023024999999999999,"<scratchpad>
+1. Cryptographic Signals: The transaction failed with a CVV Mismatch (Code N7), indicating that the CVV provided did not match the one on file for the card.
+2. Velocity Profile: The narrative mentions an extreme velocity anomaly with 44 distinct card numbers attempted in the last 60 seconds, specifically targeting BIN 466301. This indicates a high-speed automated attack.
+3. Identity Risk: The identity profile indicates a brand-new guest checkout session with zero historical platform trust, which raises concerns but does not directly indicate synthetic identity use.
+4. Logistics Risk: There is no physical delivery address provided, as this is a digital/pre-auth transaction, which is typical for testing scenarios but does not indicate a drop-house pattern.
+
+Based on the analysis, the transaction shows characteristics of BIN Testing due to the high-speed attempts, the specific targeting of a BIN, and the CVV mismatch.
+</scratchpad>
+
+<classification>BIN_Testing</classification>"
+tx_fcfd5e7d09,OPENAI,Carding,Carding,True,2211.98,0.000246,"<scratchpad>
+1. Cryptographic Signals: The transaction failed with a CVV match but was declined due to Insufficient Funds (Code 51). This indicates that the CVV was valid, which is a common characteristic of carding.
+2. Velocity Profile: The narrative mentions high velocity, with the session rotating through 17 different cards in under a minute. This is indicative of carding behavior, where multiple cards are tested quickly.
+3. Identity Risk: The account is newly created and only active for 1 day, with an email from a disposable domain (guerrillamail.com). This suggests a high risk of synthetic identity usage.
+4. Logistics Risk: The billing ZIP matches the cardholder, but the shipping ZIP is different and consistent with drop-house patterns. This adds to the suspicion of fraudulent activity.
+
+Given the combination of a valid CVV, high velocity with multiple cards, a newly created account with a disposable email, and the logistics risk, the transaction aligns most closely with carding behavior.
+</scratchpad>
+
+<classification>Carding</classification>"
+tx_5f7c487769,OPENAI,Legitimate,Legitimate,True,1775.46,0.0001911,"<scratchpad>
+1. Cryptographic Signals: The transaction was authorized successfully, with both CVV and billing address checks passing.
+2. Velocity Profile: The narrative indicates normal velocity, with only 1-2 cards attempted from the IP recently, which does not suggest any automated attack.
+3. Identity Risk: The identity profile shows an established user account that has been active for 1126 days, indicating a legitimate user rather than a synthetic identity.
+4. Logistics Risk: The billing and shipping ZIP codes match, which further reduces the risk of fraudulent activity.
+
+Based on the analysis, all signals point towards a standard, valid transaction with no malicious intent.
+</scratchpad>
+
+<classification>Legitimate</classification>"
+tx_ff11c040fd,OPENAI,Legitimate,Legitimate,True,2401.22,0.00019095,"<scratchpad>
+1. Cryptographic Signals: The transaction was authorized successfully, with both CVV and billing address checks passing.
+2. Velocity Profile: The narrative indicates normal velocity, with only 1-2 cards attempted from the IP recently, which does not suggest any high-speed or automated attempts.
+3. Identity Risk: The identity profile shows an established user account that has been active for 958 days, indicating a low risk of synthetic identity.
+4. Logistics Risk: The billing and shipping ZIP codes match, which further reduces the risk of fraudulent activity.
+
+Based on the analysis, all signals point to a standard, valid transaction with no malicious intent.
+</scratchpad>
+
+<classification>Legitimate</classification>"
+tx_4605377640,OPENAI,Synthetic_Identity,Synthetic_Identity,True,1977.09,0.00021989999999999998,"<scratchpad>
+1. Cryptographic Signals: The transaction was authorized successfully, with CVV and billing address checks passing.
+2. Velocity Profile: The narrative indicates normal velocity, with only 1-2 cards attempted from the IP recently, which does not suggest high-speed automated attacks.
+3. Identity Risk: The account is highly suspicious, created using a disposable email and has a critically high synthetic identity score (0.804), indicating a potential synthetic identity.
+4. Logistics Risk: There is low logistics risk as the billing and shipping ZIP codes match, which is a positive sign for legitimacy.
+
+Based on the analysis, the key factor here is the high synthetic identity score and the use of a disposable email, which strongly suggests that this transaction is linked to a synthetic identity. The successful authorization and normal velocity do not negate the identity risk present in this case.
+</scratchpad>
+
+<classification>Synthetic_Identity</classification>"
+tx_ee4392984f,OPENAI,Carding,Carding,True,2065.06,0.00023955,"<scratchpad>
+1. Cryptographic Signals: The transaction failed with a CVV match but was declined due to Insufficient Funds (Code 51). This indicates that the CVV was valid, but the card was either empty or blocked.
+2. Velocity Profile: The narrative mentions high velocity, with the session rotating through 14 different cards in under a minute. This suggests an automated attempt to validate multiple stolen credentials.
+3. Identity Risk: The identity profile indicates a brand-new guest checkout session with zero historical trust, which raises concerns about the legitimacy of the identity being used.
+4. Logistics Risk: There is a high logistics risk as the billing ZIP matches the cardholder, but the shipping ZIP is different and consistent with drop-house patterns. This further indicates potential fraudulent activity.
+
+Based on the analysis, the transaction shows characteristics of Carding due to the CVV match and the high velocity of rotating through multiple cards, which is typical of scripted low-value transactions validating stolen credentials.
+</scratchpad>
+
+<classification>Carding</classification>"
+tx_4912d8be96,OPENAI,Stolen_Card,Stolen_Card,True,2439.74,0.00025335,"<scratchpad>
+1. Cryptographic Signals: The transaction was authorized successfully, with both CVV and billing address checks passing.
+2. Velocity Profile: The narrative indicates normal velocity, with only 1-2 cards attempted from the IP recently, which does not suggest high-speed automated attempts.
+3. Identity Risk: The identity profile shows an established user account active for 537 days, which does not indicate a synthetic identity.
+4. Logistics Risk: There is a high logistics risk as the billing ZIP matches the cardholder, but the shipping ZIP is different and consistent with drop-house patterns.
+
+Based on the analysis:
+- The transaction is authorized and appears legitimate in terms of the identity profile.
+- However, the logistics risk raises a red flag due to the mismatch in shipping and billing ZIP codes, suggesting potential fraudulent intent.
+
+Given the combination of a legitimate authorization but high logistics risk, the transaction does not fit neatly into the ""Legitimate"" category due to the drop-house pattern.
+
+Final classification will lean towards ""Stolen_Card"" due to the high-value transaction and the logistics risk indicating potential unauthorized use of the card.
+</scratchpad>
+
+<classification>Stolen_Card</classification>"
+tx_cc4d35f4c9,OPENAI,Synthetic_Identity,Synthetic_Identity,True,1992.63,0.00020894999999999998,"<scratchpad>
+1. Cryptographic Signals: The transaction was authorized successfully, with both CVV and billing address checks passing.
+2. Velocity Profile: The narrative indicates normal velocity, with only 1-2 cards attempted from the IP recently, suggesting no high-speed automated attempts.
+3. Identity Risk: The account is highly suspicious, created using a disposable email and has a critically high synthetic identity score (0.88), indicating a potential synthetic identity.
+4. Logistics Risk: There is low logistics risk as the billing and shipping ZIP codes match, which is a positive sign for legitimacy.
+
+Based on the analysis, the key factor here is the high synthetic identity score and the use of a disposable email, which strongly suggests that this transaction is linked to a synthetic identity.
+</scratchpad>
+
+<classification>Synthetic_Identity</classification>"
+tx_717f8d005f,OPENAI,Synthetic_Identity,Synthetic_Identity,True,1747.17,0.00020984999999999998,"<scratchpad>
+1. Cryptographic Signals: The transaction was authorized successfully, with CVV and billing address checks passing.
+2. Velocity Profile: The narrative indicates normal velocity, with only 1-2 cards attempted from the IP recently, which does not suggest high-speed automated attacks.
+3. Identity Risk: The account is highly suspicious, created with a disposable email and has a critically high synthetic identity score (0.955), indicating a potential synthetic identity.
+4. Logistics Risk: There is low logistics risk as the billing and shipping ZIP codes match, which is a positive sign for legitimacy.
+
+Based on the analysis, the key factor here is the high synthetic identity score and the use of a disposable email, which strongly suggests that this transaction is linked to a synthetic identity.
+</scratchpad>
+
+<classification>Synthetic_Identity</classification>"
+tx_c4ae0baac3,OPENAI,BIN_Testing,BIN_Testing,True,2182.02,0.00022395,"<scratchpad>
+1. Cryptographic Signals: The transaction failed with a CVV Mismatch (Code N7), indicating that the CVV provided did not match the one on file for the card being used.
+2. Velocity Profile: The narrative mentions an extreme velocity anomaly, with 58 distinct card numbers attempted in the last 60 seconds, specifically targeting BIN 587485. This indicates a high-speed automated attack.
+3. Identity Risk: The identity profile indicates a brand-new guest checkout session with zero historical platform trust, which raises concerns but does not directly indicate synthetic identity use.
+4. Logistics Risk: There is no physical delivery address provided, which is typical for digital transactions but does not indicate a drop-house pattern.
+
+Based on the analysis, the transaction shows characteristics of BIN Testing due to the high-speed attempts at different card numbers and the explicit CVV mismatch.
+</scratchpad>
+
+<classification>BIN_Testing</classification>"
+tx_5509baab1c,OPENAI,Carding,Carding,True,2533.19,0.0002526,"<scratchpad>
+1. Cryptographic Signals: The transaction failed with a CVV match but was declined due to Insufficient Funds (Code 51). This indicates that the card was likely valid but had no available balance.
+2. Velocity Profile: The narrative mentions high velocity, with the session rotating through 14 different cards in under a minute. This suggests an automated attempt to validate multiple cards quickly.
+3. Identity Risk: The account is newly created and only active for 1 day, with an email from a disposable domain (guerrillamail.com). This raises concerns about the legitimacy of the identity.
+4. Logistics Risk: There is a high logistics risk as the billing ZIP matches the cardholder, but the shipping ZIP is different and consistent with drop-house patterns. This indicates potential fraudulent activity.
+
+Based on the analysis, the transaction shows characteristics of Carding due to the CVV match and the decline due to insufficient funds, combined with the high velocity of card rotation and the use of a disposable email. The presence of a drop-house pattern further supports this classification.
+</scratchpad>
+
+<classification>Carding</classification>"
+tx_9612646745,OPENAI,Synthetic_Identity,Synthetic_Identity,True,2017.3,0.00021225,"<scratchpad>
+1. Cryptographic Signals: The transaction was authorized successfully, with both CVV and billing address checks passing.
+2. Velocity Profile: The narrative indicates normal velocity, with only 1-2 cards attempted from the IP recently, which does not suggest high-speed automated attempts.
+3. Identity Risk: The account is highly suspicious, created using a disposable email and has a critically high synthetic identity score (0.976), indicating a high risk of being a synthetic identity.
+4. Logistics Risk: There is low logistics risk as the billing and shipping ZIP codes match, which is a positive sign for legitimacy.
+
+Based on the analysis, the key factor is the high synthetic identity score and the use of a disposable email, which strongly indicates that this transaction is tied to a newly fabricated identity.
+</scratchpad>
+
+<classification>Synthetic_Identity</classification>"
+tx_92ae0a68a6,OPENAI,Stolen_Card,Legitimate,False,2405.55,0.00022769999999999998,"<scratchpad>
+1. Cryptographic Signals: The transaction was authorized successfully, with both CVV and billing address checks passing.
+2. Velocity Profile: The narrative indicates normal velocity, with only 1-2 cards attempted from the IP recently, which does not suggest high-speed automated attempts.
+3. Identity Risk: The identity profile shows an established user account active for 372 days, which does not indicate a synthetic identity.
+4. Logistics Risk: There is a high logistics risk as the billing ZIP matches the cardholder, but the shipping ZIP is different and consistent with drop-house patterns.
+
+Based on the analysis, while the transaction was authorized and appears legitimate in terms of the user account, the high logistics risk due to the mismatch in shipping and billing addresses raises concerns. However, since the transaction was approved and there are no indications of malicious intent or automated attacks, it leans towards being legitimate despite the logistics risk.
+</scratchpad>
+
+<classification>Legitimate</classification>"
+tx_490bb8f9e6,OPENAI,Synthetic_Identity,Synthetic_Identity,True,2112.58,0.00022514999999999997,"<scratchpad>
+1. Cryptographic Signals: The transaction was authorized successfully, with CVV and billing address checks passing.
+2. Velocity Profile: The narrative indicates normal velocity, with only 1-2 cards attempted from the IP recently, which does not suggest high-speed automated attacks.
+3. Identity Risk: The account is highly suspicious, created using a disposable email and has a critically high synthetic identity score (0.94), indicating a high risk of being a synthetic identity.
+4. Logistics Risk: There is low logistics risk as the billing and shipping ZIP codes match, which is a positive sign for legitimacy.
+
+Based on the analysis, the key factor here is the high synthetic identity score and the use of a disposable email, which strongly indicates that this transaction is tied to a newly fabricated identity. The successful authorization and normal velocity do not negate the identity risk present.
+
+Final classification: Synthetic_Identity
+</scratchpad>
+
+<classification>Synthetic_Identity</classification>"
+tx_0121a853c5,OPENAI,Synthetic_Identity,Synthetic_Identity,True,2037.22,0.0002118,"<scratchpad>
+1. Cryptographic Signals: The transaction was authorized successfully, with both CVV and billing address checks passing.
+2. Velocity Profile: The narrative indicates normal velocity, with only 1-2 cards attempted from the IP recently, which does not suggest high-speed automated attacks.
+3. Identity Risk: The account is highly suspicious, created using a disposable email and has a critically high synthetic identity score (0.921), indicating a strong likelihood of being a synthetic identity.
+4. Logistics Risk: There is low logistics risk as the billing and shipping ZIP codes match, which is a positive sign for legitimacy.
+
+Based on the analysis, the key factor is the high synthetic identity score and the use of a disposable email, which strongly indicates that this transaction is tied to a synthetic identity.
+</scratchpad>
+
+<classification>Synthetic_Identity</classification>"
+tx_8a2c238094,OPENAI,Legitimate,Stolen_Card,False,2303.48,0.00025919999999999996,"<scratchpad>
+1. Cryptographic Signals: The transaction was authorized successfully, with both CVV and billing address checks passing.
+2. Velocity Profile: The narrative indicates normal velocity, with only 1-2 cards attempted from the IP recently, which does not suggest high-speed automated attempts.
+3. Identity Risk: The identity profile indicates a brand-new guest checkout session with zero historical platform trust, which raises some concerns but does not definitively indicate synthetic identity.
+4. Logistics Risk: There is a high logistics risk as the billing ZIP matches the cardholder, but the shipping ZIP is different and consistent with drop-house patterns.
+
+Based on the analysis:
+- The successful authorization and normal velocity suggest a legitimate transaction at first glance.
+- However, the high logistics risk due to the mismatch in shipping and billing addresses raises red flags, indicating potential fraudulent behavior.
+- The new guest checkout session with no historical trust adds to the suspicion but does not confirm synthetic identity.
+
+Given the combination of successful authorization and high logistics risk, this transaction is likely to be classified as Stolen_Card due to the potential for unauthorized purchases using stolen card details, especially with the drop-house pattern indicated.
+
+</scratchpad>
+
+<classification>Stolen_Card</classification>"
+tx_75fb59fa34,OPENAI,Carding,Carding,True,2607.0,0.00026714999999999996,"<scratchpad>
+1. Cryptographic Signals: The transaction failed with a CVV match but was declined due to insufficient funds (Code 51). This indicates that the card is likely valid but has no available balance.
+2. Velocity Profile: The narrative mentions high velocity, with the session rotating through 18 different cards in under a minute. This suggests an attempt to validate multiple cards quickly.
+3. Identity Risk: The account is newly created and only active for 2 days, with an email from a disposable domain (temp-mail.org). This raises concerns about the legitimacy of the identity.
+4. Logistics Risk: The billing ZIP code matches the cardholder, but the shipping ZIP code is different and consistent with drop-house patterns. This indicates a potential risk in the logistics of the transaction.
+
+Based on the analysis, the transaction shows characteristics of both Carding (due to the CVV match and insufficient funds) and Synthetic Identity (due to the newly created account and disposable email). However, the high velocity of rotating through multiple cards and the nature of the transaction (declined due to insufficient funds) aligns more closely with Carding, as it indicates an attempt to validate stolen credentials.
+
+Final classification: Carding
+</scratchpad>
+
+<classification>Carding</classification>"
+tx_640672033f,OPENAI,Stolen_Card,Stolen_Card,True,2334.39,0.00025755,"<scratchpad>
+1. Cryptographic Signals: The transaction was authorized successfully, with CVV and billing address checks passing.
+2. Velocity Profile: The narrative indicates normal velocity, with only 1-2 cards attempted from the IP recently, which does not suggest high-speed automated attempts.
+3. Identity Risk: The identity profile shows an established user account active for 508 days, which does not indicate a synthetic identity.
+4. Logistics Risk: There is a high logistics risk as the billing ZIP matches the cardholder, but the shipping ZIP is different and consistent with drop-house patterns.
+
+Based on the analysis, while the transaction was authorized and appears legitimate at first glance, the high logistics risk due to the mismatch in shipping and billing addresses raises significant concerns. This suggests that the transaction may not be entirely legitimate, as it aligns with patterns often seen in fraudulent activities, particularly those involving drop-houses.
+
+Final classification: Stolen_Card seems plausible due to the high-value transaction and the logistics risk, but the established user account complicates this. However, the shipping address inconsistency is a strong indicator of potential fraud.
+
+Final classification: Stolen_Card
+</scratchpad>
+
+<classification>Stolen_Card</classification>"
+tx_cbd7c49ebb,OPENAI,Legitimate,Legitimate,True,1631.51,0.00019035,"<scratchpad>
+1. Cryptographic Signals: The transaction was authorized successfully, with both CVV and billing address checks passing.
+2. Velocity Profile: The narrative indicates normal velocity, with only 1-2 cards attempted from the IP recently, which does not suggest any automated attack.
+3. Identity Risk: The identity profile shows an established user account that has been active for 236 days, indicating a legitimate user rather than a synthetic identity.
+4. Logistics Risk: The billing and shipping ZIP codes match, which further reduces the risk of fraudulent activity.
+
+Based on the analysis, all signals point towards a standard, valid transaction with no malicious intent.
+</scratchpad>
+
+<classification>Legitimate</classification>"
+tx_6b4643e18d,OPENAI,Legitimate,Legitimate,True,1595.82,0.00018930000000000002,"<scratchpad>
+1. Cryptographic Signals: The transaction was authorized successfully, with both CVV and billing address checks passing.
+2. Velocity Profile: The narrative indicates normal velocity, with only 1-2 cards attempted from the IP recently, which does not suggest any automated attack.
+3. Identity Risk: The identity profile shows an established user account that has been active for 576 days, indicating a low risk of synthetic identity.
+4. Logistics Risk: The billing and shipping ZIP codes match, which further reduces the risk of fraudulent activity.
+
+Based on the analysis, all signals point towards a standard, valid transaction with no malicious intent.
+</scratchpad>
+
+<classification>Legitimate</classification>"
+tx_e026d6c212,OPENAI,Stolen_Card,Stolen_Card,True,2386.86,0.000234,"<scratchpad>
+1. Cryptographic Signals: The transaction was authorized successfully, with both CVV and billing address checks passing.
+2. Velocity Profile: The narrative indicates normal velocity, with only 1-2 cards attempted from the IP recently, which does not suggest high-speed automated attempts.
+3. Identity Risk: The identity profile shows an established user account active for 471 days, which does not indicate a synthetic identity.
+4. Logistics Risk: There is a high logistics risk as the billing ZIP matches the cardholder, but the shipping ZIP is different and consistent with drop-house patterns.
+
+Based on the analysis, while the transaction was authorized and appears legitimate at first glance, the high logistics risk due to the mismatch in shipping and billing addresses raises significant concerns. This suggests that the transaction may not be legitimate and could be indicative of a Stolen_Card scenario, as it involves a high-value order with suspicious shipping behavior.
+
+Final classification: Stolen_Card
+</scratchpad>
+
+<classification>Stolen_Card</classification>"
+tx_73212d1b7b,OPENAI,Stolen_Card,Stolen_Card,True,2093.7,0.00024075,"<scratchpad>
+1. Cryptographic Signals: The transaction was authorized successfully, with both CVV and billing address checks passing.
+2. Velocity Profile: The narrative indicates normal velocity, with only 1-2 cards attempted from the IP recently, which does not suggest high-speed automated attempts.
+3. Identity Risk: The identity profile shows an established user account active for 678 days, which does not indicate a synthetic identity.
+4. Logistics Risk: There is a high logistics risk as the billing ZIP matches the cardholder, but the shipping ZIP is different and consistent with drop-house patterns.
+
+Based on the analysis, the transaction has been authorized successfully and does not show signs of BIN Testing or Carding due to the normal velocity and established user account. However, the high logistics risk indicates potential fraudulent behavior, as the shipping address does not match the billing address, which is a common tactic in stolen card transactions.
+
+Final classification: Stolen_Card due to the mismatch in shipping and billing addresses, despite the successful authorization.
+</scratchpad>
+
+<classification>Stolen_Card</classification>"
+tx_f73aa20b1a,OPENAI,Synthetic_Identity,Synthetic_Identity,True,1836.53,0.0002124,"<scratchpad>
+1. Cryptographic Signals: The transaction was authorized successfully, with both CVV and billing address checks passing.
+2. Velocity Profile: The narrative indicates normal velocity, with only 1-2 cards attempted from the IP recently, which does not suggest high-speed automated attempts.
+3. Identity Risk: The account is highly suspicious, created using a disposable email and has a critically high synthetic identity score (0.964), indicating a strong likelihood of being a synthetic identity.
+4. Logistics Risk: There is low logistics risk as the billing and shipping ZIP codes match, which is a positive sign for legitimacy.
+
+Based on the analysis, the key factor here is the high synthetic identity score and the use of a disposable email, which strongly points towards the transaction being linked to a synthetic identity.
+</scratchpad>
+
+<classification>Synthetic_Identity</classification>"
+tx_3ea2e69d5c,OPENAI,Legitimate,Legitimate,True,2207.42,0.00018975,"<scratchpad>
+1. Cryptographic Signals: The transaction was authorized successfully, with both CVV and billing address checks passing.
+2. Velocity Profile: The narrative indicates normal velocity, with only 1-2 cards attempted from the IP recently, which does not suggest any automated attack.
+3. Identity Risk: The identity profile shows an established user account that has been active for 595 days, indicating a legitimate user rather than a synthetic identity.
+4. Logistics Risk: The billing and shipping ZIP codes match, which further reduces the risk of fraud.
+
+Based on the analysis, all signals point towards a standard, valid transaction with no malicious intent.
+</scratchpad>
+
+<classification>Legitimate</classification>"
+tx_fd40f6267b,OPENAI,BIN_Testing,BIN_Testing,True,2159.91,0.00020684999999999999,"<scratchpad>
+1. Cryptographic Signals: The transaction failed with a CVV Mismatch (Code N7), indicating that the CVV provided did not match the one on file for the card.
+2. Velocity Profile: The narrative mentions an extreme velocity anomaly with 44 distinct card numbers attempted in the last 60 seconds, specifically targeting BIN 599906. This indicates a focused attack on a single BIN.
+3. Identity Risk: The identity profile indicates a brand-new guest checkout session with zero historical trust, which raises some concerns but does not directly indicate synthetic identity use.
+4. Logistics Risk: There is no physical delivery address provided, which is typical for digital transactions but does not indicate a drop-house pattern.
+</scratchpad>
+
+<classification>BIN_Testing</classification>"
+tx_a4c84423a9,OPENAI,BIN_Testing,BIN_Testing,True,2014.9,0.00023414999999999997,"<scratchpad>
+1. Cryptographic Signals: The transaction failed with a CVV Mismatch (Code N7 - CVV Mismatch).
+2. Velocity Profile: The narrative mentions an extreme velocity anomaly with 20 distinct card numbers attempted in the last 60 seconds, specifically targeting BIN 539180.
+3. Identity Risk: The identity profile indicates a brand-new guest checkout session with zero historical platform trust, but there is no mention of a disposable email.
+4. Logistics Risk: There is no physical delivery address provided, as it is a digital/pre-auth transaction.
+
+Based on the analysis:
+- The failure due to CVV Mismatch indicates an attempt to validate card details.
+- The extreme velocity and targeting of a specific BIN suggest a systematic approach to testing card numbers.
+- The lack of a physical address and the bot-like behavior further support the notion of automated testing rather than legitimate purchases.
+
+Thus, the transaction aligns with the characteristics of BIN Testing.
+</scratchpad>
+
+<classification>BIN_Testing</classification>"
+tx_4923b23013,OPENAI,Carding,Carding,True,2422.89,0.000246,"<scratchpad>
+1. Cryptographic Signals: The transaction failed with a CVV match but was declined due to insufficient funds (Code 51). This indicates that the CVV was valid, which is a common characteristic of carding.
+2. Velocity Profile: The narrative mentions high velocity, with the session rotating through 13 different cards in under a minute. This is indicative of carding behavior, where multiple cards are tested quickly.
+3. Identity Risk: The account is newly created and only active for 1 day, with an email from a disposable domain (10minutemail.com). This suggests a high risk of synthetic identity usage.
+4. Logistics Risk: The billing ZIP code matches the cardholder, but the shipping ZIP code is different and consistent with drop-house patterns. This adds to the suspicion of fraudulent activity.
+
+Given the combination of a valid CVV, high velocity with multiple cards, a newly created account with a disposable email, and the logistics risk, the transaction aligns most closely with carding behavior.
+</scratchpad>
+
+<classification>Carding</classification>"
+tx_96dd7aac2c,OPENAI,Legitimate,Legitimate,True,1615.6,0.00019335,"<scratchpad>
+1. Cryptographic Signals: The transaction was authorized successfully, with both CVV and billing address checks passing.
+2. Velocity Profile: The narrative indicates normal velocity, with only 1-2 cards attempted from the IP recently, which does not suggest any automated attack.
+3. Identity Risk: The identity profile shows an established user account that has been active for 531 days, indicating a legitimate user rather than a synthetic identity.
+4. Logistics Risk: There is low logistics risk as the billing and shipping ZIP codes match, further supporting the legitimacy of the transaction.
+
+Based on the analysis, all signals point towards a standard, valid transaction with no malicious intent.
+</scratchpad>
+
+<classification>Legitimate</classification>"
+tx_670e2f128b,OPENAI,Stolen_Card,Legitimate,False,1529.41,0.00018930000000000002,"<scratchpad>
+1. Cryptographic Signals: The transaction was authorized successfully, with both CVV and billing address checks passing.
+2. Velocity Profile: The narrative indicates normal velocity, with only 1-2 cards attempted from the IP recently, which does not suggest any automated attack.
+3. Identity Risk: The identity profile shows an established user account that has been active for 380 days, indicating a low risk of synthetic identity.
+4. Logistics Risk: The billing and shipping ZIP codes match, which further reduces the risk of fraudulent activity.
+
+Based on the analysis, all signals point towards a standard, valid transaction with no malicious intent.
+</scratchpad>
+
+<classification>Legitimate</classification>"
+tx_dcf4c41e9f,OPENAI,Legitimate,Legitimate,True,1537.54,0.00019050000000000002,"<scratchpad>
+1. Cryptographic Signals: The transaction was authorized successfully, with both CVV and billing address checks passing.
+2. Velocity Profile: The narrative indicates normal velocity, with only 1-2 cards attempted from the IP recently, which does not suggest any automated attack.
+3. Identity Risk: The identity profile shows an established user account that has been active for 578 days, indicating a legitimate user rather than a synthetic identity.
+4. Logistics Risk: The billing and shipping ZIP codes match, which further reduces the risk of fraudulent activity.
+
+Based on the analysis, all signals point towards a standard, valid transaction with no malicious intent.
+</scratchpad>
+
+<classification>Legitimate</classification>"
+tx_baa510e4cf,OPENAI,Stolen_Card,Legitimate,False,1638.45,0.00018975,"<scratchpad>
+1. Cryptographic Signals: The transaction was authorized successfully, with both CVV and billing address checks passing.
+2. Velocity Profile: The narrative indicates normal velocity, with only 1-2 cards attempted from the IP recently, which does not suggest any automated attack.
+3. Identity Risk: The identity profile shows an established user account that has been active for 363 days, indicating a legitimate user rather than a synthetic identity.
+4. Logistics Risk: The billing and shipping ZIP codes match, which further reduces the risk of fraud.
+
+Based on the analysis, all signals point towards a standard, valid transaction with no malicious intent.
+</scratchpad>
+
+<classification>Legitimate</classification>"
+tx_794246f157,OPENAI,Legitimate,Legitimate,True,1805.24,0.0001899,"<scratchpad>
+1. Cryptographic Signals: The transaction was authorized successfully, with both CVV and billing address checks passing.
+2. Velocity Profile: The narrative indicates normal velocity, with only 1-2 cards attempted from the IP recently, which does not suggest any automated attack.
+3. Identity Risk: The identity profile shows an established user account that has been active for 383 days, indicating a legitimate user rather than a synthetic identity.
+4. Logistics Risk: The billing and shipping ZIP codes match, which further reduces the risk of fraud.
+
+Based on the analysis, all signals point towards a standard, valid transaction with no malicious intent.
+</scratchpad>
+
+<classification>Legitimate</classification>"
+tx_49cb510cc6,OPENAI,Carding,Carding,True,2428.99,0.00025905,"<scratchpad>
+1. Cryptographic Signals: The transaction failed with a CVV match but was declined due to Insufficient Funds (Code 51). This indicates that the card was likely valid but had no available balance.
+2. Velocity Profile: The narrative mentions high velocity, with the session rotating through 9 different cards in under a minute. This suggests an automated attempt to validate multiple cards quickly.
+3. Identity Risk: The account is newly created and only active for 2 days, with an email from a disposable domain (guerrillamail.com). This raises concerns about the legitimacy of the identity.
+4. Logistics Risk: The billing ZIP code matches the cardholder, but the shipping ZIP code is different and consistent with drop-house patterns. This indicates a potential risk in the logistics of the transaction.
+
+Based on the analysis, the transaction shows characteristics of Carding due to the CVV match and the high velocity of rotating through multiple cards, combined with the newly created account and disposable email. The decline due to insufficient funds aligns with typical carding behavior where stolen credentials are used but the accounts are often empty or blocked.
+</scratchpad>
+
+<classification>Carding</classification>"
+tx_6bda68cdfd,OPENAI,Carding,Carding,True,2288.34,0.00026444999999999995,"<scratchpad>
+1. Cryptographic Signals: The transaction failed with a CVV match but was declined due to Insufficient Funds (Code 51). This indicates that the CVV was valid, but the card was either empty or blocked.
+2. Velocity Profile: The narrative mentions high velocity, with the session rotating through 15 different cards in under a minute. This suggests an automated attempt to validate multiple stolen credentials.
+3. Identity Risk: The account is newly created and only active for 2 days, with a throwaway email domain. This indicates a high risk of synthetic identity usage.
+4. Logistics Risk: The billing ZIP code matches the cardholder, but the shipping ZIP code is different and consistent with drop-house patterns. This adds to the suspicion of fraudulent activity.
+
+Based on the analysis, the transaction shows characteristics of both Carding (due to the CVV match and high velocity through multiple cards) and Synthetic Identity (due to the newly created account and throwaway email). However, the presence of a valid CVV and the decline due to insufficient funds strongly aligns with Carding, as it indicates an attempt to validate stolen credentials.
+
+Final classification: Carding
+</scratchpad>
+
+<classification>Carding</classification>"

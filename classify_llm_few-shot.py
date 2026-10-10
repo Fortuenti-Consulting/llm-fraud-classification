@@ -21,6 +21,11 @@ ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 if not OPENAI_API_KEY or not ANTHROPIC_API_KEY:
     raise ValueError(f"Missing API keys. Looked for .env at: {env_path}")
 
+# DATASET=shifted runs on the shifted stress-test set instead of the published one
+SHIFTED = os.getenv("DATASET", "") == "shifted"
+DATASET_FILE = "shifted_fraud_dataset.json" if SHIFTED else "synthetic_fraud_dataset.json"
+SAMPLE_FILE = "shifted_sample_ids.txt" if SHIFTED else "eval_sample_ids.txt"
+
 OPENAI_MODEL = "gpt-4o-mini"
 ANTHROPIC_MODEL = "claude-haiku-4-5-20251001"
 
@@ -120,12 +125,12 @@ def classify_with_llm(prompt: str, engine: str):
 
 # 4. Main
 if __name__ == "__main__":
-    print("Loading synthetic_fraud_dataset.json...")
-    with open("synthetic_fraud_dataset.json", "r") as f:
+    print(f"Loading {DATASET_FILE}...")
+    with open(DATASET_FILE, "r") as f:
         dataset = json.load(f)
 
     # Every strategy is scored on the same 50 transactions (10 per category)
-    with open("eval_sample_ids.txt", "r") as f:
+    with open(SAMPLE_FILE, "r") as f:
         sample_ids = f.read().split()
     records_by_id = {r["raw_ml_features"]["transaction_id"]: r for r in dataset}
     sampled_records = [records_by_id[tx_id] for tx_id in sample_ids]
@@ -188,6 +193,6 @@ if __name__ == "__main__":
     print(f"Max Latency:     {max_latency:.0f} ms")
     print("="*45)
 
-    output_file = f"llm_eval_log_few-shot_{ENGINE_CHOICE.lower()}.csv"
+    output_file = f"llm_eval_log_few-shot_{ENGINE_CHOICE.lower()}{'_shifted' if SHIFTED else ''}.csv"
     df_results.to_csv(output_file, index=False)
     print(f"\nDetailed log saved to {output_file}")

@@ -30,6 +30,11 @@ mutate "Anthropic call left at default temperature" classify_llm_few-shot.py 's/
 mutate "a run scored on a different sample" llm_eval_log_zero-shot_openai.csv 's/tx_9bf5f27eda/tx_3fc1372a4e/' V6
 mutate "report cites a transaction not in the logs" Engineer_Report.md 's/tx_9bf5f27eda/tx_ae318ef002/' V8
 mutate "README results table out of date" README.md 's/90% · 531 ms/91% · 531 ms/' V8
+mutate "shifted BIN testing back inside the rule's velocity range" dataset_generator.py 's/randint\(6, 10\)/randint(11, 20)/' V10
+mutate "narrative calls any email domain disposable" dataset_generator.py 's/if raw\["email_domain"\] in DISPOSABLE_EMAIL_DOMAINS/if True/' V10
+mutate "default mode consumes an extra random number" dataset_generator.py 's/if shifted and random\.random\(\) < SHIFT_RATE:/if random.random() < SHIFT_RATE and shifted:/' V11
+mutate "README shifted category table out of date" README.md 's/\| 0 \| 0 \| 0 \| 1 \| 6 \|/| 0 | 0 | 0 | 1 | 7 |/' V8
+mutate "shifted seed changed after publishing" dataset_generator.py 's/SHIFTED_SEED = 7/SHIFTED_SEED = 8/' V10
 mutate "grid cell reads the wrong engine's log" cost-accuracy_analysis.py 's/llm_eval_log_\{strat\}_\{eng\}\.csv/llm_eval_log_{strat}_openai.csv/' V4
 
 echo "survivors: $survived"

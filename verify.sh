@@ -14,7 +14,7 @@ check() { # id, command...  — prints PASS/FAIL id; output shown only on failur
   if out=$("$@" 2>&1); then echo "PASS $id"; else echo "FAIL $id"; printf '%s\n' "$out" | tail -15; rc=1; fi
 }
 
-for id in V1 V2 V3 V4 V5 V6 V7 V8; do
+for id in V1 V2 V3 V4 V5 V6 V7 V8 V10 V11; do
   check "$id" python3 tests/test_pipeline.py "$id"
 done
 

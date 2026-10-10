@@ -1,0 +1,2848 @@
+transaction_id,engine_used,true_label,predicted_label,is_correct,latency_ms,cost_usd,cot_output
+tx_68b0506b5f,ANTHROPIC,Legitimate,Legitimate,True,9297.8,0.004837,"<scratchpad>
+Let me work through the checklist systematically:
+
+1. **Cryptographic Signals:**
+   - Authorization: APPROVED
+   - CVV check: PASSED
+   - Billing address check: PASSED
+   - No CVV mismatch errors
+   - No insufficient funds decline
+   - This rules out BIN_Testing (which shows explicit CVV mismatches) and Carding (which shows declines due to empty/blocked cards)
+
+2. **Velocity Profile:**
+   - Velocity is NORMAL: Only 1-2 cards attempted from this IP recently
+   - No mention of targeting a specific BIN
+   - No rotation through many different cards
+   - This rules out both BIN_Testing and Carding, which require high-velocity automated patterns
+
+3. **Identity Risk:**
+   - Account is ESTABLISHED: Active for 883 days
+   - No mention of synthetic identity score being critically high
+   - No disposable email mentioned
+   - This rules out Synthetic_Identity
+
+4. **Logistics Risk:**
+   - Billing ZIP (06288) matches the cardholder
+   - Shipping ZIP (79700) is DIFFERENT from billing ZIP
+   - Narrative explicitly notes this is ""consistent with drop-houses""
+   - However, this alone doesn't definitively classify the fraud type
+   - The transaction authorized successfully with valid credentials
+   - The account is established and legitimate-looking
+   - The shipping mismatch suggests potential fraud, but combined with successful authorization and normal velocity, this points to either Stolen_Card or a risky Legitimate transaction
+
+**Key Decision Point:**
+- The authorization APPROVED with valid CVV and address checks suggests the cardholder's credentials are correct
+- The established 883-day account suggests legitimacy
+- However, the drop-house shipping pattern (different ZIP) is a red flag
+- This is NOT Stolen_Card because stolen card fraud typically involves either: (a) authorization failures, or (b) high-value purchases that trigger fraud alerts, or (c) mismatched billing/shipping with failed verification
+- Here, verification PASSED, suggesting the person using the card has legitimate access to it
+- The drop-house pattern is suspicious but could be a legitimate customer shipping to a different location
+
+**Most Likely Classification:**
+Given that:
+- All cryptographic checks passed
+- Velocity is normal
+- Account is established
+- The only red flag is the shipping-to-drop-house pattern
+
+This appears to be a **Legitimate** transaction with elevated logistics risk, rather than a confirmed fraud type. The transaction doesn't fit the automated attack patterns (BIN_Testing, Carding) or the stolen card profile (which would show verification failures or high-value red flags).
+</scratchpad>
+
+<classification>
+Legitimate
+</classification>
+
+**Reasoning:**
+This transaction exhibits the hallmarks of a legitimate purchase despite the logistics risk:
+
+1. **Cryptographic Signals:** Authorization approved with successful CVV and billing address verification—inconsistent with BIN_Testing (CVV mismatches) or Carding (issuer declines).
+
+2. **Velocity Profile:** Normal velocity (1-2 cards from IP) rules out automated attack patterns requiring high-speed card rotation.
+
+3. **Identity Profile:** Established account active for 883 days indicates a genuine, long-standing customer.
+
+4. **Logistics Context:** While the billing-to-shipping ZIP mismatch (06288 → 79700) is flagged as drop-house-consistent, this alone does not override the legitimate signals above. The customer may legitimately ship to"
+tx_bd7ff3c0ba,ANTHROPIC,BIN_Testing,BIN_Testing,True,8899.31,0.004843,"<scratchpad>
+Let me work through the classification checklist:
+
+1. **Cryptographic Signals:**
+   - Authorization failed with CVV Mismatch (Code N7)
+   - This is an explicit CVV failure, not an Insufficient Funds or Do Not Honor decline
+   - The transaction amount is USD 1.00 (micro-transaction for validation)
+   - This pattern is characteristic of brute-force CVV guessing
+
+2. **Velocity Profile:**
+   - High velocity: 8 different cards rotated in under a minute
+   - However, the narrative does NOT explicitly mention targeting a single ""BIN prefix""
+   - Multiple different cards are being tested, not a single BIN
+   - This suggests card rotation rather than BIN-specific targeting
+
+3. **Identity Risk:**
+   - Brand-new guest checkout session with zero historical trust
+   - No disposable email explicitly mentioned, but new session indicates low identity confidence
+   - Not a strong synthetic identity signal (no fabricated identity details provided)
+
+4. **Logistics Risk:**
+   - No physical delivery address (digital/pre-auth transaction)
+   - This is consistent with validation testing, not a purchase pattern
+
+**Critical Analysis:**
+The key distinguishing factor between BIN_Testing and Carding is:
+- BIN_Testing: Targets a single BIN prefix with CVV brute-force attempts (explicit CVV Mismatches)
+- Carding: Rotates through DIFFERENT cards with stolen credential lists (CVV matches, but issuer declines for other reasons like Insufficient Funds)
+
+This narrative shows:
+- CVV Mismatch (Code N7) ✓ (suggests brute-force)
+- BUT: ""rotated through 8 different cards"" ✓ (suggests card rotation, not single BIN targeting)
+- Micro-transaction (USD 1.00) for validation ✓
+- High velocity ✓
+
+The presence of ""8 different cards"" in rotation is the critical signal. However, the explicit CVV Mismatch and micro-transaction validation pattern is more consistent with BIN Testing methodology. The ""8 different cards"" could represent testing across different BINs rather than a traditional carder rotating through a stolen list.
+
+Given the explicit CVV Mismatch failure (Code N7) combined with the micro-transaction validation attempt and high velocity, this is most consistent with **BIN_Testing** - automated brute-force attempts to guess valid card numbers and CVVs, testing across multiple BIN prefixes.
+</scratchpad>
+
+<classification>
+BIN_Testing
+</classification>
+
+**Reasoning:**
+The transaction exhibits the hallmark signature of BIN Testing:
+1. **Cryptographic Signal**: Explicit CVV Mismatch (Code N7) indicates brute-force CVV guessing rather than possession of valid stolen credentials
+2. **Velocity & Automation**: High-speed rotation through 8 cards in under 60 seconds using programmatic injection
+3. **Micro-Transaction Pattern**: USD 1.00 pre-authorization is a classic validation probe to test card validity without triggering fraud alerts
+4. **Attack Methodology**: The combination of CVV failures across multiple cards suggests systematic BIN/card number enumeration rather than a carder using a pre-validated stolen list
+
+While the narrative mentions ""8 different cards,"" this is consistent with testing across multiple BIN prefixes rather than traditional carding (which would show CVV matches followed by issuer declines). The explicit CVV Mismatch is the decisive signal."
+tx_3faab98366,ANTHROPIC,Stolen_Card,Stolen_Card,True,8468.5,0.0046240000000000005,"<scratchpad>
+Let me work through the checklist systematically:
+
+1. **Cryptographic Signals:**
+   - Authorization: APPROVED
+   - CVV check: PASSED
+   - Billing address check: PASSED
+   - No CVV mismatch errors
+   - No insufficient funds decline
+   - This rules out BIN_Testing (which shows explicit CVV mismatches) and Carding (which shows declines like Code 51 or Code 05)
+
+2. **Velocity Profile:**
+   - Velocity is NORMAL: Only 1-2 cards attempted from this IP recently
+   - No mention of targeting a specific BIN
+   - No rotation through many different cards
+   - This rules out both BIN_Testing and Carding, which require high-velocity automated patterns
+
+3. **Identity Risk:**
+   - Account is established and active for 27 days (not brand new)
+   - No mention of synthetic identity score being critically high
+   - No mention of disposable email
+   - This makes Synthetic_Identity less likely
+
+4. **Logistics Risk:**
+   - Billing ZIP (18550) matches the cardholder
+   - Shipping ZIP (10624) is DIFFERENT from billing ZIP
+   - Narrative explicitly notes this is ""consistent with drop-houses""
+   - However, this alone doesn't definitively prove fraud—legitimate customers sometimes ship to different addresses
+   - The proxy IP masking origin is suspicious but not conclusive
+
+5. **Overall Assessment:**
+   - The transaction authorized successfully with all verification checks passing
+   - Velocity is normal (not automated attack)
+   - The primary red flag is the billing/shipping ZIP mismatch and proxy IP
+   - This pattern is most consistent with **Stolen_Card**: A high-value transaction ($501.90) using stolen card details that passed verification (because the card is valid and not yet reported), but with logistics indicators of fraud (drop-house shipping)
+   - The cardholder's billing address matched, suggesting the stolen card belongs to someone at that location, and the fraudster is shipping to a drop-house
+   - This is NOT Legitimate because of the clear drop-house logistics pattern
+   - This is NOT Synthetic_Identity because the account is established and identity checks passed
+</scratchpad>
+
+<classification>
+Stolen_Card
+</classification>
+
+**Reasoning:**
+This transaction exhibits the hallmark pattern of **Stolen_Card** fraud:
+- **Authorization Success**: The stolen card details (including valid CVV and matching billing address) passed all verification checks, indicating the card itself is legitimate and not yet reported as compromised.
+- **High Transaction Value**: USD 501.90 is a substantial purchase, consistent with fraudsters maximizing value from stolen credentials.
+- **Drop-House Logistics**: The critical indicator is the mismatch between billing ZIP (18550, matching the cardholder) and shipping ZIP (10624), explicitly noted as consistent with drop-house patterns. This is a classic sign of card theft—the fraudster uses the legitimate cardholder's billing address to pass verification, then ships to a location under their control.
+- **Proxy IP Masking**: The use of a datacenter/residential proxy to mask true origin further supports fraudulent intent.
+- **Normal Velocity**: Rules out automated attacks (BIN_Testing, Carding), which require high-speed multi-card attempts."
+tx_0379de8de5,ANTHROPIC,Synthetic_Identity,Synthetic_Identity,True,7370.95,0.004212,"<scratchpad>
+Let me work through the classification checklist:
+
+1. **Cryptographic Signals:**
+   - Authorization: APPROVED
+   - CVV check: PASSED
+   - Billing address check: PASSED
+   - No CVV mismatch errors
+   - No insufficient funds decline
+   - This rules out BIN_Testing (which shows explicit CVV mismatches) and Carding (which shows declines due to insufficient funds or ""Do Not Honor"")
+
+2. **Velocity Profile:**
+   - Velocity is NORMAL: Only 1-2 cards attempted from this IP recently
+   - No targeting of a specific BIN prefix
+   - No rotation through many different cards
+   - This rules out both BIN_Testing and Carding, which require high-velocity automated patterns
+
+3. **Identity Risk:**
+   - Account created only 10 days ago (very recent)
+   - Email domain: hotmail.com (generic, disposable-type domain)
+   - Synthetic identity score: CRITICALLY HIGH at 0.792
+   - This is a major red flag for Synthetic_Identity fraud
+   - The account is explicitly flagged as ""highly suspicious""
+
+4. **Logistics Risk:**
+   - Billing and shipping ZIP codes MATCH
+   - Low logistics risk overall
+   - This does NOT indicate Stolen_Card (which typically shows mismatched addresses/drop-house patterns)
+
+5. **Transaction Characteristics:**
+   - Standard order value (USD 488.21)
+   - Manual typing behavior (56.8 seconds checkout)
+   - Standard residential/mobile ISP
+   - All verification checks passed
+   - No signs of automated scripting or high-speed attacks
+
+**Conclusion:**
+The transaction authorizes successfully with all cryptographic checks passing. Velocity is normal (not automated). However, the account itself is the problem: it's brand new (10 days), has a critically high synthetic identity score (0.792), and uses a generic email domain. The logistics match and normal behavior suggest this isn't a stolen card being used for fraud, but rather a fabricated identity attempting to make a legitimate-looking purchase.
+
+This is **Synthetic_Identity** fraud.
+</scratchpad>
+
+<classification>
+Synthetic_Identity
+</classification>
+
+**Reasoning:**
+The transaction exhibits all hallmarks of synthetic identity fraud:
+- **Account Age:** Created only 10 days ago (newly fabricated)
+- **Identity Score:** Critically high synthetic identity score of 0.792
+- **Email Profile:** Generic hotmail.com domain typical of synthetic accounts
+- **Cryptographic Signals:** Authorization and all verification checks passed (ruling out BIN_Testing, Carding, and Stolen_Card)
+- **Velocity:** Normal (1-2 cards), not automated attack patterns
+- **Logistics:** Matching ZIP codes and standard human behavior mask the fraud attempt
+
+The fraudster has created a fake identity and is attempting to establish legitimacy through a standard transaction with proper address matching and normal checkout behavior."
+tx_0a68404206,ANTHROPIC,Synthetic_Identity,Synthetic_Identity,True,6897.11,0.0038369999999999997,"<scratchpad>
+Let me work through the classification checklist:
+
+1. **Cryptographic Signals:**
+   - Authorization: APPROVED
+   - CVV check: PASSED
+   - Billing address check: PASSED
+   - No CVV Mismatch (which would indicate BIN Testing)
+   - No Insufficient Funds decline (which would indicate Carding)
+   - Transaction successfully authorized
+
+2. **Velocity Profile:**
+   - Velocity is NORMAL: Only 1-2 cards attempted from this IP recently
+   - NOT targeting a single BIN with high-speed attempts
+   - NOT rotating through many different cards
+   - This rules out both BIN_Testing and Carding
+
+3. **Identity Risk:**
+   - Account created only 13 days ago (very recent)
+   - Using yahoo.com email domain (common but not necessarily disposable)
+   - Synthetic identity score is CRITICALLY HIGH at 0.793
+   - This is a major red flag for synthetic identity fraud
+   - The account age + high synthetic score strongly suggests fabricated identity
+
+4. **Logistics Risk:**
+   - Billing and shipping ZIP codes MATCH
+   - Low logistics risk overall
+   - This does NOT support Stolen_Card (which typically shows mismatched addresses/drop-house patterns)
+
+**Key Observations:**
+- The transaction itself is legitimate (approved, CVV passed, address matched, normal velocity)
+- However, the underlying identity is highly suspicious (newly created, critically high synthetic score)
+- This is NOT an automated attack (BIN Testing or Carding) - velocity is normal and authorization succeeded
+- This is NOT a stolen card scenario - logistics match and only 1-2 cards used
+- This IS a Synthetic_Identity case - the account profile shows all hallmarks of a fabricated identity attempting to make a legitimate-looking transaction
+
+The fraud here is in the identity layer, not the transaction layer.
+</scratchpad>
+
+<classification>
+Synthetic_Identity
+</classification>
+
+**Reasoning:**
+The transaction itself appears legitimate on the surface (authorization approved, CVV and address checks passed, normal velocity, matching ZIP codes). However, the underlying account exhibits critical synthetic identity indicators:
+- Account created only 13 days ago
+- Synthetic identity score critically high at 0.793
+- Using a common email domain with a brand-new account
+
+This pattern is characteristic of Synthetic_Identity fraud, where a fraudster fabricates a new identity and attempts to establish legitimacy through a valid transaction before escalating to higher-value fraud or credit abuse. The normal velocity and successful authorization do not rule out synthetic identity—they actually support it, as the fraudster is attempting to appear legitimate."
+tx_daf0510b35,ANTHROPIC,Synthetic_Identity,Synthetic_Identity,True,6802.75,0.003876,"<scratchpad>
+Let me work through the checklist systematically:
+
+1. **Cryptographic Signals:**
+   - Authorization: APPROVED
+   - CVV check: PASSED
+   - Billing address check: PASSED
+   - No CVV Mismatch (rules out BIN_Testing)
+   - No Insufficient Funds decline (rules out Carding)
+   - Transaction successfully authorized
+
+2. **Velocity Profile:**
+   - Velocity is NORMAL: Only 1-2 cards attempted from this IP recently
+   - No targeting of a specific BIN mentioned
+   - No rotation through multiple different cards
+   - This rules out both BIN_Testing and Carding patterns
+
+3. **Identity Risk:**
+   - Account created only 12 days ago (very recent)
+   - Email domain: gmail.com (generic, disposable-friendly)
+   - Synthetic identity score: CRITICALLY HIGH at 0.745
+   - This is a major red flag for Synthetic_Identity fraud
+   - The account itself is flagged as ""highly suspicious""
+
+4. **Logistics Risk:**
+   - Billing and shipping ZIP codes MATCH
+   - Low logistics risk overall
+   - This does NOT indicate drop-house pattern (rules out Stolen_Card)
+
+**Key Differentiator Analysis:**
+- NOT BIN_Testing: No CVV mismatches, no single BIN targeting
+- NOT Carding: No card rotation, no declined transactions, CVV passed
+- NOT Stolen_Card: Logistics match, normal velocity, no high-value fraud indicators
+- NOT Legitimate: Critically high synthetic identity score (0.745), brand new account (12 days), suspicious profile
+- **IS Synthetic_Identity**: The transaction is authorized and appears normal operationally, BUT the account itself is fabricated/synthetic with critically high risk score and very recent creation date
+
+The synthetic identity score of 0.745 is the dominant signal here. Despite the transaction appearing legitimate on the surface (good authorization, matching addresses, normal velocity), the underlying account is flagged as highly suspicious and newly created—classic synthetic identity patterns.
+</scratchpad>
+
+<classification>
+Synthetic_Identity
+</classification>
+
+**Reasoning:**
+While this transaction shows legitimate operational characteristics (successful authorization, passed CVV/address verification, normal velocity, matching logistics), the **critically high synthetic identity score (0.745)** combined with a **brand-new account created only 12 days ago** using a generic gmail.com domain are definitive indicators of synthetic identity fraud. Synthetic identity fraudsters often conduct legitimate-appearing transactions to establish credibility before escalating to larger fraud. The account profile itself—not the transaction mechanics—is the primary risk signal here."
+tx_7f22a1c195,ANTHROPIC,Stolen_Card,Stolen_Card,True,8799.27,0.004843,"<scratchpad>
+Let me analyze this transaction systematically using the provided checklist:
+
+**1. Cryptographic Signals:**
+- Authorization: APPROVED
+- CVV check: PASSED
+- Billing address check: PASSED
+- No CVV Mismatch (Code N7) → Rules out BIN_Testing
+- No Insufficient Funds/Do Not Honor decline → Rules out Carding
+- Transaction successfully authorized with valid credentials
+
+**2. Velocity Profile:**
+- Velocity is NORMAL: Only 1-2 cards attempted from this IP recently
+- No mention of targeting a specific BIN prefix
+- No rotation through multiple different cards
+- This rules out both BIN_Testing (which requires high-speed automated attempts on a single BIN) and Carding (which requires rotating through many stolen cards)
+
+**3. Identity Risk:**
+- Account is ESTABLISHED, active for 20 days (not newly fabricated)
+- No mention of disposable email or synthetic identity red flags
+- Synthetic identity score is not critically high
+- Rules out Synthetic_Identity
+
+**4. Logistics Risk:**
+- Billing ZIP (24693) matches the cardholder
+- Shipping ZIP (56057) is DIFFERENT from billing ZIP
+- This is flagged as ""consistent with drop-houses""
+- However, this alone does not definitively prove fraud—legitimate customers sometimes ship to different addresses
+- The proxy IP is suspicious but not conclusive
+
+**Key Observations:**
+- All cryptographic validations PASSED (CVV, billing address, authorization)
+- Velocity is normal (not automated attack)
+- Account is established (not synthetic)
+- The primary red flag is the ZIP code mismatch and proxy IP usage
+- However, the transaction was successfully authorized with valid credentials matching the cardholder
+
+**Classification Logic:**
+- NOT BIN_Testing: No CVV failures, no single BIN targeting
+- NOT Carding: CVV matched, authorization approved (not declined), normal velocity
+- NOT Synthetic_Identity: Established 20-day-old account
+- Possibly Stolen_Card: High-value purchase ($688.72) with valid credentials but suspicious logistics (drop-house pattern)
+- Possibly Legitimate: All validations passed, normal velocity, established account
+
+The ZIP code mismatch to a drop-house location combined with proxy IP masking, despite passing all cryptographic checks, suggests this is most consistent with **Stolen_Card**—the fraudster has valid stolen card details (CVV, billing address) and is using them to make a high-value purchase with intent to ship to a drop-house.
+</scratchpad>
+
+<classification>
+Stolen_Card
+</classification>
+
+**Reasoning:**
+This transaction exhibits the hallmark pattern of stolen card fraud:
+- **Valid Credentials**: The CVV and billing address checks passed, indicating the fraudster possesses legitimate stolen card details
+- **High-Value Purchase**: $688.72 is a substantial amount, typical of stolen card abuse rather than validation testing
+- **Drop-House Logistics**: Billing ZIP matches the cardholder, but shipping diverges to a different ZIP (56057), consistent with drop-house patterns used to fence stolen goods
+- **Proxy Masking**: The datacenter/residential proxy IP suggests deliberate origin obfuscation
+- **Established Account**: The 20-day-old account may be a compromised legitimate account or a hastily created one to appear established
+
+This is NOT Carding (which would show declined transactions due to insufficient funds) and NOT BIN_Testing (which would show CVV mismat"
+tx_6cb7b909b1,ANTHROPIC,Legitimate,Stolen_Card,False,8759.34,0.00473,"<scratchpad>
+Let me analyze this transaction systematically using the provided checklist:
+
+1. **Cryptographic Signals:**
+   - Authorization: APPROVED
+   - CVV check: PASSED
+   - Billing address check: PASSED
+   - No CVV mismatch errors
+   - No insufficient funds decline
+   - This rules out BIN_Testing (which shows explicit CVV mismatches) and Carding (which shows declines like Code 51 or Code 05)
+
+2. **Velocity Profile:**
+   - Velocity is NORMAL: Only 1-2 cards attempted from this IP recently
+   - No mention of targeting a specific BIN
+   - No rotation through multiple different cards
+   - This rules out both BIN_Testing and Carding, which require high-velocity automated patterns
+
+3. **Identity Risk:**
+   - Account is ESTABLISHED: Active for 858 days
+   - No mention of synthetic identity score being critically high
+   - No disposable email mentioned
+   - This rules out Synthetic_Identity
+
+4. **Logistics Risk:**
+   - Billing ZIP (95594) matches the cardholder
+   - Shipping ZIP (23271) is DIFFERENT from billing ZIP
+   - Narrative explicitly notes this is ""consistent with drop-houses""
+   - However, this alone doesn't definitively classify the fraud type
+   - The transaction amount is moderate ($20.29)
+   - All cryptographic checks passed
+   - The account is established and legitimate-looking
+
+**Key Observation:**
+The transaction shows characteristics of a **Stolen_Card** scenario:
+- The card authorization succeeded (cardholder's legitimate card or stolen card with valid credentials)
+- Shipping to a different address (drop-house pattern) suggests the fraudster is using a stolen card but shipping to their own location
+- The established account could be compromised or the card details stolen from a legitimate account
+- The moderate amount and normal velocity suggest careful, deliberate fraud rather than automated testing
+
+This is NOT Legitimate because of the clear drop-house logistics pattern (different billing/shipping ZIP codes with explicit drop-house notation).
+
+This IS most consistent with **Stolen_Card**: A fraudster has obtained valid card credentials, passed all verification checks, but is shipping to a different location (drop-house) to receive the goods before the cardholder notices the unauthorized charge.
+</scratchpad>
+
+<classification>
+Stolen_Card
+</classification>
+
+**Reasoning:**
+The transaction exhibits the hallmark pattern of stolen card fraud:
+- **Cryptographic validation passed**: CVV and billing address checks succeeded, indicating the fraudster possesses valid card credentials
+- **Normal velocity**: Only 1-2 cards from this IP, suggesting deliberate, careful fraud rather than automated testing
+- **Drop-house logistics**: Billing ZIP matches cardholder, but shipping ZIP (23271) is completely different and explicitly noted as consistent with drop-house patterns
+- **Moderate transaction value**: $20.29 suggests a test purchase or intentional low-profile fraud to avoid immediate detection
+- **Established account**: The 858-day account history may indicate either a compromised legitimate account or social engineering
+
+This is **not** Legitimate (due to drop-house pattern), **not** BIN_Testing or Carding (no CVV mismatches or declines), and **not** Synthetic_Identity (established account, no identity red flags). The fraudster successfully used stolen card credentials and is attempting to receive goods at a drop location."
+tx_6e7740e1a1,ANTHROPIC,Legitimate,Stolen_Card,False,8282.65,0.004569,"<scratchpad>
+Let me work through the classification checklist:
+
+1. **Cryptographic Signals:**
+   - Authorization: APPROVED
+   - CVV check: PASSED
+   - Billing address check: PASSED
+   - No CVV mismatch, no insufficient funds decline
+   - This rules out BIN_Testing (which shows explicit CVV mismatches) and Carding (which shows declines despite correct CVV)
+
+2. **Velocity Profile:**
+   - Velocity is NORMAL: Only 1-2 cards attempted from this IP recently
+   - No targeting of a specific BIN prefix
+   - No rotation through many different cards
+   - This rules out both BIN_Testing and Carding, which require high-velocity automated patterns
+
+3. **Identity Risk:**
+   - Account is ESTABLISHED: Active for 704 days
+   - No mention of disposable/suspicious email
+   - No synthetic identity red flags
+   - This rules out Synthetic_Identity
+
+4. **Logistics Risk:**
+   - Billing ZIP (48695) matches the cardholder
+   - Shipping ZIP (46168) is DIFFERENT from billing
+   - Narrative explicitly notes this is ""consistent with drop-houses""
+   - However, this alone doesn't definitively classify the fraud type
+
+5. **Additional Behavioral Signals:**
+   - Standard human behavior: 66.4 seconds checkout time (manual typing, not automated)
+   - Residential/mobile ISP (not proxy/VPN)
+   - Transaction amount is moderate ($228.54), not exceptionally high
+   - No scripted/automated attack patterns
+
+**Analysis:**
+The transaction shows:
+- ✓ Successful authorization with valid credentials
+- ✓ Passed security checks (CVV, address)
+- ✓ Normal velocity (not automated attack)
+- ✓ Established account (not synthetic)
+- ✗ Mismatched shipping/billing ZIP (drop-house pattern)
+
+The drop-house logistics pattern combined with successful authorization of a stolen/compromised card suggests **Stolen_Card** fraud. The cardholder's legitimate billing address is on file, but the attacker is shipping to a different location (drop-house). This is classic stolen card usage: the card details are valid and authorized, but being used fraudulently for shipment to an alternate location.
+
+This is NOT Carding (which involves testing many cards with declines), NOT BIN_Testing (which involves CVV failures), and NOT Synthetic_Identity (account is 704 days old and established).
+</scratchpad>
+
+<classification>
+Stolen_Card
+</classification>
+
+**Reasoning:**
+The transaction exhibits the hallmark characteristics of stolen card fraud:
+- **Valid Authorization**: CVV and billing address checks passed, indicating the stolen card credentials are accurate and currently active
+- **Normal Velocity**: Only 1-2 cards from this IP, ruling out automated attacks (BIN_Testing/Carding)
+- **Established Account**: 704-day-old account eliminates Synthetic_Identity concerns
+- **Drop-House Logistics**: Billing ZIP matches cardholder, but shipping redirects to a completely different ZIP code—a classic indicator that a legitimate card has been compromised and is being used fraudulently for unauthorized shipments to a drop location"
+tx_2643efcda4,ANTHROPIC,Synthetic_Identity,Synthetic_Identity,True,7350.33,0.0040609999999999995,"<scratchpad>
+Let me work through the checklist systematically:
+
+1. **Cryptographic Signals:**
+   - Authorization: APPROVED
+   - CVV check: PASSED
+   - Billing address check: PASSED
+   - No CVV Mismatch (which would indicate BIN Testing)
+   - No Insufficient Funds decline (which would indicate Carding)
+   - Transaction successfully authorized
+
+2. **Velocity Profile:**
+   - Velocity is NORMAL: Only 1-2 cards attempted from this IP recently
+   - NOT targeting a single BIN with high-speed attempts
+   - NOT rotating through many different cards
+   - This rules out both BIN_Testing and Carding
+
+3. **Identity Risk:**
+   - Account created only 8 days ago (very recent)
+   - Using generic gmail.com email domain
+   - Synthetic identity score is CRITICALLY HIGH at 0.711
+   - This is a major red flag for synthetic identity fraud
+   - The account itself appears fabricated/newly created
+
+4. **Logistics Risk:**
+   - Billing and shipping ZIP codes MATCH
+   - Low logistics risk overall
+   - This does NOT suggest a drop-house pattern typical of Stolen_Card fraud
+
+**Key Observations:**
+- The transaction itself is clean: approved authorization, passed CVV, passed address verification
+- Velocity is normal (not automated attack patterns)
+- The critical issue is the IDENTITY: newly created account (8 days old) with critically high synthetic identity score
+- This is NOT a stolen card being used (those typically show high-value purchases with mismatched addresses or velocity issues)
+- This IS a fabricated identity attempting to establish legitimacy through a moderate-value transaction
+
+**Conclusion:**
+The synthetic identity score of 0.711 (critically high) combined with the very recent account creation (8 days) is the dominant signal. The transaction itself appears legitimate in execution, but the underlying identity is synthetic/fabricated.
+</scratchpad>
+
+<classification>
+Synthetic_Identity
+</classification>
+
+**Reasoning:**
+The transaction exhibits all hallmarks of synthetic identity fraud:
+- **Critically high synthetic identity score (0.711)** – the strongest indicator
+- **Recently created account (8 days old)** – typical of fabricated identities establishing initial credibility
+- **Generic email domain (gmail.com)** – common in synthetic setups
+- **Clean transaction execution** – authorization approved, CVV passed, address verified – this is characteristic of synthetic identity fraud attempting to appear legitimate and build transaction history
+- **Normal velocity** – rules out automated attacks (BIN Testing/Carding)
+- **Matching ZIP codes** – rules out Stolen_Card drop-house patterns
+
+The fraudster is using a fabricated identity to make a moderate-value purchase that will pass all verification checks, establishing a foothold for future fraudulent activity."
+tx_a8debee39b,ANTHROPIC,Carding,Carding,True,8643.19,0.004864,"<scratchpad>
+Let me work through the checklist systematically:
+
+**1. Cryptographic Signals:**
+- Authorization: APPROVED
+- CVV check: PASSED
+- Billing address check: PASSED
+- This is NOT a CVV Mismatch (which would indicate BIN Testing)
+- This is NOT an Insufficient Funds decline (which would indicate Carding)
+- The transaction was successfully authorized with valid credentials
+
+**2. Velocity Profile:**
+- High velocity: 9 different cards rotated in under a minute
+- This is NOT targeting a single BIN (which would indicate BIN Testing)
+- This IS rotating through multiple different cards (characteristic of Carding)
+- Velocity is extremely abnormal and automated
+
+**3. Identity Risk:**
+- Newly created account (2 days old)
+- Disposable email: temp-mail.org (high synthetic identity indicator)
+- Synthetic identity score would be critically high
+- However, this alone doesn't override the other signals
+
+**4. Logistics Risk:**
+- Billing ZIP (74840) matches cardholder
+- Shipping ZIP (67195) is completely different
+- Drop-house pattern is evident
+- This suggests stolen card usage with fraudulent shipping destination
+
+**5. Additional Behavioral Signals:**
+- Severe bot signature: 518ms checkout (impossible for human)
+- Programmatic field injection bypassing keyboard events
+- Datacenter/proxy IP masking origin
+- All indicators of automated fraud
+
+**Classification Logic:**
+- NOT Legitimate: Multiple fraud signals present
+- NOT BIN_Testing: No CVV Mismatch failures; not targeting single BIN
+- NOT Stolen_Card: While there are high-value indicators, the amount is micro-transaction (USD 3.46)
+- Carding vs. Synthetic_Identity: The key differentiator is the velocity profile. The narrative explicitly states ""rotated through 9 different cards"" - this is the hallmark of Carding attacks where fraudsters validate stolen card credentials through low-value test transactions. The successful authorization with valid CVV/address checks combined with card rotation through multiple stolen credentials is textbook Carding behavior.
+- The synthetic identity elements (new account, temp email) are secondary to the primary attack vector of card rotation.
+
+**Final determination: CARDING**
+The rotation through 9 different cards with successful authorizations on low-value transactions is the defining characteristic of a Carding attack validating stolen credentials.
+</scratchpad>
+
+<classification>
+Carding
+</classification>
+
+**Reasoning:**
+This transaction exhibits the classic hallmarks of a **Carding attack**:
+
+1. **Cryptographic Signals**: The transaction was authorized successfully with CVV and billing address checks passing—indicating the attacker possesses valid stolen card credentials (not guessing them like in BIN Testing).
+
+2. **Velocity Profile**: The narrative explicitly states ""rotated through 9 different cards in under a minute."" This card rotation pattern is the defining characteristic of Carding, where fraudsters validate stolen card lists through rapid, low-value test transactions.
+
+3. **Transaction Amount**: The USD 3.46 micro-purchase is a classic validation amount used by carders to test stolen credentials without triggering high-value fraud alerts.
+
+4. **Behavioral Signals**: The bot signature (518ms checkout, programmatic field injection, proxy IP) confirms automated scripted attacks typical of Carding operations.
+
+5. **Logistics Risk**: The drop-house shipping pattern (different ZIP from billing) indicates fraudulent intent with stolen cards.
+
+The key differ"
+tx_3f98e8fa8f,ANTHROPIC,Carding,Carding,True,9037.39,0.004865,"<scratchpad>
+Let me work through the checklist systematically:
+
+**1. Cryptographic Signals:**
+- Authorization: APPROVED
+- CVV check: PASSED
+- Billing address check: PASSED
+- This is NOT a CVV Mismatch (which would indicate BIN Testing)
+- This is NOT an Insufficient Funds decline (which would indicate Carding)
+- The transaction was successfully authorized with valid credentials
+
+**2. Velocity Profile:**
+- High velocity: 6 different cards rotated in under 1 minute
+- This is NOT targeting a single BIN (which would indicate BIN Testing)
+- This IS rotating through multiple different cards (characteristic of Carding)
+- Velocity is abnormally high and suspicious
+
+**3. Identity Risk:**
+- Newly created account (only 1 day old)
+- Disposable email: guerrillamail.com (a known disposable email provider)
+- Synthetic identity score appears elevated
+- However, the account is tied to a real billing ZIP that matches the cardholder
+
+**4. Logistics Risk:**
+- Billing ZIP (25307) matches the cardholder
+- Shipping ZIP (38053) is completely different
+- This is a classic drop-house pattern
+- High logistics risk present
+
+**5. Additional Behavioral Signals:**
+- Micro-transaction amount ($2.82) - typical of validation testing
+- Impossible checkout speed (913ms) - bot signature
+- Programmatic field injection bypassing keyboard events - automation
+- Datacenter/proxy IP masking origin - evasion technique
+
+**Classification Decision:**
+The key distinguishing factors:
+- CVV and billing address checks PASSED (rules out BIN Testing which fails on CVV)
+- Multiple different cards rotated (rules out Stolen_Card which uses one card)
+- Micro-transaction with successful authorization (characteristic of Carding validation)
+- Bot behavior and drop-house logistics confirm automated credential testing
+- The carder has a valid stolen card list with correct CVVs and billing addresses
+
+This matches the Carding profile: scripted low-value transactions validating stolen credentials, rotating through multiple cards, with successful authorizations because the CVV and billing data are correct (stolen from legitimate cardholders).
+</scratchpad>
+
+<classification>
+Carding
+</classification>
+
+**Reasoning:**
+This transaction exhibits the classic hallmarks of a Carding attack:
+
+1. **Cryptographic Match**: CVV and billing address checks PASSED—indicating the attacker possesses valid stolen credential data, not guessing blindly (which would show CVV Mismatches in BIN Testing).
+
+2. **Velocity & Card Rotation**: 6 different cards rotated in under 60 seconds. Carders operate from stolen card lists and test multiple credentials in rapid succession to identify which ones are still active.
+
+3. **Micro-Transaction Validation**: The $2.82 amount is a classic validation test—low enough to avoid immediate fraud detection but sufficient to confirm the card is active and the issuer will process it.
+
+4. **Bot Automation**: 913ms checkout completion, programmatic field injection, and proxy masking are consistent with carding scripts that automate credential testing at scale.
+
+5. **Drop-House Logistics**: Billing ZIP matches (stolen data is accurate), but shipping to a different ZIP (38053) is a textbook drop-house pattern used by carders to receive goods without detection.
+
+The successful authorization combined with multiple card rotation and bot behavior definitively classifies this as **Carding**, not BIN Testing ("
+tx_559cc9ab30,ANTHROPIC,Legitimate,Legitimate,True,8534.85,0.00458,"<scratchpad>
+Let me work through the checklist systematically:
+
+1. **Cryptographic Signals:**
+   - Authorization: APPROVED
+   - CVV check: PASSED
+   - Billing address check: PASSED
+   - No CVV mismatch errors
+   - No insufficient funds decline
+   - This rules out BIN_Testing (which shows explicit CVV mismatches) and Carding (which shows declines due to empty/blocked cards)
+
+2. **Velocity Profile:**
+   - Velocity is NORMAL: Only 1-2 cards attempted from this IP recently
+   - No targeting of a specific BIN prefix
+   - No rotation through many different cards
+   - This rules out both BIN_Testing and Carding, which require high-velocity automated patterns
+
+3. **Identity Risk:**
+   - Account is ESTABLISHED: Active for 225 days
+   - No mention of synthetic identity score being critically high
+   - No disposable email mentioned
+   - This rules out Synthetic_Identity
+
+4. **Logistics Risk:**
+   - Billing ZIP (16312) matches the cardholder
+   - Shipping ZIP (02589) is DIFFERENT from billing ZIP
+   - Narrative explicitly notes this is ""consistent with drop-houses""
+   - However, this alone doesn't definitively classify the fraud type
+   - The transaction was AUTHORIZED and all cryptographic checks PASSED
+   - The account is established (225 days old)
+   - Behavior appears human (38-second checkout with autofill)
+
+**Analysis:**
+The transaction shows:
+- Valid authorization with passed CVV and address checks
+- Normal velocity (not automated attack)
+- Established account (not synthetic)
+- Standard human behavior
+- BUT: Suspicious logistics pattern (drop-house shipping)
+
+The drop-house pattern combined with authorization suggests this could be a **Stolen_Card** scenario—someone using a legitimately stolen card (hence the authorization passes) to make a high-value purchase with shipping to a drop location. However, the amount is relatively modest ($33.71), which is atypical for stolen card fraud.
+
+Given that:
+- All cryptographic checks passed (rules out BIN_Testing and Carding)
+- Account is established (rules out Synthetic_Identity)
+- Velocity is normal (rules out automated attacks)
+- The authorization succeeded with valid credentials
+
+The most appropriate classification is **Legitimate**, despite the logistics red flag. The transaction itself shows no fraud indicators in the cryptographic, velocity, or identity dimensions. The drop-house pattern is a logistics concern but doesn't override the legitimate authorization signals.
+
+</scratchpad>
+
+<classification>
+Legitimate
+</classification>
+
+**Reasoning:** While the drop-house shipping pattern presents a logistics red flag, the transaction exhibits all hallmarks of legitimacy:
+- Authorization APPROVED with CVV and address verification passed
+- Normal velocity (1-2 cards, not automated attack pattern)
+- Established account (225 days active, not synthetic)
+- Human behavior profile (38-second checkout with autofill)
+
+The cryptographic signals rule out BIN_Testing, Carding, and Stolen_Card. The established account rules out Synthetic_Identity. The logistics anomaly alone is insufficient to override the strong legitimate authorization signals. This appears to be a valid transaction with an unusual but not necessarily fraudulent shipping destination."
+tx_f4b105285b,ANTHROPIC,BIN_Testing,BIN_Testing,True,7948.33,0.004428,"<scratchpad>
+Let me work through the classification checklist:
+
+1. **Cryptographic Signals:**
+   - Authorization failed with CVV Mismatch (Code N7)
+   - This is an explicit CVV failure, not an Insufficient Funds or Do Not Honor decline
+   - The transaction amount is a micro-transaction (USD 0.31) designed for validation
+
+2. **Velocity Profile:**
+   - High velocity: 8 different cards rotated through in under a minute
+   - This is NOT targeting a single BIN prefix
+   - Multiple different cards are being tested in rapid succession
+   - This is characteristic of scripted, automated testing
+
+3. **Identity Risk:**
+   - Brand-new guest checkout session with zero historical trust
+   - No established identity profile
+   - However, this is less critical than the velocity and cryptographic signals
+
+4. **Logistics Risk:**
+   - No physical delivery address (digital/pre-auth transaction)
+   - This is consistent with validation testing, not a full purchase
+
+**Key Differentiation Analysis:**
+According to the examples provided:
+- **BIN_Testing**: CVV Mismatches + targeting a single BIN prefix
+- **Carding**: CVV matches + rotates through different cards + Insufficient Funds/Do Not Honor declines
+
+This transaction shows:
+- CVV Mismatch (Code N7) ✓
+- Rotating through 8 different cards (NOT a single BIN) ✓
+- Micro-transaction validation attempt ✓
+- Programmatic injection with proxy masking ✓
+
+**Critical Issue:** The example states BIN Testing targets ""a single BIN prefix,"" but this transaction rotates through 8 different cards. However, the cryptographic signal (CVV Mismatch) and the validation behavior (micro-transaction, rapid-fire attempts) are hallmarks of BIN Testing methodology.
+
+Upon closer review: The narrative indicates rotation through different cards with CVV failures. This could suggest the attacker is testing multiple BINs or card numbers. The CVV Mismatch pattern combined with high-velocity micro-transactions and programmatic injection is most consistent with **BIN_Testing** - an automated brute-force attack attempting to discover valid card numbers and CVVs.
+
+</scratchpad>
+
+<classification>
+BIN_Testing
+</classification>
+
+**Reasoning:**
+This transaction exhibits the classic hallmarks of BIN Testing:
+- **Cryptographic Signal**: Explicit CVV Mismatch (Code N7) failure, indicating the attacker is brute-forcing the 3-digit CVV
+- **Velocity & Automation**: High-speed rotation through 8 different cards in under a minute using programmatic injection
+- **Transaction Pattern**: Micro-transaction (USD 0.31) designed purely for validation without actual purchase intent
+- **Network Masking**: Datacenter/residential proxy IP masking true origin, consistent with automated attack infrastructure
+
+While the transaction rotates through multiple cards rather than a single BIN, the CVV Mismatch failure combined with rapid-fire validation attempts is diagnostic of BIN Testing methodology—an automated attack attempting to discover valid card credentials through brute-force enumeration."
+tx_376a409cab,ANTHROPIC,Carding,Carding,True,7677.85,0.0042369999999999994,"<scratchpad>
+Let me work through the classification checklist:
+
+1. **Cryptographic Signals:**
+   - Authorization: APPROVED
+   - CVV check: PASSED
+   - Billing address check: PASSED
+   - This is NOT a CVV Mismatch (which would indicate BIN Testing)
+   - This is NOT an Insufficient Funds decline (which would indicate Carding)
+   - The transaction was successfully authorized with valid credentials
+
+2. **Velocity Profile:**
+   - HIGH VELOCITY: 8 different cards rotated in under a minute
+   - This is NOT targeting a single BIN (which would indicate BIN Testing)
+   - This IS rotating through MULTIPLE different cards (which is a Carding indicator)
+   - The velocity pattern matches Carding behavior: testing many stolen cards in rapid succession
+
+3. **Identity Risk:**
+   - Brand-new guest checkout session
+   - Zero historical platform trust
+   - While this shows some synthetic identity risk, it's not the primary fraud signal here
+   - The identity itself doesn't appear fabricated; rather, it's a new/unknown user
+
+4. **Logistics Risk:**
+   - Billing ZIP (35555) matches cardholder
+   - Shipping ZIP (29549) is different - consistent with drop-house pattern
+   - This is a secondary risk indicator but not the primary classification driver
+
+5. **Behavior and Network:**
+   - Severe bot signature (615ms checkout - impossible for human)
+   - Programmatic field injection
+   - Datacenter/proxy IP masking
+   - These are automation indicators consistent with Carding attacks
+
+**Key Distinguishing Factor:**
+- The transaction was AUTHORIZED with valid CVV and address checks
+- Multiple different cards were tested in rapid succession
+- Low-value micro-transaction
+- This matches the Carding profile: carders possess real stolen card data (CVV matches), test multiple cards quickly, and use automation
+
+This is NOT BIN Testing because:
+- No CVV Mismatch failures mentioned
+- Not targeting a single BIN
+- CVV actually passed validation
+
+This IS Carding because:
+- Multiple different cards rotated through
+- CVV and address checks passed (stolen data is valid)
+- Low-value test transaction
+- High-speed automation
+- Drop-house shipping pattern
+</scratchpad>
+
+<classification>
+Carding
+</classification>
+
+**Reasoning:** The transaction exhibits the classic Carding attack pattern. The attacker possesses a list of stolen card credentials (evidenced by successful CVV and address verification), and is systematically rotating through 8 different cards in rapid succession to validate which ones are still active and usable. The low-value USD 4.01 micro-purchase is a typical validation test. The successful authorization combined with multi-card rotation, bot-like automation (615ms checkout), and drop-house shipping logistics all confirm this is a Carding attack, not BIN Testing (which would show CVV Mismatches on a single BIN)."
+tx_0ae17e2431,ANTHROPIC,Synthetic_Identity,Synthetic_Identity,True,6453.14,0.003676,"<scratchpad>
+Let me work through the classification checklist:
+
+1. **Cryptographic Signals:**
+   - Authorization: APPROVED
+   - CVV check: PASSED
+   - Billing address check: PASSED
+   - No CVV mismatch errors
+   - No insufficient funds decline
+   - This rules out BIN_Testing (which shows explicit CVV mismatches) and Carding (which shows declines due to insufficient funds or ""Do Not Honor"")
+
+2. **Velocity Profile:**
+   - Velocity is NORMAL: Only 1-2 cards attempted from this IP recently
+   - No targeting of a specific BIN prefix
+   - No rotation through many different cards
+   - This rules out both BIN_Testing and Carding, which require high-velocity automated patterns
+
+3. **Identity Risk:**
+   - Account created only 12 days ago (very recent)
+   - Email domain: outlook.com (disposable/free email service)
+   - Synthetic identity score: CRITICALLY HIGH at 0.755
+   - This is a strong signal for Synthetic_Identity fraud
+   - The account itself appears fabricated despite the transaction authorizing successfully
+
+4. **Logistics Risk:**
+   - Billing and shipping ZIP codes MATCH
+   - Low logistics risk overall
+   - This does NOT indicate drop-house or Stolen_Card patterns
+
+5. **Behavioral Signals:**
+   - Standard human behavior (56.7 second checkout, manual typing)
+   - Residential/mobile ISP (normal)
+   - These are consistent with legitimate behavior, but don't override the synthetic identity red flags
+
+**Key Insight:**
+The transaction authorized successfully with all cryptographic checks passing. However, the account itself is highly suspicious with a critically high synthetic identity score (0.755), created only 12 days ago with a disposable email. This is NOT a stolen card (which would show high-value unauthorized purchases with mismatched logistics). This IS a synthetic identity attempting to establish legitimacy through a successful transaction.
+</scratchpad>
+
+<classification>
+Synthetic_Identity
+</classification>
+
+**Reasoning:**
+The critically high synthetic identity score (0.755), combined with the account being created only 12 days ago using a disposable outlook.com email, indicates a fabricated identity. While the transaction itself authorized successfully with matching billing/shipping addresses and normal velocity, these are tactics used by synthetic identity fraudsters to build account credibility before escalating to larger fraud schemes. The account profile—not the transaction mechanics—is the primary fraud signal here."
+tx_70d40e8f43,ANTHROPIC,Synthetic_Identity,Synthetic_Identity,True,7731.59,0.004116,"<scratchpad>
+Let me work through the classification checklist:
+
+1. **Cryptographic Signals:**
+   - Authorization: APPROVED
+   - CVV check: PASSED
+   - Billing address check: PASSED
+   - No CVV mismatch errors
+   - No insufficient funds decline
+   - This rules out BIN_Testing (which shows explicit CVV mismatches) and Carding (which shows declines due to insufficient funds or ""Do Not Honor"")
+
+2. **Velocity Profile:**
+   - Velocity is NORMAL: Only 1-2 cards attempted from this IP recently
+   - No targeting of a specific BIN prefix
+   - No rotation through many different cards
+   - This rules out both BIN_Testing and Carding, which require high-velocity automated patterns
+
+3. **Identity Risk:**
+   - Account created only 9 days ago (very recent)
+   - Email domain: yahoo.com (free/disposable email provider)
+   - Synthetic identity score: CRITICALLY HIGH at 0.704
+   - This is a strong signal for Synthetic_Identity fraud
+   - The account itself appears fabricated despite the transaction authorizing successfully
+
+4. **Logistics Risk:**
+   - Billing and shipping ZIP codes MATCH
+   - Low logistics risk overall
+   - This does NOT indicate drop-house or Stolen_Card patterns
+   - Consistent with either legitimate or synthetic identity transactions
+
+**Key Distinguishing Factor:**
+The transaction authorized successfully with all verification checks passing. This eliminates Stolen_Card (which typically involves high-value unauthorized purchases that may trigger declines or fraud alerts). However, the critically high synthetic identity score (0.704), combined with a brand-new account (9 days old) using a disposable email domain, is the dominant risk signal. The fraudster is testing whether a newly fabricated identity can successfully complete a transaction.
+
+This is NOT Legitimate because of the critically high synthetic identity score and suspicious account creation pattern.
+</scratchpad>
+
+<classification>
+Synthetic_Identity
+</classification>
+
+**Reasoning:**
+The transaction exhibits the hallmark characteristics of synthetic identity fraud:
+- **Account Age:** Created only 9 days ago (extremely recent)
+- **Email Domain:** yahoo.com (free/disposable provider commonly used for synthetic identities)
+- **Synthetic Identity Score:** Critically high at 0.704, indicating strong signals of identity fabrication
+- **Authorization Success:** The fraudster successfully validated that this newly fabricated identity can pass verification checks and complete a transaction
+- **Normal Velocity & Logistics:** The low-velocity profile and matching ZIP codes suggest this is a ""proof-of-concept"" transaction to establish the synthetic identity's credibility before scaling to larger fraud operations
+
+The authorization success combined with the critically high synthetic identity score indicates the fraudster is testing a newly created fake identity, not conducting high-speed automated attacks (BIN Testing/Carding) or using a stolen legitimate card."
+tx_906fa85de7,ANTHROPIC,Synthetic_Identity,Synthetic_Identity,True,6790.77,0.003737,"<scratchpad>
+Let me work through the checklist systematically:
+
+1. **Cryptographic Signals:**
+   - Authorization: APPROVED
+   - CVV check: PASSED
+   - Billing address check: PASSED
+   - No CVV mismatch errors
+   - No insufficient funds decline
+   - This rules out BIN_Testing (which shows explicit CVV mismatches) and Carding (which shows declines like Code 51 or Code 05)
+
+2. **Velocity Profile:**
+   - Velocity is NORMAL: Only 1-2 cards attempted from this IP recently
+   - NOT targeting a single BIN with high-speed attempts
+   - NOT rotating through many different cards
+   - This rules out both BIN_Testing and Carding, which require abnormal velocity patterns
+
+3. **Identity Risk:**
+   - Account created only 8 days ago (very recent)
+   - Email domain: icloud.com (common but not necessarily disposable)
+   - Synthetic identity score: CRITICALLY HIGH at 0.743
+   - This is a major red flag for Synthetic_Identity fraud
+   - The account age combined with high synthetic score is the dominant risk signal
+
+4. **Logistics Risk:**
+   - Billing and shipping ZIP codes MATCH
+   - Low logistics risk overall
+   - This does NOT support Stolen_Card (which often shows mismatched addresses/drop-house patterns)
+
+**Key Observations:**
+- The transaction itself is clean: approved authorization, passed CVV, passed address verification
+- The velocity is normal (not an automated attack)
+- The critical risk factor is the SYNTHETIC IDENTITY PROFILE: newly created account (8 days) with critically high synthetic score (0.743)
+- This is NOT a stolen card being used for high-value purchases (logistics match, normal velocity)
+- This is NOT an automated attack (normal velocity, no CVV/decline errors)
+- This IS a newly fabricated identity attempting to make a purchase
+
+</scratchpad>
+
+<classification>
+Synthetic_Identity
+</classification>
+
+**Reasoning:** The transaction exhibits the hallmark characteristics of synthetic identity fraud. While the transaction itself authorized successfully with proper verification, the account profile is critically suspicious: created only 8 days ago with a synthetic identity score of 0.743 (critically high). The normal velocity, matching ZIP codes, and successful authorization indicate this is not a stolen card or automated attack, but rather a fraudster using a fabricated identity to establish legitimacy before conducting fraudulent activity. The newly created account combined with the critically high synthetic score is the dominant risk signal."
+tx_d48050183a,ANTHROPIC,Stolen_Card,Stolen_Card,True,7612.82,0.004255,"<scratchpad>
+Let me work through the checklist systematically:
+
+1. **Cryptographic Signals:**
+   - Authorization: APPROVED
+   - CVV check: PASSED
+   - Billing address check: PASSED
+   - No CVV mismatch errors
+   - No insufficient funds decline
+   - This rules out BIN_Testing (which shows explicit CVV mismatches) and Carding (which shows declines like Code 51 or Code 05)
+
+2. **Velocity Profile:**
+   - Velocity is NORMAL: Only 1-2 cards attempted from this IP recently
+   - No mention of targeting a specific BIN
+   - No rotation through many different cards
+   - This rules out both BIN_Testing and Carding, which require high-velocity automated patterns
+
+3. **Identity Risk:**
+   - Account is ""established"" and ""active for 25 days""
+   - No mention of synthetic identity score being critically high
+   - No mention of disposable email
+   - This does not support Synthetic_Identity classification
+
+4. **Logistics Risk:**
+   - Billing ZIP (63733) matches the cardholder
+   - Shipping ZIP (32648) is DIFFERENT from billing ZIP
+   - Narrative explicitly notes this is ""consistent with drop-houses""
+   - However, a single transaction with mismatched shipping/billing is not definitive of Stolen_Card alone
+   - The proxy IP and datacenter connection are suspicious but not conclusive
+
+5. **Overall Assessment:**
+   - The transaction AUTHORIZED successfully with all verification checks passing
+   - The cardholder's credentials (CVV, billing address) are valid
+   - The amount is moderately high ($2049.11) but not extreme
+   - The key red flag is the drop-house logistics pattern (different shipping ZIP)
+   - Combined with proxy IP masking, this suggests unauthorized use of valid stolen card credentials
+   - This pattern is most consistent with **Stolen_Card**: high-value unauthorized purchase using stolen card details that still validate (CVV and address match because they're real stolen credentials)
+
+</scratchpad>
+
+<classification>
+Stolen_Card
+</classification>
+
+**Reasoning:**
+The transaction exhibits the hallmark characteristics of a Stolen_Card fraud:
+- **Valid credentials**: Authorization approved with CVV and billing address verification passing (indicating real stolen card details, not guessing)
+- **High-value purchase**: $2,049.11 is a substantial amount typical of stolen card abuse
+- **Drop-house logistics**: Billing ZIP matches cardholder, but shipping to a completely different ZIP code—a classic indicator of fraudulent reshipping
+- **Proxy masking**: Datacenter/residential proxy IP suggests deliberate origin obfuscation
+- **Normal velocity**: Only 1-2 cards from this IP, ruling out automated BIN testing or carding attacks
+
+The fraudster possesses legitimate stolen card credentials (hence the successful authorization) but is attempting to redirect the merchandise to a drop-house location, not the cardholder's address."
+tx_94e8533f9e,ANTHROPIC,Stolen_Card,Stolen_Card,True,8739.69,0.004844,"<scratchpad>
+Let me analyze this transaction systematically using the provided checklist:
+
+**1. Cryptographic Signals:**
+- Authorization: APPROVED
+- CVV check: PASSED
+- Billing address check: PASSED
+- No CVV Mismatch (Code N7) → Rules out BIN_Testing
+- No Insufficient Funds/Do Not Honor decline (Code 51/05) → Rules out Carding
+- Transaction successfully authorized with valid credentials
+
+**2. Velocity Profile:**
+- Velocity is NORMAL: Only 1-2 cards attempted from this IP recently
+- No mention of targeting a specific BIN prefix
+- No rotation through multiple different cards
+- This rules out both BIN_Testing (which requires high-speed automated attempts on a single BIN) and Carding (which requires rotating through many stolen cards)
+
+**3. Identity Risk:**
+- Account is ""established"" and ""active for 15 days""
+- No mention of synthetic identity score being critically high
+- No disposable email mentioned
+- This does not indicate Synthetic_Identity
+
+**4. Logistics Risk:**
+- HIGH LOGISTICS RISK DETECTED: Billing ZIP (30675) does NOT match shipping ZIP (29724)
+- This is explicitly noted as ""consistent with drop-houses""
+- However, the transaction itself authorized successfully with valid credentials
+- The cardholder's billing address matched their identity verification
+- This suggests the cardholder may be intentionally shipping to a different location (legitimate reshipping) OR this could indicate Stolen_Card usage
+
+**Critical Assessment:**
+The transaction shows:
+- ✓ Valid authorization and CVV match (not BIN_Testing or Carding)
+- ✓ Normal velocity (not automated attack)
+- ✓ Established account (not Synthetic_Identity)
+- ✗ High-value amount ($2,028.19)
+- ✗ Mismatched shipping/billing ZIP codes (drop-house pattern)
+- ✗ Proxy IP masking true origin
+- ✗ Rapid account creation (15 days old)
+
+The combination of: successful authorization with valid credentials + high transaction value + drop-house shipping pattern + proxy IP + newly created account = **Stolen_Card**
+
+This is a high-value unauthorized purchase using stolen card details that passed verification checks because the cardholder's legitimate credentials were compromised.
+</scratchpad>
+
+<classification>
+Stolen_Card
+</classification>
+
+**Reasoning:**
+This transaction exhibits the hallmark characteristics of Stolen_Card fraud:
+
+1. **Valid Credentials + High Value**: The authorization succeeded with matching CVV and billing address, but the amount ($2,028.19) is substantial—typical of stolen card abuse.
+
+2. **Drop-House Logistics**: The critical mismatch between billing ZIP (30675) and shipping ZIP (29724) is explicitly flagged as consistent with drop-house patterns, a classic indicator of stolen card usage where fraudsters redirect high-value goods to intermediary locations.
+
+3. **Suspicious Account Profile**: The account is only 15 days old, combined with proxy IP masking, suggesting either account takeover or rapid account creation to exploit stolen credentials.
+
+4. **Ruled Out Other Categories**: 
+   - Not BIN_Testing (no CVV mismatches, normal velocity)
+   - Not Carding (authorization succeeded, not rotating through multiple cards)
+   - Not Synthetic_Identity (established account, not newly fabricated)
+   - Not Legitimate (drop-house pattern + proxy + new account + mis"
+tx_2a2b1ffd5e,ANTHROPIC,Carding,Carding,True,8914.14,0.004864,"<scratchpad>
+Let me work through the checklist systematically:
+
+**1. Cryptographic Signals:**
+- Authorization: APPROVED
+- CVV check: PASSED
+- Billing address check: PASSED
+- This is NOT a CVV Mismatch (which would indicate BIN Testing)
+- This is NOT an Insufficient Funds decline (which would indicate Carding)
+- The transaction was successfully authorized with valid credentials
+
+**2. Velocity Profile:**
+- High velocity: 12 different cards rotated in under 1 minute
+- This is NOT targeting a single BIN (which would indicate BIN Testing)
+- This IS rotating through multiple different cards (characteristic of Carding)
+- Velocity is extremely abnormal and automated
+
+**3. Identity Risk:**
+- Newly created account (1 day old)
+- Disposable email: temp-mail.org (high synthetic identity indicator)
+- Synthetic identity score would be critically high
+- However, this alone doesn't override the other signals
+
+**4. Logistics Risk:**
+- Billing ZIP (12222) matches cardholder
+- Shipping ZIP (81181) is completely different
+- Drop-house pattern is evident
+- This suggests stolen card usage with fraudster redirecting goods
+
+**5. Additional Behavioral Signals:**
+- Checkout completed in 805ms (impossible for human)
+- Programmatic field injection bypassing keyboard events
+- Datacenter/proxy IP masking origin
+- Clear bot signature
+
+**Classification Logic:**
+The key distinguishing factors:
+- CVV PASSED (not BIN Testing, which requires CVV failures)
+- Authorization APPROVED (not Carding, which typically shows declines)
+- 12 different cards rotated (not a single BIN)
+- Low-value micro-transaction (validation attempt)
+- Stolen credentials being tested with real CVVs
+- Drop-house shipping pattern (fraudster taking possession)
+
+This profile matches **Carding**: The attacker has a stolen card list with valid CVVs, is testing them with low-value transactions to validate they work, rotating through multiple cards, and shipping to drop-houses. The synthetic identity and bot behavior are secondary indicators supporting the carding operation.
+
+The authorization success with valid CVV + rotation through multiple cards + low-value validation + drop-house logistics = Carding attack.
+</scratchpad>
+
+<classification>
+Carding
+</classification>
+
+**Reasoning:**
+This transaction exhibits the classic hallmarks of a **Carding** attack:
+
+1. **Cryptographic Success**: CVV and billing address checks PASSED, indicating the attacker possesses valid stolen card credentials (not guessing like BIN Testing would).
+
+2. **Velocity & Card Rotation**: 12 different cards rotated in under 60 seconds—this is the signature of a carder testing a stolen card list, not a single BIN brute-force attack.
+
+3. **Low-Value Validation**: The USD 2.51 micro-transaction is a classic validation technique to confirm stolen cards are active before attempting larger fraudulent purchases.
+
+4. **Drop-House Logistics**: Billing ZIP matches but shipping diverges to a different ZIP (81181), consistent with fraudsters redirecting stolen goods to drop-houses for resale.
+
+5. **Automated Bot Behavior**: 805ms checkout completion and programmatic field injection confirm scripted attack infrastructure.
+
+The transaction does NOT qualify as BIN_Testing (which requires CVV Mismatches) or Stolen_Card (which typically involves single high-value purchases). The synthetic identity signals are secondary"
+tx_c73fa48471,ANTHROPIC,BIN_Testing,BIN_Testing,True,8320.57,0.0044919999999999995,"<scratchpad>
+Let me work through the classification checklist:
+
+1. **Cryptographic Signals:**
+   - Authorization failed with CVV Mismatch (Code N7)
+   - This is an explicit CVV failure, not an Insufficient Funds or Do Not Honor decline
+   - The transaction did NOT authorize successfully
+
+2. **Velocity Profile:**
+   - High velocity: 6 different cards rotated in under a minute
+   - This is NOT targeting a single BIN prefix (which would be BIN Testing)
+   - Multiple different cards are being tested
+   - This velocity pattern suggests automated credential testing
+
+3. **Identity Risk:**
+   - Brand-new guest checkout session with zero historical trust
+   - No established identity history
+   - However, the narrative doesn't explicitly mention a synthetic identity score or disposable email
+   - This appears to be a guest session rather than a fabricated identity
+
+4. **Logistics Risk:**
+   - No physical delivery address (digital/pre-auth transaction)
+   - This is consistent with testing/validation behavior rather than actual fraud purchase
+
+**Key Decision Point - BIN Testing vs Carding:**
+
+According to the examples provided:
+- **BIN Testing**: CVV Mismatches + targeting a single BIN prefix
+- **Carding**: CVV matches + rotates through different cards + declines due to Insufficient Funds/Do Not Honor
+
+This transaction shows:
+- CVV Mismatch (Code N7) ✓
+- Rotating through 6 different cards (NOT a single BIN) ✓
+- Micro-transaction amount (USD 0.00) ✓
+- High velocity automated testing ✓
+
+The critical issue: The narrative shows CVV Mismatches while rotating through MULTIPLE cards. This is unusual because:
+- Pure BIN Testing targets ONE BIN and brute-forces CVVs
+- Pure Carding rotates cards but CVVs should match (they have the real CVVs)
+
+However, the explicit CVV Mismatch failures combined with high-velocity rotation through multiple cards most closely aligns with **BIN_Testing** behavior, as the attacker is systematically testing card validity through CVV validation across different card numbers in rapid succession.
+
+</scratchpad>
+
+<classification>
+BIN_Testing
+</classification>
+
+**Reasoning:**
+The transaction exhibits the hallmark signature of BIN Testing:
+1. **Cryptographic Signal**: Explicit CVV Mismatch failures (Code N7) indicate the attacker is brute-forcing the 3-digit CVV field
+2. **Velocity Profile**: High-speed rotation through 6 different cards in under a minute demonstrates automated, systematic card enumeration
+3. **Transaction Amount**: Micro-transaction (USD 0.00) is typical of validation/testing attempts, not actual fraud purchases
+4. **Behavior**: Programmatic injection with proxy masking confirms automated attack infrastructure
+
+While the rotation through multiple cards might superficially resemble Carding, the explicit CVV Mismatch failures are the decisive factor—Carders possess real CVVs from stolen lists, so they would not encounter CVV Mismatches. This is a BIN Testing attack validating card numbers through CVV brute-forcing."
+tx_a14acce2c7,ANTHROPIC,BIN_Testing,Carding,False,8816.24,0.004843,"<scratchpad>
+Let me work through the classification checklist:
+
+1. **Cryptographic Signals:**
+   - Authorization failed with CVV Mismatch (Code N7)
+   - This is an explicit CVV failure, not an Insufficient Funds or Do Not Honor decline
+   - The transaction amount is USD 1.00 (micro-transaction for validation)
+   - This suggests the attacker is guessing/brute-forcing the CVV
+
+2. **Velocity Profile:**
+   - High velocity: 7 different cards rotated in under a minute
+   - However, the narrative does NOT explicitly mention targeting a single ""BIN prefix""
+   - Multiple different cards are being tested, not a single BIN
+   - This is rapid card rotation, not BIN-specific targeting
+
+3. **Identity Risk:**
+   - Brand-new guest checkout session with zero historical trust
+   - No established identity profile
+   - However, the narrative does not explicitly mention a synthetic identity score or disposable email
+   - This appears to be a guest session rather than a fabricated identity
+
+4. **Logistics Risk:**
+   - No physical delivery address (digital/pre-auth transaction)
+   - This is consistent with validation testing, not a purchase pattern
+
+**Critical Analysis:**
+The key distinguishing factor between BIN_Testing and Carding is:
+- **BIN_Testing**: Targets a single BIN prefix, fails on CVV mismatches (guessing CVV)
+- **Carding**: Rotates through DIFFERENT cards, CVV matches but issuer declines (stolen list with real CVVs)
+
+This transaction shows:
+- CVV Mismatch failure (Code N7) ✓
+- Rotation through 7 DIFFERENT cards (not a single BIN) ✓
+- Micro-transaction validation attempt ✓
+- High velocity ✓
+
+The presence of ""rotated through 7 different cards"" combined with CVV Mismatch suggests the attacker is testing multiple card numbers to find valid ones, which is characteristic of **Carding** behavior. However, the explicit CVV Mismatch (rather than Insufficient Funds) is more typical of BIN Testing.
+
+**Re-evaluation:** The narrative states ""rotated through 7 different cards"" - this is the critical signal. Carders rotate through different cards from a stolen list. BIN testers target a single BIN. The rotation through multiple cards is the distinguishing factor here, making this **Carding**, even though the failure mode is CVV Mismatch rather than Insufficient Funds.
+
+Actually, upon closer reading: the CVV Mismatch on multiple different cards suggests the attacker doesn't have the real CVVs for these cards - they're guessing. This is more consistent with **BIN_Testing** methodology, but applied across multiple cards rather than a single BIN.
+
+Given the explicit guidance that BIN Testing targets ""a single BIN prefix"" and this transaction rotates through 7 different cards, this should be classified as **Carding** - the attacker is cycling through different stolen card numbers attempting validation.
+
+</scratchpad>
+
+<classification>
+Carding
+</classification>
+
+**Reasoning:**
+The transaction exhibits the hallmark characteristics of Carding:
+- **Velocity Profile**: Rotation through 7 different cards in under a minute (not targeting a single BIN)
+- **Cryptographic Signal**: CVV Mismatch failure, indicating the attacker lacks the real CVV data for these cards
+- **Transaction Pattern**: Micro-transaction (USD"
+tx_2653ea1fe6,ANTHROPIC,Stolen_Card,Stolen_Card,True,8575.97,0.004643,"<scratchpad>
+Let me work through the checklist systematically:
+
+1. **Cryptographic Signals:**
+   - Authorization: APPROVED
+   - CVV check: PASSED
+   - Billing address check: PASSED
+   - No CVV mismatch errors
+   - No insufficient funds decline
+   - This rules out BIN_Testing (which shows explicit CVV mismatches) and Carding (which shows declines like Code 51 or Code 05)
+
+2. **Velocity Profile:**
+   - Velocity is NORMAL: Only 1-2 cards attempted from this IP recently
+   - No mention of targeting a specific BIN
+   - No rotation through many different cards
+   - This rules out both BIN_Testing and Carding, which require high-velocity automated patterns
+
+3. **Identity Risk:**
+   - Account is ""established"" and ""active for 23 days""
+   - No mention of synthetic identity score being critically high
+   - No mention of disposable email
+   - This does not strongly indicate Synthetic_Identity
+
+4. **Logistics Risk:**
+   - Billing ZIP (43881) matches the cardholder
+   - Shipping ZIP (98163) is DIFFERENT from billing ZIP
+   - Narrative explicitly notes this is ""consistent with drop-houses""
+   - However, a single shipment to a different address is not definitive proof of fraud
+   - The proxy IP and datacenter connection are suspicious but not conclusive
+
+5. **Overall Assessment:**
+   - All cryptographic checks passed (CVV, address verification, authorization)
+   - Velocity is normal (not automated attack)
+   - Identity appears established (not synthetic)
+   - The primary red flag is the billing-to-shipping ZIP mismatch and proxy IP usage
+   - This pattern is most consistent with **Stolen_Card**: The card was stolen and is being used for a high-value purchase ($906.90) with successful authorization, but the attacker is shipping to a drop-house location rather than the legitimate cardholder's address
+
+The transaction authorized successfully with valid credentials, suggesting the stolen card details are accurate and current. The logistics mismatch (drop-house pattern) is the key indicator of unauthorized use.
+</scratchpad>
+
+<classification>
+Stolen_Card
+</classification>
+
+**Reasoning:**
+This transaction exhibits the hallmark characteristics of a **Stolen_Card** fraud:
+
+- **Successful Authorization with Valid Credentials:** The CVV and billing address checks both passed, indicating the attacker possesses accurate stolen card details (not guessing like in BIN Testing).
+- **High-Value Purchase:** USD 906.90 is a substantial amount, consistent with stolen card exploitation rather than low-value validation attempts (Carding).
+- **Normal Velocity:** Only 1-2 cards from this IP—not the high-speed automation of BIN Testing or the multi-card rotation of Carding.
+- **Drop-House Logistics Pattern:** Billing ZIP matches the legitimate cardholder, but shipping diverges to a different ZIP (98163), a classic indicator that the attacker is redirecting merchandise to a drop-house rather than the cardholder's address.
+- **Proxy/Datacenter IP:** Masking true origin further supports unauthorized use.
+
+The combination of successful authorization with stolen credentials and the logistics mismatch strongly indicates this is an unauthorized purchase using compromised card details."
+tx_ce414aa183,ANTHROPIC,BIN_Testing,BIN_Testing,True,8225.64,0.004528,"<scratchpad>
+Let me work through the classification checklist:
+
+**1. Cryptographic Signals:**
+- Transaction failed with CVV Mismatch (Code N7)
+- This is a micro-transaction ($0.50 pre-authorization)
+- The CVV mismatch indicates the attacker does NOT have the correct CVV
+
+**2. Velocity Profile:**
+- HIGH VELOCITY: 9 different cards rotated in under 1 minute
+- This is NOT targeting a single BIN prefix
+- Multiple different cards are being tested
+- This is characteristic of rapid card enumeration/validation attempts
+
+**3. Identity Risk:**
+- Brand-new guest checkout session
+- Zero historical platform trust
+- No established identity history
+- However, the primary signal is the automated attack pattern, not synthetic identity fabrication
+
+**4. Logistics Risk:**
+- No physical delivery address (digital/pre-auth transaction)
+- This is consistent with validation testing, not actual fraud purchase
+
+**Key Distinction Analysis:**
+According to the guidelines:
+- **BIN_Testing**: Brute-forces CVV on a SINGLE BIN prefix → results in CVV Mismatches
+- **Carding**: Rotates through DIFFERENT CARDS with correct CVVs → declines due to Insufficient Funds/Do Not Honor
+
+This transaction shows:
+- CVV Mismatch (Code N7) ✓
+- BUT rotating through 9 different cards (not a single BIN) ✓
+- Micro-transaction validation attempt ✓
+- High velocity ✓
+
+**Critical Analysis:**
+The narrative states ""rotated through 9 different cards"" - this suggests multiple card numbers, not just CVV variations on a single BIN. However, the CVV Mismatch failure is the dominant signal. The combination of:
+1. CVV Mismatch failures
+2. Rapid rotation through multiple cards
+3. Micro-transaction validation
+4. Programmatic injection
+
+This appears to be a hybrid attack attempting to validate card numbers AND CVVs across multiple cards. However, the explicit CVV Mismatch combined with the micro-transaction validation pattern most closely aligns with **BIN_Testing** methodology, where attackers test multiple card variations to find valid combinations.
+
+The ""9 different cards"" could represent 9 different card numbers within a BIN range or across BINs, all failing on CVV validation.
+
+</scratchpad>
+
+<classification>
+BIN_Testing
+</classification>
+
+**Reasoning:**
+The transaction exhibits the hallmark characteristics of BIN Testing:
+1. **Cryptographic Signal**: Explicit CVV Mismatch (Code N7) indicates the attacker is brute-forcing the 3-digit CVV without possessing the correct value
+2. **Attack Pattern**: Micro-transaction ($0.50 pre-authorization) designed to validate card credentials without full charges
+3. **Velocity**: High-speed automated testing (9 cards in <1 minute) using programmatic injection
+4. **Intent**: Validation testing to identify working card numbers and CVV combinations
+
+While the narrative mentions ""9 different cards,"" the dominant signal is the CVV Mismatch failure combined with rapid micro-transaction validation attempts—the core methodology of BIN Testing attacks."
+tx_cf30fe91a0,ANTHROPIC,Legitimate,Stolen_Card,False,7580.73,0.004187,"<scratchpad>
+Let me work through the checklist systematically:
+
+1. **Cryptographic Signals:**
+   - Authorization: APPROVED
+   - CVV check: PASSED
+   - Billing address check: PASSED
+   - No CVV mismatch, no insufficient funds decline
+   - This rules out BIN_Testing (which shows explicit CVV mismatches) and Carding (which shows declines despite correct CVV)
+
+2. **Velocity Profile:**
+   - Velocity is NORMAL: Only 1-2 cards attempted from this IP recently
+   - No targeting of a specific BIN prefix
+   - No rotation through many different cards
+   - This rules out both BIN_Testing and Carding, which require high-velocity automated patterns
+
+3. **Identity Risk:**
+   - Account is ESTABLISHED: Active for 438 days
+   - No mention of disposable email or newly fabricated identity
+   - Synthetic identity score is NOT critically high
+   - This rules out Synthetic_Identity
+
+4. **Logistics Risk:**
+   - Billing ZIP (73435) matches the cardholder
+   - Shipping ZIP (28225) is DIFFERENT from billing ZIP
+   - Narrative explicitly notes this is ""consistent with drop-houses""
+   - However, this alone doesn't definitively classify the fraud type
+   - The transaction authorized successfully with valid credentials
+   - This pattern suggests unauthorized use of a legitimate card
+
+5. **Overall Assessment:**
+   - Authorization succeeded with valid CVV and address
+   - Normal velocity (not automated attack)
+   - Established account (not synthetic)
+   - High-value relative to typical fraud patterns? USD 50.63 is moderate
+   - The mismatch between billing and shipping ZIP to a drop-house is the primary red flag
+   - Combined with successful authorization using valid credentials, this points to STOLEN_CARD usage
+   - The cardholder's legitimate billing address was used (passed verification), but the goods are being shipped elsewhere (drop-house pattern)
+
+</scratchpad>
+
+<classification>
+Stolen_Card
+</classification>
+
+**Reasoning:**
+This transaction exhibits the hallmark pattern of stolen card fraud:
+- **Valid Credentials**: Authorization approved with CVV and billing address verification passed—indicating the attacker possesses the real card details
+- **Legitimate Account History**: The 438-day account age and normal velocity rule out automated attacks (BIN_Testing, Carding) and synthetic identity fraud
+- **Drop-House Logistics**: The critical red flag is the mismatch between billing ZIP (73435, cardholder's legitimate address) and shipping ZIP (28225, drop-house pattern)—a classic indicator that someone other than the legitimate cardholder is making the purchase
+- **Moderate Transaction Value**: USD 50.63 is consistent with a stolen card being tested for viability before larger purchases
+
+The attacker has stolen valid card credentials and is using them to make an unauthorized purchase with delivery to a drop-house location."
+tx_9f12721488,ANTHROPIC,BIN_Testing,Carding,False,8788.48,0.004828,"<scratchpad>
+Let me work through the classification checklist:
+
+1. **Cryptographic Signals:**
+   - Authorization failed with CVV Mismatch (Code N7)
+   - This is a failed transaction, not a successful charge
+   - CVV Mismatch is a strong indicator of brute-force attempts
+
+2. **Velocity Profile:**
+   - High velocity: 7 different cards rotated in under a minute
+   - This is NOT targeting a single BIN prefix
+   - Multiple different cards are being tested
+   - This contradicts BIN Testing (which targets a single BIN)
+   - This aligns with Carding (rotating through different stolen cards)
+
+3. **Identity Risk:**
+   - Brand-new guest checkout session
+   - Zero historical platform trust
+   - However, the primary signal is the automated attack pattern, not synthetic identity fabrication
+
+4. **Logistics Risk:**
+   - No physical delivery address (digital/pre-auth transaction)
+   - This is a pre-authorization validation attempt, not a full purchase
+   - Not indicative of drop-house or shipping fraud
+
+**Critical Analysis:**
+The key distinction between BIN_Testing and Carding:
+- BIN_Testing: Targets a single BIN, brute-forces CVV, results in CVV Mismatches
+- Carding: Rotates through DIFFERENT cards, possesses real CVVs (so CVV matches), but issuer declines due to insufficient funds or ""Do Not Honor""
+
+This transaction shows:
+- CVV Mismatch (Code N7) ✓
+- BUT rotating through 7 DIFFERENT cards (not a single BIN) ✓
+- Micro-transaction amount (USD 0.88) for validation ✓
+- High velocity ✓
+
+The presence of CVV Mismatch combined with rotating through multiple different cards is unusual. However, the examples clarify that BIN Testing targets a SINGLE BIN and causes CVV failures on that BIN. This transaction rotates through different cards, which is the hallmark of Carding.
+
+The CVV Mismatch here could indicate that the attacker is using a stolen card list with incorrect CVVs, or is attempting to validate cards before using them. The rotation through 7 different cards in rapid succession is the defining characteristic of Carding operations.
+
+</scratchpad>
+
+<classification>
+Carding
+</classification>
+
+**Reasoning:**
+This transaction exhibits the classic hallmarks of a Carding attack:
+
+1. **Multiple Card Rotation:** The attacker cycled through 7 different cards in under 60 seconds—this is the defining characteristic of Carding, where attackers possess a stolen card list and test each one.
+
+2. **Micro-Transaction Validation:** The USD 0.88 pre-authorization is a classic validation technique used by carders to confirm stolen credentials work before attempting larger fraudulent purchases.
+
+3. **High Velocity:** Rapid-fire testing across multiple payment instruments indicates automated scripted behavior typical of Carding operations.
+
+4. **CVV Mismatch Context:** While the CVV failed, this is consistent with carders using incomplete or outdated stolen card data. The key differentiator from BIN Testing is that BIN Testing targets a *single BIN prefix* with brute-forced CVVs, whereas this attack rotates through *different cards entirely*.
+
+5. **Proxy/Datacenter Origin:** Masking true origin via proxy is standard for Carding operations to evade geographic velocity checks."
+tx_8443842f55,ANTHROPIC,Legitimate,Legitimate,True,8529.25,0.004587,"<scratchpad>
+Let me work through the checklist systematically:
+
+1. **Cryptographic Signals:**
+   - Authorization: APPROVED
+   - CVV check: PASSED
+   - Billing address check: PASSED
+   - No CVV mismatch errors
+   - No insufficient funds decline
+   - This rules out BIN_Testing (which shows explicit CVV mismatches) and Carding (which shows declines like Code 51 or Code 05)
+
+2. **Velocity Profile:**
+   - Velocity is NORMAL: Only 1-2 cards attempted from this IP recently
+   - No mention of targeting a specific BIN
+   - No rotation through many different cards
+   - This rules out both BIN_Testing and Carding, which require high-velocity automated patterns
+
+3. **Identity Risk:**
+   - Account is ESTABLISHED: Active for 142 days
+   - No mention of synthetic identity score being critically high
+   - No disposable email mentioned
+   - This rules out Synthetic_Identity
+
+4. **Logistics Risk:**
+   - Billing ZIP (18025) matches the cardholder
+   - Shipping ZIP (23725) is DIFFERENT from billing ZIP
+   - Narrative explicitly notes this is ""consistent with drop-houses""
+   - However, a single shipment to a different address is not definitive fraud on its own
+   - The account is established (142 days old), not new
+   - Authorization and all verification checks passed
+   - Behavior is standard human (44.3 second checkout, manual typing)
+   - Normal velocity (1-2 cards)
+
+**Analysis:**
+The transaction shows:
+- ✓ Valid authorization and verification
+- ✓ Normal velocity (not automated attack)
+- ✓ Established account (not synthetic)
+- ✓ Standard human behavior
+- ⚠ Logistics anomaly (different shipping address)
+
+The logistics risk (drop-house pattern) is a red flag, but it's not sufficient alone to classify this as Stolen_Card. The transaction could be:
+- A legitimate purchase to a friend/family member
+- A gift shipment
+- A business address different from home
+
+Given that ALL cryptographic signals passed, velocity is normal, identity is established, and behavior is standard human, the logistics anomaly alone does not override these legitimate indicators. This appears to be a **Legitimate** transaction with a logistics anomaly that warrants monitoring but doesn't constitute fraud classification.
+
+</scratchpad>
+
+<classification>
+Legitimate
+</classification>
+
+**Reasoning:**
+This transaction exhibits all hallmarks of a legitimate purchase:
+- Authorization and CVV verification both **passed successfully** (rules out BIN_Testing and Carding)
+- **Normal velocity** with only 1-2 cards attempted (rules out automated attacks)
+- **Established account** active for 142 days (rules out Synthetic_Identity)
+- **Standard human behavior** with manual typing and reasonable checkout duration
+
+While the logistics pattern (different shipping ZIP) is a **risk indicator** worthy of monitoring, it alone does not constitute fraud classification. Legitimate reasons exist for shipping to an alternate address (gifts, family, business locations). The combination of passed verification, normal velocity, established identity, and standard behavior patterns indicates this is a legitimate transaction with a logistics anomaly rather than a fraudulent one."
+tx_8a7f1032eb,ANTHROPIC,Legitimate,Legitimate,True,8532.39,0.004752,"<scratchpad>
+Let me analyze this transaction systematically using the provided checklist:
+
+1. **Cryptographic Signals:**
+   - Authorization: APPROVED
+   - CVV check: PASSED
+   - Billing address check: PASSED
+   - No CVV Mismatch (Code N7) → Rules out BIN_Testing
+   - No Insufficient Funds/Do Not Honor decline → Rules out Carding
+   - Transaction successfully authorized with valid credentials
+
+2. **Velocity Profile:**
+   - Velocity is NORMAL: Only 1-2 cards attempted from this IP recently
+   - No targeting of a specific BIN prefix
+   - No rotation through multiple different cards
+   - This rules out both BIN_Testing and Carding patterns
+
+3. **Identity Risk:**
+   - Account is ESTABLISHED: Active for 557 days
+   - No mention of synthetic identity score being critically high
+   - No disposable email mentioned
+   - Rules out Synthetic_Identity
+
+4. **Logistics Risk:**
+   - Billing ZIP (85487) matches the cardholder
+   - Shipping ZIP (19876) is DIFFERENT from billing ZIP
+   - Narrative explicitly notes this is ""consistent with drop-houses""
+   - However, this alone doesn't definitively classify as Stolen_Card without other indicators
+   - The account is established (557 days old), suggesting legitimate user history
+
+5. **Behavioral Signals:**
+   - Checkout took 45.5 seconds with Manual Typing (human behavior, not automated)
+   - Standard residential/mobile ISP connection
+   - No signs of scripted/automated attack patterns
+
+**Key Decision Point:**
+The transaction has:
+- ✓ Valid authorization and CVV match
+- ✓ Normal velocity
+- ✓ Established account
+- ✓ Human behavior patterns
+- ✗ Mismatched shipping/billing ZIP (logistics risk)
+
+The mismatched ZIP codes suggest potential fraud risk, but this alone doesn't meet the threshold for ""Stolen_Card"" classification, which typically involves high-value unauthorized purchases with stolen details. The account establishment, successful authorization, and normal behavior patterns suggest this could be a legitimate user shipping to a different address (common for gifts, relocations, or business purposes).
+
+Given that all cryptographic and velocity signals are clean, and the account is established with normal behavior, this appears to be a **Legitimate** transaction with an unusual but not necessarily fraudulent shipping pattern.
+</scratchpad>
+
+<classification>
+Legitimate
+</classification>
+
+**Reasoning:**
+This transaction exhibits all hallmarks of a legitimate purchase:
+- **Cryptographic Signals:** Authorization approved with CVV and address verification passed—no fraud indicators like CVV mismatches or insufficient funds declines
+- **Velocity Profile:** Normal velocity (1-2 cards from IP), no BIN targeting or card rotation
+- **Identity Profile:** Established account active for 557 days, not a synthetic identity
+- **Behavioral Signals:** Manual typing over 45 seconds indicates human behavior, not automated scripting
+
+While the mismatched billing/shipping ZIP codes present a logistics anomaly, this alone does not override the clean authorization, established account history, and normal behavioral patterns. Legitimate users frequently ship to different addresses for valid reasons (gifts, business locations, relocations). The transaction lacks the velocity, cryptographic, or identity red flags that would classify it as BIN_Testing, Carding, Stolen_Card, or Synthetic_Identity fraud."
+tx_22a79ae055,ANTHROPIC,Carding,Carding,True,8768.95,0.004864,"<scratchpad>
+Let me work through the checklist systematically:
+
+**1. Cryptographic Signals:**
+- Authorization: APPROVED
+- CVV check: PASSED
+- Billing address check: PASSED
+- This is NOT a CVV Mismatch (which would indicate BIN Testing)
+- This is NOT an Insufficient Funds decline (which would indicate Carding)
+- The transaction was successfully authorized with valid credentials
+
+**2. Velocity Profile:**
+- High velocity: 7 different cards rotated in under 1 minute
+- This is NOT targeting a single BIN (which would indicate BIN Testing)
+- This IS rotating through multiple different cards (characteristic of Carding)
+- However, the CVV and address checks passed, which is unusual for Carding
+
+**3. Identity Risk:**
+- Newly created account (1 day old) - HIGH RISK
+- Disposable email domain (temp-mail.org) - HIGH RISK
+- This suggests Synthetic_Identity or Carding with new accounts
+
+**4. Logistics Risk:**
+- Billing ZIP (82840) matches cardholder
+- Shipping ZIP (19571) is completely different
+- Drop-house pattern detected - HIGH RISK
+- This is consistent with Carding or Stolen_Card operations
+
+**5. Additional Behavioral Signals:**
+- Micro-transaction amount ($2.77) - typical of Carding validation
+- Impossible checkout speed (744ms) - bot automation
+- Programmatic field injection - automated attack
+- Datacenter/proxy IP - masking origin
+- All point to automated fraud
+
+**Distinguishing between Carding and Stolen_Card:**
+- Carding: Low-value transactions, multiple cards, validation purpose, often declined
+- Stolen_Card: High-value unauthorized purchases, single card
+- This transaction: Low-value ($2.77), multiple cards (7 rotated), successfully authorized
+- The successful authorization despite all red flags suggests these are valid stolen credentials being tested
+
+**Distinguishing between Carding and Synthetic_Identity:**
+- Synthetic_Identity: Fabricated identity, disposable email, new account
+- Carding: Stolen credentials, multiple cards, low-value validation
+- This has BOTH characteristics, but the defining factor is the rotation through 7 different cards in rapid succession
+- Synthetic_Identity typically uses one fabricated identity; Carding rotates through stolen card lists
+
+**Final Assessment:**
+The combination of:
+- Multiple different cards rotated rapidly (7 cards in <1 minute)
+- Low micro-transaction amount ($2.77)
+- Successful authorization (CVV and address matched)
+- Bot automation signals
+- Drop-house shipping pattern
+
+This is classic **Carding** behavior: validating stolen credentials through low-value test transactions using a list of stolen cards. The new synthetic account and disposable email are secondary tactics used to evade detection, but the primary attack vector is the rotation through stolen card credentials.
+</scratchpad>
+
+<classification>
+Carding
+</classification>
+
+**Reasoning:**
+This transaction exhibits the hallmark signature of a Carding attack:
+
+1. **Multiple Card Rotation**: 7 different cards cycled through in under 60 seconds—this is the defining characteristic of Carding, where attackers validate stolen credential lists.
+
+2. **Successful Authorization with Valid Credentials**: Unlike BIN Testing (which fails on CVV mismatches), this transaction passed both CVV and billing address verification. This indicates the attacker possesses real stolen card data, not"
+tx_b0a6a4ec06,ANTHROPIC,Carding,Carding,True,9241.19,0.0048660000000000005,"<scratchpad>
+Let me work through the checklist systematically:
+
+**1. Cryptographic Signals:**
+- Authorization: APPROVED
+- CVV check: PASSED
+- Billing address check: PASSED
+- This is NOT a CVV Mismatch (which would indicate BIN Testing)
+- This is NOT an Insufficient Funds decline (which would indicate Carding)
+- The transaction was successfully authorized with valid credentials
+
+**2. Velocity Profile:**
+- HIGH VELOCITY: 19 different cards rotated in under 1 minute
+- This is NOT targeting a single BIN (which would be BIN Testing)
+- This IS rotating through MULTIPLE different cards (characteristic of Carding)
+- The velocity is extremely abnormal and automated
+
+**3. Identity Risk:**
+- Newly created account (2 days old)
+- Disposable email: 10minutemail.com (classic fraud indicator)
+- Synthetic identity score would be HIGH
+- However, this alone doesn't override the other signals
+
+**4. Logistics Risk:**
+- Billing ZIP (47345) matches cardholder
+- Shipping ZIP (89322) is completely different
+- Drop-house pattern is present
+- This suggests stolen card usage with reshipping
+
+**5. Additional Behavioral Signals:**
+- Checkout completed in 717 milliseconds (impossible for human)
+- Programmatic field injection bypassing keyboard events
+- Datacenter/proxy IP masking origin
+- Clear bot signature
+
+**CLASSIFICATION LOGIC:**
+
+The key distinguishing factor between Carding and Stolen_Card:
+- **Carding**: Multiple cards rotated, low-value test transactions, CVV matches but issuer declines (Insufficient Funds/Do Not Honor)
+- **Stolen_Card**: High-value unauthorized purchases, authorization succeeds, single card used
+
+This transaction shows:
+- Multiple cards rotated (19 cards) → suggests Carding pattern
+- Low-value micro-purchase ($3.95) → suggests validation/testing
+- Authorization APPROVED with valid CVV → suggests the stolen credentials are valid
+- Drop-house shipping pattern → suggests actual fraudulent purchase intent
+
+The combination of rotating through 19 different cards with low-value amounts, successful authorizations, and drop-house logistics is the CLASSIC Carding signature. The attacker is validating stolen card credentials through micro-transactions before attempting larger fraud.
+
+</scratchpad>
+
+<classification>
+Carding
+</classification>
+
+**Reasoning:**
+This transaction exhibits the definitive hallmarks of Carding:
+
+1. **Velocity Pattern**: 19 different cards rotated in under 60 seconds—this is scripted credential validation, not a single stolen card attack.
+
+2. **Cryptographic Success**: CVV and billing address checks PASSED, indicating the attacker possesses valid stolen card data (not guessing CVVs like BIN Testing would).
+
+3. **Transaction Value**: The $3.95 micro-purchase is a classic validation test to confirm stolen credentials work before larger fraud attempts.
+
+4. **Behavioral Automation**: Bot signatures (717ms checkout, programmatic injection, proxy masking) confirm scripted attack infrastructure.
+
+5. **Logistics Intent**: The drop-house shipping pattern (different ZIP from billing) indicates the attacker plans to use validated cards for actual fraudulent purchases.
+
+This is **not** Stolen_Card (which would involve a single high-value unauthorized purchase) and **not** BIN_Testing (which would show CVV Mismatches on a single BIN). This is Carding—validating"
+tx_530efd328e,ANTHROPIC,BIN_Testing,BIN_Testing,True,8490.7,0.004643,"<scratchpad>
+Let me work through the classification checklist:
+
+**1. Cryptographic Signals:**
+- Authorization failed with CVV Mismatch (Code N7)
+- This is an explicit CVV failure, not an Insufficient Funds or Do Not Honor decline
+- The transaction amount is a micro-transaction (USD 0.89) designed for validation
+
+**2. Velocity Profile:**
+- HIGH VELOCITY: ""rotated through 8 different cards in under a minute""
+- This is NOT targeting a single BIN prefix
+- Multiple different cards are being tested in rapid succession
+- This is characteristic of card rotation, not BIN enumeration
+
+**3. Identity Risk:**
+- Brand-new guest checkout session with zero historical trust
+- No established identity profile
+- However, the primary attack vector here is the card rotation, not synthetic identity fabrication
+
+**4. Logistics Risk:**
+- No physical delivery address (digital/pre-auth transaction)
+- This is consistent with validation attacks that don't require shipping
+
+**Critical Analysis - BIN_Testing vs Carding:**
+
+According to the provided rules:
+- **BIN_Testing**: Targets a SINGLE BIN prefix with CVV Mismatches (brute-forcing the 3-digit CVV)
+- **Carding**: Rotates through DIFFERENT CARDS with real CVVs, but gets declined for other reasons (Insufficient Funds, Do Not Honor)
+
+This transaction shows:
+- CVV Mismatch (Code N7) ✓
+- BUT: Rotating through 8 DIFFERENT cards (not a single BIN) ✓
+- Micro-transaction validation pattern ✓
+- High velocity ✓
+
+The key distinguishing factor: The narrative explicitly states ""rotated through 8 different cards"" - this is card rotation behavior. However, the CVV Mismatch suggests the attacker does NOT have the correct CVVs for these cards, which is more consistent with BIN Testing methodology.
+
+**Resolution:** The combination of:
+1. CVV Mismatch failures (explicit CVV brute-forcing)
+2. Rotating through multiple cards (testing different card numbers)
+3. Micro-transaction validation
+4. High velocity
+
+This is a hybrid attack pattern, but the PRIMARY signal is CVV Mismatch across multiple card attempts, which indicates **BIN_Testing** - the attacker is systematically testing card numbers and their corresponding CVVs across a range of cards/BINs.
+
+</scratchpad>
+
+<classification>
+BIN_Testing
+</classification>
+
+**Reasoning:**
+The transaction exhibits the hallmark characteristics of BIN Testing:
+- **Cryptographic Signal**: Authorization failed with explicit CVV Mismatch (Code N7), indicating the attacker is brute-forcing CVV values
+- **Velocity Profile**: High-speed rotation through 8 different cards in under 60 seconds, consistent with automated enumeration
+- **Transaction Pattern**: Micro-transaction (USD 0.89) designed purely for validation without actual purchase intent
+- **Network Behavior**: Programmatic injection from proxy/datacenter IP masking true origin
+
+While the attack rotates through multiple cards rather than a single BIN, the CVV Mismatch failures indicate the attacker lacks valid CVV data and is systematically testing card number + CVV combinations—the core methodology of BIN Testing attacks."
+tx_132ed519d2,ANTHROPIC,BIN_Testing,Carding,False,7949.72,0.004627,"<scratchpad>
+Let me work through the classification checklist:
+
+1. **Cryptographic Signals:**
+   - Authorization failed with CVV Mismatch (Code N7)
+   - This is a failed transaction, not a successful authorization
+   - CVV Mismatch is a strong indicator of brute-force attempts on card verification
+
+2. **Velocity Profile:**
+   - High velocity: 8 different cards rotated in under a minute
+   - This is NOT targeting a single BIN prefix (which would be BIN_Testing)
+   - Multiple different cards are being tested
+   - This rotation pattern is characteristic of Carding (testing stolen card lists)
+
+3. **Identity Risk:**
+   - Brand-new guest checkout session with zero historical trust
+   - No established identity history
+   - However, this is not explicitly a synthetic identity fabrication scenario
+
+4. **Logistics Risk:**
+   - No physical delivery address (digital/pre-auth transaction)
+   - This doesn't help differentiate between BIN_Testing and Carding
+
+**Critical Analysis - BIN_Testing vs Carding:**
+
+According to the provided rules:
+- **BIN_Testing**: Targets a SINGLE BIN prefix, results in CVV Mismatches
+- **Carding**: Rotates through MANY DIFFERENT CARDS, CVV matches but issuer declines (Insufficient Funds/Do Not Honor)
+
+This transaction shows:
+- CVV Mismatch (Code N7) ✓
+- BUT rotated through 8 DIFFERENT CARDS (not a single BIN) ✓
+- Micro-transaction amount (USD 0.50) typical of validation testing ✓
+
+**The Conflict:**
+The narrative shows BOTH CVV Mismatch (BIN_Testing indicator) AND rotation through multiple different cards (Carding indicator). However, the explicit rule states that Carders ""possess stolen lists containing the real CVVs"" and should see CVV matches followed by issuer declines.
+
+The presence of CVV Mismatch combined with rotation through different cards suggests the attacker is testing multiple stolen cards but doesn't have accurate CVV data for all of them. This is still consistent with a **Carding** operation using an incomplete/inaccurate stolen card database, rather than pure BIN enumeration.
+
+The rotation through 8 different cards in under a minute is the decisive factor - this is characteristic of Carding (testing a stolen card list) rather than BIN_Testing (which focuses on a single BIN prefix).
+
+</scratchpad>
+
+<classification>
+Carding
+</classification>
+
+**Reasoning:**
+The transaction exhibits classic Carding behavior:
+- **Velocity**: Rotated through 8 different cards in under 60 seconds (characteristic of testing a stolen card list, not a single BIN)
+- **Cryptographic Signal**: CVV Mismatch suggests incomplete/inaccurate stolen card data in the attacker's possession
+- **Transaction Pattern**: Micro-transaction (USD 0.50) used for validation testing
+- **Identity**: Brand-new guest session with zero trust history
+
+While the CVV Mismatch might suggest BIN_Testing, the decisive factor is the **rotation through multiple different cards** rather than targeting a single BIN prefix. This multi-card rotation pattern is definitional for Carding operations."
+tx_8b70db9b4d,ANTHROPIC,BIN_Testing,BIN_Testing,True,8610.57,0.004753,"<scratchpad>
+Let me work through the classification checklist:
+
+1. **Cryptographic Signals:**
+   - Authorization failed with CVV Mismatch (Code N7)
+   - This is an explicit CVV failure, not an Insufficient Funds or Do Not Honor decline
+   - The transaction amount is USD 1.00 (micro-transaction for validation)
+   - This pattern is characteristic of brute-forcing CVV values
+
+2. **Velocity Profile:**
+   - High velocity: 10 different cards rotated in under a minute
+   - However, the narrative does NOT explicitly mention targeting a single ""BIN prefix""
+   - Multiple different cards are being tested, not a single BIN
+   - This is rapid card rotation, not BIN-specific targeting
+
+3. **Identity Risk:**
+   - Brand-new guest checkout session with zero historical trust
+   - No disposable email explicitly mentioned, but new session indicates low identity confidence
+   - Not a critical synthetic identity red flag with fabricated identity markers
+
+4. **Logistics Risk:**
+   - No physical delivery address (digital/pre-auth transaction)
+   - This is consistent with validation testing, not a drop-house pattern
+   - Proxy IP masking origin suggests automated/programmatic behavior
+
+**Critical Analysis:**
+The key distinguishing factor between BIN_Testing and Carding:
+- BIN_Testing: Targets a single BIN prefix with CVV brute-forcing (explicit CVV Mismatches)
+- Carding: Rotates through DIFFERENT cards with stolen credential lists (CVV matches, but issuer declines)
+
+This narrative shows:
+- CVV Mismatch (Code N7) ✓
+- BUT: Rotating through 10 DIFFERENT cards (not a single BIN) ✓
+- Micro-transaction validation attempt ✓
+- Programmatic inject with proxy masking ✓
+
+The rotation through 10 different cards suggests the attacker has a list of stolen card numbers and is testing them with incorrect CVVs (or testing which ones are still active). However, the explicit CVV Mismatch failures and the micro-transaction validation pattern are more consistent with BIN Testing methodology.
+
+**Resolution:** The CVV Mismatch combined with high-velocity card rotation and micro-transaction validation points to **BIN_Testing**, as the attacker is systematically validating card numbers and CVVs at scale. The ""10 different cards"" likely represent different card numbers within the same or related BIN ranges being tested.
+
+</scratchpad>
+
+<classification>
+BIN_Testing
+</classification>
+
+**Reasoning:**
+The transaction exhibits the hallmark signature of BIN Testing:
+- **Cryptographic Signal:** Explicit CVV Mismatch (Code N7) indicates brute-force CVV validation attempts
+- **Velocity Profile:** High-speed rotation through 10 cards in under 60 seconds using programmatic injection
+- **Transaction Pattern:** USD 1.00 micro-authorization designed to validate card viability without full charges
+- **Network Behavior:** Datacenter/proxy IP masking and 4-second checkout time indicate automated attack infrastructure
+
+While the narrative mentions ""10 different cards,"" this is consistent with BIN Testing methodology where attackers systematically test card numbers and CVVs across a range. The explicit CVV Mismatch failures are the definitive signal—carders would possess valid CVVs and would see Insufficient Funds or Do Not Honor declines instead."
+tx_5512040470,ANTHROPIC,Synthetic_Identity,Synthetic_Identity,True,7304.98,0.004157,"<scratchpad>
+Let me work through the classification checklist:
+
+1. **Cryptographic Signals:**
+   - Authorization: APPROVED
+   - CVV check: PASSED
+   - Billing address check: PASSED
+   - No CVV Mismatch (which would indicate BIN Testing)
+   - No Insufficient Funds decline (which would indicate Carding)
+   - Transaction successfully authorized
+
+2. **Velocity Profile:**
+   - Velocity is NORMAL: Only 1-2 cards attempted from this IP recently
+   - NOT targeting a single BIN with high-speed attempts
+   - NOT rotating through many different cards
+   - This rules out both BIN_Testing and Carding
+
+3. **Identity Risk:**
+   - Account created only 5 days ago (very recent)
+   - Using generic gmail.com email domain
+   - Synthetic identity score is CRITICALLY HIGH at 0.768
+   - This is a major red flag for fabricated identity
+   - However, the transaction itself authorized successfully with matching address verification
+
+4. **Logistics Risk:**
+   - Billing and shipping ZIP codes MATCH
+   - Low logistics risk overall
+   - This does NOT suggest drop-house or stolen card patterns
+
+**Analysis:**
+- The transaction is NOT BIN_Testing (no CVV mismatches, no single BIN targeting)
+- The transaction is NOT Carding (no card rotation, no insufficient funds decline)
+- The transaction is NOT Stolen_Card (authorization approved, addresses match, normal velocity, human behavior)
+- The transaction COULD be Legitimate (all checks passed, normal behavior, matching addresses)
+- The transaction COULD be Synthetic_Identity (critically high synthetic score, very new account, generic email)
+
+**Decision Logic:**
+The defining characteristic here is the critically high synthetic identity score (0.768) combined with a brand-new account (5 days old). While the transaction itself passed all cryptographic and logistics checks, the identity profile is the primary risk signal. The account appears to be a fabricated identity attempting to make a purchase. This is distinct from a stolen card (which would show mismatches or declines) or automated attacks (which would show velocity/CVV issues).
+
+The synthetic identity score of 0.768 is explicitly flagged as ""critically high,"" which is the key discriminator.
+</scratchpad>
+
+<classification>
+Synthetic_Identity
+</classification>
+
+**Reasoning:**
+While the transaction passed all cryptographic verifications (CVV matched, address verified, authorization approved) and shows normal velocity and human behavior, the **critically high synthetic identity score of 0.768** combined with a **newly created account (5 days old)** using a generic email domain is the dominant risk signal. This pattern is characteristic of a fabricated identity attempting to establish legitimacy through a successful transaction. The account creation recency and synthetic score far outweigh the passing verification checks, indicating this is a synthetic identity fraud attempt rather than a legitimate purchase or other fraud category."
+tx_f9f7ea91bc,ANTHROPIC,Synthetic_Identity,Synthetic_Identity,True,7034.36,0.003922,"<scratchpad>
+Let me work through the classification checklist:
+
+1. **Cryptographic Signals:**
+   - Authorization: APPROVED
+   - CVV check: PASSED
+   - Billing address check: PASSED
+   - No CVV Mismatch (rules out BIN_Testing)
+   - No Insufficient Funds decline (rules out Carding)
+   - Transaction successfully authorized
+
+2. **Velocity Profile:**
+   - Velocity is NORMAL: Only 1-2 cards attempted from this IP recently
+   - NOT targeting a single BIN with high-speed attempts
+   - NOT rotating through many different cards
+   - This rules out both BIN_Testing and Carding
+
+3. **Identity Risk:**
+   - Account created only 6 days ago (very recent)
+   - Email domain: yahoo.com (free/disposable email service)
+   - Synthetic identity score: CRITICALLY HIGH at 0.744
+   - This is a major red flag for synthetic identity fraud
+
+4. **Logistics Risk:**
+   - Billing and shipping ZIP codes MATCH
+   - Low logistics risk overall
+   - Does NOT indicate drop-house pattern (rules out Stolen_Card)
+
+**Analysis Summary:**
+- The transaction was AUTHORIZED successfully with all verification checks passing
+- Velocity is normal (not an automated attack like BIN_Testing or Carding)
+- The critical indicator is the SYNTHETIC IDENTITY PROFILE: newly created account (6 days), disposable email domain, and critically high synthetic identity score (0.744)
+- Logistics are consistent (matching ZIP codes), so this isn't a typical stolen card with drop-house pattern
+- The combination of recent account creation + disposable email + critically high synthetic score points directly to Synthetic_Identity fraud
+
+This is NOT Legitimate (too many identity red flags), NOT Stolen_Card (logistics match, normal velocity), and NOT an automated attack (normal velocity, successful authorization with valid CVV).
+</scratchpad>
+
+<classification>
+Synthetic_Identity
+</classification>
+
+**Reasoning:**
+The transaction exhibits the hallmark indicators of synthetic identity fraud:
+- **Account Age:** Created only 6 days ago (extremely recent)
+- **Email Profile:** yahoo.com domain (disposable/free email service)
+- **Synthetic Score:** Critically high at 0.744
+- **Verification Success:** All cryptographic checks passed because the synthetic identity was constructed with valid stolen data or fabricated credentials
+- **Normal Velocity & Logistics:** Consistent with a single fraudster using one fabricated identity, not an automated attack or stolen card ring
+
+The attacker created a new synthetic identity and is now attempting a moderate-value transaction ($1,060.72) to establish legitimacy before escalating fraud."
+tx_0d85cbc441,ANTHROPIC,Carding,Carding,True,8926.5,0.004865,"<scratchpad>
+Let me work through the checklist systematically:
+
+**1. Cryptographic Signals:**
+- Authorization: APPROVED
+- CVV check: PASSED
+- Billing address check: PASSED
+- This is NOT a CVV Mismatch (which would indicate BIN Testing)
+- This is NOT an Insufficient Funds decline (which would indicate Carding)
+- The transaction was successfully authorized with valid credentials
+
+**2. Velocity Profile:**
+- High velocity: 8 different cards rotated in under 1 minute
+- This is NOT targeting a single BIN (which would indicate BIN Testing)
+- This IS rotating through multiple different cards (characteristic of Carding)
+- However, the CVV and address checks passed, which is unusual for Carding
+
+**3. Identity Risk:**
+- Newly created account (1 day old) - HIGH RISK
+- Disposable email domain (temp-mail.org) - HIGH RISK
+- This suggests Synthetic_Identity or Carding with new account setup
+
+**4. Logistics Risk:**
+- Billing ZIP (48594) matches cardholder
+- Shipping ZIP (63266) is completely different
+- Drop-house pattern is evident
+- This is consistent with Carding or Stolen_Card operations
+
+**5. Behavioral Signals:**
+- Severe bot signature present
+- Checkout completed in 1450ms (impossible for human)
+- Programmatic field injection bypassing keyboard events
+- Datacenter/proxy IP masking origin
+- All indicators of automated fraud
+
+**Analysis:**
+The key distinguishing factors:
+- Multiple cards rotated (8 in 1 minute) = Carding or Synthetic_Identity pattern
+- CVV and address checks PASSED = suggests valid stolen credentials (Carding) rather than BIN Testing
+- Newly created account + disposable email = Synthetic_Identity signals
+- Drop-house shipping pattern = Carding or Stolen_Card
+- Bot automation + low micro-transaction = Carding validation pattern
+
+The combination of:
+1. Multiple card rotation (not single BIN)
+2. Successful CVV/address validation (stolen credentials work)
+3. Low-value micro-transaction (validation test)
+4. Bot automation
+5. Drop-house logistics
+
+This matches the CARDING profile: scripted low-value transactions validating stolen credentials across multiple cards, with successful CVV matches because the carder possesses the real stolen data.
+
+The synthetic identity signals (new account, temp email) are secondary to the primary attack vector of rotating stolen cards.
+</scratchpad>
+
+<classification>
+Carding
+</classification>
+
+**Reasoning:**
+This transaction exhibits the classic hallmarks of a Carding attack:
+
+1. **Cryptographic Match**: CVV and billing address checks PASSED—indicating the attacker possesses legitimate stolen card credentials, not guessing them (which would show CVV Mismatches in BIN Testing).
+
+2. **Velocity & Card Rotation**: 8 different cards rotated in under 60 seconds. This is the signature pattern of Carding, where attackers validate stolen card lists by testing multiple credentials, not a single BIN prefix.
+
+3. **Low-Value Micro-Transaction**: USD 3.21 is a classic validation amount used by carders to confirm stolen cards are active before attempting larger fraudulent purchases.
+
+4. **Bot Automation**: Programmatic injection, 1450ms checkout, and proxy masking confirm scripted attack infrastructure.
+
+5. **Drop-House Logistics**: Shipping to a"
+tx_9f4b1e3bbc,ANTHROPIC,Carding,Carding,True,9088.29,0.004779,"<scratchpad>
+Let me work through the checklist systematically:
+
+**1. Cryptographic Signals:**
+- Authorization: APPROVED
+- CVV check: PASSED
+- Billing address check: PASSED
+- This is NOT a CVV Mismatch (which would indicate BIN Testing)
+- This is NOT an Insufficient Funds decline (which would indicate Carding)
+- The transaction was successfully authorized with valid credentials
+
+**2. Velocity Profile:**
+- HIGH VELOCITY: 15 different cards rotated in under a minute
+- This is NOT targeting a single BIN (which would indicate BIN Testing)
+- This IS rotating through multiple different cards (characteristic of Carding)
+- Normal velocity would be 1 card per transaction
+
+**3. Identity Risk:**
+- Newly created account (2 days old) - HIGH RISK
+- Disposable email domain (temp-mail.org) - HIGH RISK
+- However, this alone doesn't definitively point to Synthetic_Identity without additional synthetic identity scoring context
+- The identity risk is elevated but combined with other signals
+
+**4. Logistics Risk:**
+- Billing ZIP (75356) matches cardholder
+- Shipping ZIP (08802) is completely different
+- This is a classic drop-house pattern - HIGH RISK
+- Suggests stolen cards being used to ship to alternative locations
+
+**5. Behavioral Signals:**
+- Checkout completed in 976 milliseconds (impossible for human)
+- Programmatic field injection bypassing keyboard events
+- Datacenter/residential proxy masking origin
+- Clear bot signature - AUTOMATED ATTACK
+
+**Classification Decision:**
+The key distinguishing factors:
+- CVV PASSED (not BIN Testing, which fails on CVV)
+- 15 DIFFERENT CARDS rotated (not BIN Testing, which targets one BIN)
+- Low-value micro-transaction (USD 4.00) - typical validation purchase
+- Authorization APPROVED despite stolen credentials
+- Rotating through different cards with valid CVVs suggests stolen card list
+- Drop-house shipping pattern confirms credential abuse
+
+This matches the **Carding** profile exactly: scripted low-value transactions validating stolen credentials from a list, with successful authorizations and rotation through multiple different cards.
+</scratchpad>
+
+<classification>
+Carding
+</classification>
+
+**Reasoning:**
+This transaction exhibits the classic hallmarks of a Carding attack:
+
+1. **Cryptographic Match**: CVV and billing address checks PASSED, indicating the attacker possesses valid stolen credentials (not guessing like BIN Testing would).
+
+2. **Velocity Pattern**: 15 different cards rotated in under a minute—this is the signature behavior of Carding, where attackers cycle through a stolen card list to validate which ones are active and unblocked.
+
+3. **Transaction Value**: USD 4.00 is a micro-transaction, typical of validation purchases used to test stolen card viability before attempting larger fraudulent purchases.
+
+4. **Behavioral Automation**: Bot signatures (976ms checkout, programmatic injection, proxy masking) confirm scripted attack infrastructure.
+
+5. **Logistics Risk**: Drop-house shipping (different ZIP from billing) combined with successful authorization indicates the attacker is using stolen cards to test and ship merchandise to alternative locations.
+
+The authorization success with valid CVV/address checks, combined with rapid rotation through multiple different cards, definitively distinguishes this from BIN Testing (which fails on CVV mismatches targeting a single BIN)."
+tx_39dffe5bea,ANTHROPIC,Carding,Carding,True,9277.72,0.0048660000000000005,"<scratchpad>
+Let me work through the checklist systematically:
+
+**1. Cryptographic Signals:**
+- Authorization: APPROVED
+- CVV check: PASSED
+- Billing address check: PASSED
+- This is NOT a CVV Mismatch (which would indicate BIN Testing)
+- This is NOT an Insufficient Funds decline (which would indicate Carding)
+- The transaction was successfully authorized with valid credentials
+
+**2. Velocity Profile:**
+- High velocity: 10 different cards rotated in under 1 minute
+- This is NOT targeting a single BIN (which would indicate BIN Testing)
+- This IS rotating through multiple different cards (characteristic of Carding)
+- Velocity is abnormally high and automated
+
+**3. Identity Risk:**
+- Newly created account (1 day old)
+- Disposable email domain: throwawaymail.com
+- These are red flags for Synthetic_Identity, BUT the account appears to be using stolen cards rather than a fabricated identity being tested
+- The synthetic identity score is high, but this appears secondary to the card rotation pattern
+
+**4. Logistics Risk:**
+- Billing ZIP (94624) matches cardholder
+- Shipping ZIP (96218) is completely different
+- This is a classic drop-house pattern
+- Suggests stolen cards being used for fraudulent purchases with reshipping
+
+**5. Behavioral Signals:**
+- Impossible checkout speed (1217ms)
+- Programmatic field injection bypassing keyboard events
+- Datacenter/proxy IP masking origin
+- Clear bot signature indicating automated attack
+
+**ANALYSIS:**
+The key distinguishing factors:
+- Authorization PASSED with valid CVV and address (rules out BIN_Testing which fails on CVV)
+- 10 different cards rotated (rules out Stolen_Card which uses one card for high-value purchases)
+- Cards are being validated and accepted (rules out Carding which typically sees declines)
+- Low-value micro-transaction ($4.72) with card rotation pattern
+- Drop-house shipping pattern
+- Automated bot behavior
+
+This matches the Carding profile: scripted low-value transactions validating stolen credentials across multiple cards. The carders possess valid stolen card data (CVV matches, address matches), and they're testing/validating these cards with micro-purchases before attempting larger fraud. The rotation through 10 cards in rapid succession is the classic carding velocity pattern.
+
+The synthetic identity elements (new account, disposable email) are present but secondary—the primary attack vector is card rotation with stolen credentials.
+</scratchpad>
+
+<classification>
+Carding
+</classification>
+
+**Reasoning:**
+This transaction exhibits the classic hallmarks of a Carding attack:
+
+1. **Cryptographic Success**: CVV and billing address checks PASSED—indicating the attacker possesses valid stolen card credentials, not guessing them (which would show CVV Mismatches in BIN Testing).
+
+2. **Card Rotation Velocity**: 10 different cards cycled in under 60 seconds—a textbook carding pattern validating stolen card lists across multiple payment instruments.
+
+3. **Micro-Transaction Amount**: The $4.72 charge is deliberately low-value to avoid triggering fraud alerts while validating card viability.
+
+4. **Automated Bot Signature**: Programmatic field injection, impossible checkout speed (1.2 seconds), and proxy masking confirm scripted attack infrastructure.
+
+5. **Drop-House Logistics**: Shipping to a different ZIP code (96218) than billing (94624) indicates stolen cards"
+tx_d72aa5ef96,ANTHROPIC,Stolen_Card,Stolen_Card,True,8668.76,0.004834,"<scratchpad>
+Let me analyze this transaction systematically using the provided checklist:
+
+1. **Cryptographic Signals:**
+   - Authorization: APPROVED
+   - CVV check: PASSED
+   - Billing address check: PASSED
+   - No CVV Mismatch (which would indicate BIN Testing)
+   - No Insufficient Funds decline (which would indicate Carding)
+   - This rules out BIN_Testing and Carding
+
+2. **Velocity Profile:**
+   - Velocity is NORMAL: Only 1-2 cards attempted from this IP recently
+   - No mention of targeting a specific BIN
+   - No rotation through multiple different cards
+   - This rules out both BIN_Testing and Carding
+
+3. **Identity Risk:**
+   - Account is ""established"" and ""active for 21 days""
+   - No mention of synthetic identity score being critically high
+   - No mention of disposable email
+   - This does NOT suggest Synthetic_Identity
+
+4. **Logistics Risk:**
+   - Billing ZIP (68995) matches the cardholder
+   - Shipping ZIP (60080) is DIFFERENT from billing ZIP
+   - Narrative explicitly notes this is ""consistent with drop-houses""
+   - However, this alone doesn't definitively classify the fraud type
+
+5. **Additional Observations:**
+   - Transaction amount is moderate ($544.63), not exceptionally high
+   - Checkout behavior appears human-like (30.8 seconds with Autofill)
+   - Proxy/datacenter IP suggests some obfuscation
+   - Authorization and all verification checks passed
+
+**Classification Logic:**
+- The transaction authorized successfully with valid CVV and address checks
+- This indicates the card details are legitimate/valid (not stolen in the traditional sense of being blocked)
+- The primary red flag is the logistics mismatch (billing ≠ shipping), suggesting a drop-house pattern
+- This pattern combined with successful authorization and valid credentials points to **Stolen_Card**: the attacker has valid stolen card details and is making a high-value purchase ($544.63) to a drop address
+- It's not Legitimate because of the clear drop-house logistics pattern
+- It's not Synthetic_Identity because the account is established and identity checks passed
+</scratchpad>
+
+<classification>
+Stolen_Card
+</classification>
+
+**Reasoning:**
+This transaction exhibits the hallmark characteristics of a **Stolen_Card** fraud:
+
+1. **Valid Credentials**: The authorization was approved with successful CVV and billing address verification, indicating the attacker possesses legitimate stolen card details (not guessing them like in BIN Testing).
+
+2. **Moderate-to-High Value Purchase**: At $544.63, this represents a meaningful transaction value consistent with stolen card exploitation, not the micro-transactions of Carding validation.
+
+3. **Drop-House Logistics Pattern**: The critical red flag is the mismatch between billing ZIP (68995, cardholder's actual location) and shipping ZIP (60080), explicitly noted as consistent with drop-house operations. This is a classic indicator of stolen card fraud where the attacker ships goods to a third-party location.
+
+4. **Normal Velocity & Established Account**: The low velocity (1-2 cards) and 21-day-old account suggest the attacker is being deliberate and careful, not running automated attacks like BIN Testing or Carding validation scripts.
+
+The combination of valid authorization, logistics mismatch, and moderate transaction value conclusively points to **Stolen_Card** rather than other fraud categories."
+tx_594fab2c45,ANTHROPIC,Stolen_Card,Stolen_Card,True,7929.52,0.00434,"<scratchpad>
+Let me analyze this transaction systematically using the provided checklist:
+
+1. **Cryptographic Signals:**
+   - Authorization: APPROVED
+   - CVV check: PASSED
+   - Billing address check: PASSED
+   - No CVV mismatch errors (rules out BIN_Testing)
+   - No insufficient funds/decline codes (rules out Carding)
+   - Transaction successfully authorized with valid credentials
+
+2. **Velocity Profile:**
+   - Velocity is NORMAL: Only 1-2 cards attempted from this IP recently
+   - NOT targeting a single BIN with high-speed attempts (rules out BIN_Testing)
+   - NOT rotating through multiple different cards (rules out Carding)
+   - Single transaction, no scripted multi-card pattern
+
+3. **Identity Risk:**
+   - Account is ESTABLISHED, active for 25 days (not newly fabricated)
+   - No mention of disposable email or synthetic identity red flags
+   - Synthetic identity score is NOT critically high
+   - Rules out Synthetic_Identity
+
+4. **Logistics Risk:**
+   - Billing ZIP (66103) matches the cardholder
+   - Shipping ZIP (03893) is DIFFERENT from billing
+   - This is a drop-house pattern (high logistics risk)
+   - However, this alone doesn't definitively classify the fraud type
+   - The transaction was AUTHORIZED and CVV/address checks PASSED
+   - This suggests the cardholder's legitimate credentials were used, but the shipping destination is suspicious
+
+5. **Synthesis:**
+   - Authorization approved + CVV passed + Address passed = Credentials are valid
+   - High-value transaction (USD 2,168.92)
+   - Shipping to different location (drop-house pattern)
+   - Proxy/datacenter IP masking origin
+   - This pattern is consistent with STOLEN_CARD: The attacker has valid stolen card credentials (hence authorization passed), is making a high-value purchase, and is shipping to a drop-house location to avoid detection.
+
+</scratchpad>
+
+<classification>
+Stolen_Card
+</classification>
+
+**Reasoning:**
+This transaction exhibits the hallmark characteristics of a Stolen_Card fraud:
+- **Valid Credentials**: Authorization approved with CVV and billing address checks passing, indicating the attacker possesses legitimate stolen card details
+- **High-Value Purchase**: USD 2,168.92 is a substantial amount, typical of stolen card exploitation
+- **Drop-House Logistics**: Billing ZIP matches cardholder, but shipping to a completely different ZIP (03893), a classic drop-house pattern used to intercept goods before the legitimate cardholder discovers the fraud
+- **Obfuscation Tactics**: Use of proxy/datacenter IP to mask true origin
+- **Established Account**: The 25-day-old account provides false legitimacy to bypass initial fraud checks
+
+This is NOT Carding (which would show declined transactions with insufficient funds) or BIN_Testing (which would show CVV mismatches). The successful authorization with valid credentials combined with suspicious shipping logistics confirms Stolen_Card classification."
+tx_d3254ee88d,ANTHROPIC,BIN_Testing,Carding,False,9173.75,0.004843,"<scratchpad>
+Let me work through the classification checklist:
+
+1. **Cryptographic Signals:**
+   - Authorization failed with CVV Mismatch (Code N7)
+   - This is an explicit CVV failure, not an Insufficient Funds or Do Not Honor decline
+   - The transaction amount is USD 1.00 (micro-transaction for validation)
+   - This suggests the attacker is guessing/brute-forcing the CVV
+
+2. **Velocity Profile:**
+   - High velocity: 7 different cards rotated in under a minute
+   - However, the narrative does NOT explicitly mention targeting a single ""BIN prefix""
+   - The attacker is rotating through DIFFERENT cards, not repeatedly testing variations of one BIN
+   - This is a multi-card rotation pattern, not a single-BIN targeting pattern
+
+3. **Identity Risk:**
+   - Brand-new guest checkout session with zero historical trust
+   - No disposable email explicitly mentioned, but new session indicates low identity confidence
+   - Not a strong synthetic identity signal (no fabricated identity details provided)
+
+4. **Logistics Risk:**
+   - No physical delivery address (digital/pre-auth transaction)
+   - This is consistent with validation attacks, not physical fraud
+
+**Critical Analysis:**
+The key distinguishing factor between BIN_Testing and Carding:
+- **BIN_Testing**: Targets a single BIN prefix, brute-forces CVV, results in CVV Mismatches
+- **Carding**: Rotates through DIFFERENT cards from a stolen list, CVV matches but issuer declines (Insufficient Funds/Do Not Honor)
+
+This transaction shows:
+- CVV Mismatch (Code N7) ✓ (consistent with BIN Testing)
+- BUT: Rotating through 7 DIFFERENT cards ✓ (consistent with Carding)
+- Micro-transaction validation (USD 1.00) ✓ (consistent with both)
+- Programmatic Inject with proxy IP ✓ (consistent with both)
+
+**Resolution:**
+The presence of ""7 different cards rotated"" is the decisive factor. Carding involves rotating through multiple stolen cards from a list. BIN Testing focuses on a single BIN prefix with CVV brute-forcing. The narrative explicitly states rotation through different cards, which is the hallmark of Carding operations, even though the CVV mismatch is occurring.
+
+However, re-reading the examples: BIN Testing results in ""massive CVV failures on BIN X"" (single BIN), while Carding ""rotated through X different cards"" with CVV matches but issuer declines.
+
+This transaction has CVV mismatches AND multiple cards. This is actually more consistent with **BIN_Testing** attempting to validate multiple BINs or card variants, but the multi-card rotation suggests **Carding**.
+
+Given the explicit statement ""rotated through 7 different cards"" and the CVV mismatch pattern, this appears to be a **Carding** operation where the attacker is testing stolen card credentials, and the CVV mismatch indicates the stolen list may have incorrect CVV data or the cards have been updated.
+
+Actually, the most accurate classification: The CVV mismatch with multi-card rotation suggests this is **Carding** - testing stolen credentials from a list, where some CVVs in the stolen data are incorrect.
+</scratchpad>
+
+<classification>
+Carding
+</classification>
+
+**Reasoning:**
+The decisive factor is the **velocity profile**: the narrative explicitly states ""rotated"
+tx_c33be31223,ANTHROPIC,Stolen_Card,Stolen_Card,True,8656.77,0.004844,"<scratchpad>
+Let me analyze this transaction systematically using the provided checklist:
+
+**1. Cryptographic Signals:**
+- Authorization: APPROVED
+- CVV Check: PASSED
+- Billing Address Check: PASSED
+- No CVV Mismatch (Code N7) → Rules out BIN_Testing
+- No Insufficient Funds decline (Code 51) → Rules out Carding pattern
+- Transaction successfully authorized with valid credentials
+
+**2. Velocity Profile:**
+- Velocity is NORMAL: Only 1-2 cards attempted from this IP recently
+- No mention of targeting a specific BIN prefix
+- No rotation through multiple different cards
+- This rules out both BIN_Testing (which requires high-speed automated attempts on a single BIN) and Carding (which requires rotating through many stolen cards)
+
+**3. Identity Risk:**
+- Account is ESTABLISHED, active for 24 days (not brand new)
+- No mention of synthetic identity score being critically high
+- No mention of disposable email
+- Rules out Synthetic_Identity
+
+**4. Logistics Risk:**
+- Billing ZIP (19611) matches the cardholder
+- Shipping ZIP (56448) is DIFFERENT from billing ZIP
+- This is flagged as ""consistent with drop-houses""
+- However, this alone doesn't definitively prove fraud—legitimate customers sometimes ship to different addresses
+
+**5. Additional Observations:**
+- High transaction value: USD 1,201.24
+- Manual typing behavior (47.9 seconds) suggests human interaction, not automation
+- Proxy/datacenter IP is suspicious but not conclusive
+- All cryptographic validations passed
+- The key red flag is the mismatched shipping/billing ZIP codes
+
+**Classification Logic:**
+- NOT BIN_Testing: No CVV failures, no single BIN targeting
+- NOT Carding: No CVV matches with subsequent declines, normal velocity
+- NOT Synthetic_Identity: Established account, no synthetic identity indicators
+- Potentially Stolen_Card: Authorization approved, high value, mismatched shipping address (drop-house pattern)
+- Potentially Legitimate: All verifications passed, normal velocity, established account
+
+The combination of:
+- Successful authorization with valid credentials
+- High transaction value ($1,201.24)
+- Mismatched billing/shipping ZIP codes (drop-house pattern)
+- Proxy IP masking origin
+- Established but relatively new account (24 days)
+
+This profile is most consistent with **Stolen_Card**: The cardholder's credentials are valid (authorization passed), but the shipping to a different location suggests unauthorized use of stolen card details for high-value goods destined to a drop-house.
+</scratchpad>
+
+<classification>
+Stolen_Card
+</classification>
+
+**Reasoning:**
+This transaction exhibits the hallmark characteristics of stolen card fraud:
+- **Valid Credentials**: Authorization and CVV checks passed, indicating the stolen card details are accurate and current
+- **High Value**: USD 1,201.24 is a significant purchase amount typical of stolen card abuse
+- **Drop-House Logistics**: Billing ZIP matches the legitimate cardholder, but shipping to a completely different ZIP (56448) is a classic drop-house pattern used to receive goods before the fraud is detected
+- **Proxy Masking**: The datacenter/residential proxy IP suggests deliberate origin obfuscation
+- **Velocity**: Normal velocity rules out automated attacks (BIN_Testing, Carding)
+
+The transaction is not legitimate because of the geographic mismatch and proxy usage, but it's not an automated attack"
+tx_02a8bbba30,ANTHROPIC,Legitimate,Legitimate,True,7588.11,0.004277,"<scratchpad>
+Let me work through the checklist systematically:
+
+1. **Cryptographic Signals:**
+   - Authorization: APPROVED
+   - CVV check: PASSED
+   - Billing address check: PASSED
+   - No CVV mismatch errors
+   - No insufficient funds decline
+   - This rules out BIN_Testing (which shows explicit CVV mismatches) and Carding (which shows declines like Code 51 or Code 05)
+
+2. **Velocity Profile:**
+   - Velocity is NORMAL: Only 1-2 cards attempted from this IP recently
+   - No mention of targeting a specific BIN
+   - No rotation through many different cards
+   - This rules out both BIN_Testing and Carding, which require high-velocity automated patterns
+
+3. **Identity Risk:**
+   - Account is ESTABLISHED: Active for 79 days
+   - No mention of synthetic identity score being critically high
+   - No disposable email mentioned
+   - This rules out Synthetic_Identity
+
+4. **Logistics Risk:**
+   - Billing ZIP (92729) matches the cardholder
+   - Shipping ZIP (07577) is DIFFERENT from billing ZIP
+   - Narrative explicitly notes this is ""consistent with drop-houses""
+   - However, a single transaction with mismatched shipping/billing is not definitively Stolen_Card without additional fraud signals
+   - The transaction itself authorized successfully with valid credentials
+
+5. **Overall Assessment:**
+   - All cryptographic checks passed (authorization, CVV, address)
+   - Velocity is normal (not automated attack)
+   - Identity is established (not synthetic)
+   - The only red flag is the drop-house shipping pattern
+   - However, legitimate customers sometimes ship to different addresses (gifts, vacation homes, etc.)
+   - The combination of: approved authorization + passed verification + normal velocity + established account + standard human behavior (33-second manual checkout) suggests this is more likely a legitimate transaction with unusual but not necessarily fraudulent shipping logistics
+
+The drop-house pattern is a risk indicator, but without additional fraud signals (failed verifications, high velocity, synthetic identity, or stolen card indicators), this appears to be a legitimate transaction with atypical but not necessarily malicious shipping behavior.
+</scratchpad>
+
+<classification>
+Legitimate
+</classification>
+
+**Reasoning:**
+This transaction exhibits the hallmarks of a legitimate purchase:
+- ✓ Authorization and all verification checks (CVV, billing address) passed successfully
+- ✓ Normal velocity (1-2 cards from IP, not automated brute-forcing)
+- ✓ Established account (79 days active, not synthetic identity)
+- ✓ Standard human behavior (33-second manual checkout, residential ISP)
+
+While the mismatched shipping/billing ZIP codes present a logistics risk consistent with drop-house patterns, this single indicator alone—without failed verifications, high velocity, or other fraud signals—does not override the strong legitimate signals. Legitimate customers frequently ship to different addresses for valid reasons (gifts, business addresses, temporary locations)."
+tx_f39e31098a,ANTHROPIC,Stolen_Card,Stolen_Card,True,7916.59,0.004449,"<scratchpad>
+Let me work through the checklist systematically:
+
+1. **Cryptographic Signals:**
+   - Authorization: APPROVED
+   - CVV check: PASSED
+   - Billing address check: PASSED
+   - No CVV mismatch errors
+   - No insufficient funds decline
+   - This rules out BIN_Testing (which shows explicit CVV mismatches) and Carding (which shows declines due to empty/blocked cards)
+
+2. **Velocity Profile:**
+   - Velocity is NORMAL: Only 1-2 cards attempted from this IP recently
+   - NOT targeting a single BIN with high-speed attempts
+   - NOT rotating through many different cards
+   - This rules out both BIN_Testing and Carding
+
+3. **Identity Risk:**
+   - Account is ""established"" and ""active for 22 days""
+   - Not a newly fabricated identity with critical synthetic score
+   - No mention of disposable email
+   - This makes Synthetic_Identity unlikely
+
+4. **Logistics Risk:**
+   - Billing ZIP (82575) matches the cardholder
+   - Shipping ZIP (86909) is DIFFERENT - consistent with drop-house pattern
+   - High-value transaction: USD 1,106.12
+   - Proxy/datacenter IP masking true origin
+   - All cryptographic checks passed (authorization approved, CVV matched, address verified)
+   - This pattern suggests the card details are VALID and STOLEN, being used for unauthorized high-value purchase to a drop location
+
+**Key Distinction:**
+- The transaction AUTHORIZED successfully with valid credentials
+- This is NOT a validation attempt (Carding) or brute-force (BIN_Testing)
+- This IS a high-value unauthorized purchase using stolen card details
+- The drop-house logistics pattern + high value + successful authorization = Stolen_Card
+
+</scratchpad>
+
+<classification>
+Stolen_Card
+</classification>
+
+**Reasoning:**
+This transaction exhibits the hallmark characteristics of **Stolen_Card** fraud:
+
+1. **Valid Credentials Used**: Authorization approved with CVV and billing address verification passed—indicating the attacker possesses genuine stolen card details, not guessing them.
+
+2. **High-Value Purchase**: USD 1,106.12 is a substantial transaction, consistent with stolen card abuse rather than low-value validation testing.
+
+3. **Drop-House Logistics**: Billing ZIP matches the cardholder, but shipping diverges to a different ZIP (86909), a classic drop-house pattern used to receive stolen goods while avoiding detection.
+
+4. **Normal Velocity**: Only 1-2 cards attempted—not the high-speed automation of BIN_Testing or the card-rotation pattern of Carding.
+
+5. **Proxy Masking**: Datacenter/residential proxy IP suggests deliberate origin obfuscation, typical of stolen card operations.
+
+The transaction is **not** Legitimate (drop-house + proxy), **not** BIN_Testing (no CVV failures), **not** Carding (successful authorization, not validation), and **not** Synthetic_Identity (established 22-day account). It is a **Stolen_Card** unauthorized purchase."
+tx_ca5ac2618c,ANTHROPIC,Legitimate,Stolen_Card,False,8857.67,0.004592,"<scratchpad>
+Let me work through the checklist systematically:
+
+1. **Cryptographic Signals:**
+   - Authorization: APPROVED
+   - CVV check: PASSED
+   - Billing address check: PASSED
+   - No CVV mismatch errors
+   - No insufficient funds decline
+   - This rules out BIN_Testing (which shows explicit CVV mismatches) and Carding (which shows declines like Code 51 or Code 05)
+
+2. **Velocity Profile:**
+   - Velocity is NORMAL: Only 1-2 cards attempted from this IP recently
+   - No mention of targeting a specific BIN
+   - No rotation through many different cards
+   - This rules out both BIN_Testing and Carding, which require high-velocity automated patterns
+
+3. **Identity Risk:**
+   - Account is ESTABLISHED: Active for 229 days
+   - No mention of synthetic identity score being critically high
+   - No disposable email mentioned
+   - This rules out Synthetic_Identity
+
+4. **Logistics Risk:**
+   - Billing ZIP (94260) matches the cardholder
+   - Shipping ZIP (69089) is DIFFERENT from billing
+   - Narrative explicitly notes this is ""consistent with drop-houses""
+   - However, the transaction itself is authorized, CVV passed, and the account is established
+   - The mismatch suggests potential fraud risk, but doesn't definitively prove the card is stolen
+
+**Analysis:**
+- The transaction authorized successfully with all verification checks passing
+- The account is legitimate and established (229 days old)
+- Velocity is normal (not automated attack)
+- The only red flag is the shipping-to-different-address pattern (drop-house indicator)
+- This pattern could indicate Stolen_Card usage (using a stolen card for high-value unauthorized purchases to a drop address)
+- However, the amount is relatively modest (USD 69.07), not particularly ""high-value""
+- The account age and normal behavior suggest this could be a legitimate user shipping to a different location
+
+**Decision Logic:**
+The transaction shows characteristics of potential fraud (drop-house shipping pattern), but lacks the definitive markers of Stolen_Card (high-value unauthorized purchase, failed verification). The established account, normal velocity, successful authorization, and modest amount suggest this is more likely a Legitimate transaction with unusual but not necessarily fraudulent shipping logistics. However, the explicit drop-house pattern is a significant risk indicator.
+
+Given the explicit mention of ""drop-house"" pattern in the narrative, this leans toward Stolen_Card rather than Legitimate, as drop-houses are a classic indicator of stolen card fraud.
+</scratchpad>
+
+<classification>
+Stolen_Card
+</classification>
+
+**Reasoning:**
+While the transaction authorized successfully and the account appears established, the logistics context reveals a critical fraud indicator: the billing ZIP (94260) matches the cardholder, but the shipping destination (69089) is completely different and explicitly noted as ""consistent with drop-houses."" This is a classic hallmark of stolen card fraud, where fraudsters use valid stolen credentials to make purchases but redirect shipments to drop addresses to avoid detection by the legitimate cardholder. The successful authorization and passed CVV/address checks indicate the stolen card details are accurate, and the modest amount (USD 69.07) is consistent with fraudsters testing stolen cards before attempting larger purchases."
+tx_0fa0e016e2,ANTHROPIC,Synthetic_Identity,Synthetic_Identity,True,7188.28,0.004087,"<scratchpad>
+Let me work through the classification checklist:
+
+1. **Cryptographic Signals:**
+   - Authorization: APPROVED
+   - CVV check: PASSED
+   - Billing address check: PASSED
+   - No CVV Mismatch (which would indicate BIN Testing)
+   - No Insufficient Funds decline (which would indicate Carding)
+   - Transaction successfully authorized
+
+2. **Velocity Profile:**
+   - Velocity is NORMAL: Only 1-2 cards attempted from this IP recently
+   - NOT targeting a single BIN with high-speed attempts
+   - NOT rotating through many different cards
+   - This rules out both BIN_Testing and Carding
+
+3. **Identity Risk:**
+   - Account created only 9 days ago (very recent)
+   - Email domain: hotmail.com (common but disposable)
+   - **Synthetic identity score: CRITICALLY HIGH at 0.782**
+   - This is the most significant red flag in the entire transaction
+
+4. **Logistics Risk:**
+   - Billing and shipping ZIP codes MATCH
+   - Low logistics risk overall
+   - This does NOT suggest a drop-house pattern (which would indicate Stolen_Card)
+
+**Analysis:**
+- The transaction is NOT a BIN_Testing attack (no CVV mismatches, no single BIN targeting)
+- The transaction is NOT a Carding attack (no card rotation, no insufficient funds declines)
+- The transaction is NOT a Stolen_Card attack (logistics match, normal velocity, single authorization)
+- The transaction is NOT Legitimate (critically high synthetic identity score, brand new account)
+- The transaction IS consistent with Synthetic_Identity: newly fabricated identity (9 days old), critically high synthetic score (0.782), disposable email domain, but otherwise normal transaction behavior and successful authorization
+
+The defining characteristic here is the synthetic identity profile combined with the critically high synthetic identity score, which is the primary fraud signal despite the transaction appearing otherwise normal.
+</scratchpad>
+
+<classification>
+Synthetic_Identity
+</classification>
+
+**Reasoning:**
+This transaction exhibits the hallmark characteristics of a synthetic identity fraud:
+- **Account Age:** Created only 9 days ago (newly fabricated identity)
+- **Synthetic Identity Score:** Critically high at 0.782, indicating strong signals of identity fabrication
+- **Email Profile:** Hotmail.com domain (commonly associated with disposable accounts)
+- **Transaction Behavior:** Despite the suspicious identity, the transaction itself is normal (standard amount, successful authorization, matching ZIP codes, normal velocity, human-like checkout behavior)
+
+The absence of cryptographic attack signals (CVV mismatches, card rotation, insufficient funds declines) and normal logistics patterns rule out BIN_Testing, Carding, and Stolen_Card. The critically high synthetic identity score is the dominant fraud indicator, making this a Synthetic_Identity classification."
+tx_67a4e83900,ANTHROPIC,Stolen_Card,Stolen_Card,True,8141.17,0.004404,"<scratchpad>
+Let me analyze this transaction systematically using the provided checklist:
+
+**1. Cryptographic Signals:**
+- Authorization: APPROVED
+- CVV check: PASSED
+- Billing address check: PASSED
+- No CVV Mismatch (Code N7) → Rules out BIN_Testing
+- No Insufficient Funds/Do Not Honor decline → Rules out Carding
+- Transaction successfully authorized with valid credentials
+
+**2. Velocity Profile:**
+- Velocity is NORMAL: Only 1-2 cards attempted from this IP recently
+- No mention of targeting a specific BIN prefix
+- No rotation through multiple different cards
+- This rules out both BIN_Testing (which requires high-speed automated attempts on a single BIN) and Carding (which requires rotating through many stolen cards)
+
+**3. Identity Risk:**
+- Account is established and active for 18 days (not brand new)
+- No mention of synthetic identity score being critically high
+- No disposable email mentioned
+- Rules out Synthetic_Identity
+
+**4. Logistics Risk:**
+- Billing ZIP (14903) matches the cardholder
+- Shipping ZIP (23890) is DIFFERENT from billing ZIP
+- This is flagged as ""consistent with drop-houses""
+- However, this alone does not definitively classify the fraud type
+- The transaction amount is substantial ($740.79)
+- All cryptographic validations passed
+- The authorization was successful with real card credentials
+
+**Synthesis:**
+The transaction shows:
+- ✓ Valid authorization with passed CVV and address checks
+- ✓ Normal velocity (not automated attack)
+- ✓ Established account (not synthetic)
+- ⚠ Mismatched shipping/billing addresses (logistics risk)
+- ⚠ Proxy IP masking origin
+
+The combination of a successful authorization with valid credentials, substantial amount, and mismatched shipping address to a drop-house location is most consistent with **Stolen_Card** fraud. The cardholder's credentials are valid (CVV passed, address passed), but the card is being used fraudulently to purchase items for shipment to a different location (drop-house pattern).
+</scratchpad>
+
+<classification>
+Stolen_Card
+</classification>
+
+**Reasoning:**
+This transaction exhibits the hallmark characteristics of Stolen_Card fraud:
+- **Valid Credentials**: Authorization approved with CVV and billing address verification passed—indicating the stolen card details are accurate and current
+- **High-Value Purchase**: $740.79 is a substantial amount, typical of stolen card abuse
+- **Drop-House Pattern**: Billing ZIP matches cardholder, but shipping to a completely different ZIP (23890), consistent with fraudster logistics
+- **Established Account**: The 18-day-old account provides cover and reduces immediate suspicion
+- **Proxy Masking**: Datacenter/residential proxy IP suggests deliberate origin obfuscation
+
+This is NOT Carding (which would show declined transactions due to insufficient funds) or BIN_Testing (which would show CVV mismatches). The successful authorization with valid credentials combined with suspicious shipping logistics indicates unauthorized use of a stolen card."
+tx_f733943829,ANTHROPIC,Legitimate,Legitimate,True,8024.0,0.004394,"<scratchpad>
+Let me work through the checklist systematically:
+
+1. **Cryptographic Signals:**
+   - Authorization: APPROVED
+   - CVV check: PASSED
+   - Billing address check: PASSED
+   - No CVV mismatch errors
+   - No insufficient funds decline
+   - This rules out BIN_Testing (which shows explicit CVV mismatches) and Carding (which shows declines due to empty/blocked cards)
+
+2. **Velocity Profile:**
+   - Velocity is NORMAL: Only 1-2 cards attempted from this IP recently
+   - No mention of targeting a specific BIN
+   - No rotation through many different cards
+   - This rules out both BIN_Testing and Carding, which require high-velocity automated patterns
+
+3. **Identity Risk:**
+   - Account is ESTABLISHED: Active for 259 days
+   - No mention of synthetic identity score being critically high
+   - No disposable email mentioned
+   - This rules out Synthetic_Identity
+
+4. **Logistics Risk:**
+   - Billing ZIP (77159) matches the cardholder
+   - Shipping ZIP (40823) is DIFFERENT from billing ZIP
+   - Narrative explicitly notes this is ""consistent with drop-houses""
+   - However, this alone doesn't definitively prove fraud—legitimate customers do ship to different addresses
+   - The transaction was authorized and all verification checks passed
+   - The account is established with 259 days of history
+   - Behavior is standard human (21-second checkout with autofill)
+   - Connection is from standard residential/mobile ISP
+
+**Key Distinction:**
+- The transaction shows NO signs of automated fraud (BIN_Testing, Carding)
+- The transaction shows NO signs of synthetic identity
+- The transaction shows NO signs of a stolen card being used fraudulently (authorization succeeded, all checks passed)
+- The only red flag is the shipping-to-different-address pattern, but this is a common legitimate behavior
+- The established account history and normal velocity strongly suggest legitimacy
+
+The drop-house logistics pattern is a risk indicator, but it's not sufficient alone to override the strong legitimate signals: successful authorization, passed verification, established account, normal velocity, and standard human behavior.
+
+</scratchpad>
+
+<classification>
+Legitimate
+</classification>
+
+**Reasoning:**
+This transaction exhibits strong legitimate indicators:
+- **Authorization & Verification:** CVV and billing address checks passed; transaction approved
+- **Velocity:** Normal (1-2 cards from IP), not the high-speed automated patterns of BIN_Testing or Carding
+- **Identity:** Established account (259 days active), not a newly fabricated synthetic identity
+- **Behavior:** Standard human checkout behavior (21-second autofill), residential ISP
+
+While the shipping-to-different-ZIP logistics pattern is a risk factor often associated with drop-house fraud, it is not definitive proof of fraud on its own. Many legitimate customers ship to alternative addresses. The convergence of all other positive signals—successful authorization, passed cryptographic checks, established account history, and normal velocity—indicates this is a legitimate transaction with atypical but not necessarily fraudulent shipping logistics."
+tx_75b47a6c20,ANTHROPIC,Carding,Carding,True,9171.09,0.0048660000000000005,"<scratchpad>
+Let me work through the checklist systematically:
+
+**1. Cryptographic Signals:**
+- Authorization: APPROVED
+- CVV check: PASSED
+- Billing address check: PASSED
+- This is NOT a CVV Mismatch (which would indicate BIN Testing)
+- This is NOT an Insufficient Funds decline (which would indicate Carding)
+- The transaction was successfully authorized with valid credentials
+
+**2. Velocity Profile:**
+- HIGH VELOCITY: 19 different cards rotated in under 1 minute
+- This is NOT targeting a single BIN (which would be BIN Testing)
+- This IS rotating through MULTIPLE different cards (characteristic of Carding)
+- The velocity is extremely abnormal and automated
+
+**3. Identity Risk:**
+- Newly created account (2 days old)
+- Disposable email: throwawaymail.com (high synthetic identity indicator)
+- However, the primary fraud signal is the multi-card rotation, not the identity alone
+
+**4. Logistics Risk:**
+- Billing ZIP (53235) matches cardholder
+- Shipping ZIP (15395) is completely different
+- Drop-house pattern is present
+- This suggests use of stolen cards being shipped to a drop location
+
+**5. Additional Behavioral Signals:**
+- Severe bot signature: 1170ms checkout (impossible for human)
+- Programmatic field injection bypassing keyboard events
+- Datacenter/proxy IP masking origin
+- All indicators of automated attack
+
+**Classification Logic:**
+- NOT Legitimate: Multiple red flags present
+- NOT BIN_Testing: No CVV Mismatches, and rotating through different cards (not targeting single BIN)
+- CARDING: ✓ Rotated through 19 different cards, CVV matched (they have real stolen data), low-value test transaction, authorization approved, drop-house shipping pattern
+- NOT Stolen_Card: While there are stolen cards involved, the pattern of rotating through 19 cards in rapid succession is characteristic of Carding validation, not a single high-value unauthorized purchase
+- NOT Synthetic_Identity: While synthetic identity signals exist (new account, disposable email), the dominant fraud pattern is the multi-card rotation attack
+
+The key differentiator: Carders possess stolen card lists with valid CVVs and use them to validate credentials through low-value transactions. This transaction shows exactly that pattern—19 cards tested in rapid succession, all with valid CVVs, low-value amount, and drop-house logistics.
+</scratchpad>
+
+<classification>
+Carding
+</classification>
+
+**Reasoning:**
+This transaction exhibits the classic hallmarks of a Carding attack:
+
+1. **Multi-Card Rotation**: 19 different cards cycled through in under 60 seconds—the attacker is testing stolen card credentials from a list.
+
+2. **Valid Cryptographic Credentials**: CVV and billing address checks PASSED, indicating the attacker possesses real stolen card data (not guessing CVVs like in BIN Testing).
+
+3. **Low-Value Validation**: The USD 1.00 micro-transaction is a classic carder tactic to validate stolen credentials without triggering high-value fraud alerts.
+
+4. **Automated Bot Behavior**: 1170ms checkout, programmatic field injection, and proxy masking confirm scripted attack infrastructure.
+
+5. **Drop-House Logistics**: Shipping to a different ZIP code (15395) while billing matches indicates stolen cards being tested for delivery to a drop location.
+
+The authorization success combined with the multi-card rotation"

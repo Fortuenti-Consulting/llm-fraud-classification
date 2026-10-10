@@ -174,9 +174,9 @@ def v4_performance_grid():
             assert abs(cell["cost"] - 0.010 * k) < 1e-12, (s, e, cell)
 
 
-def load_cot_module():
+def load_cot_module(script="classify_llm_chain-of-thought.py"):
     tmp = tempfile.mkdtemp()  # no .env here, so the dummy keys below are used
-    path = shutil.copy(os.path.join(ROOT, "classify_llm_chain-of-thought.py"), tmp)
+    path = shutil.copy(os.path.join(ROOT, script), tmp)
     os.environ.setdefault("OPENAI_API_KEY", "dummy")
     os.environ.setdefault("ANTHROPIC_API_KEY", "dummy")
     spec = importlib.util.spec_from_file_location("cot", path)
@@ -186,6 +186,11 @@ def load_cot_module():
 
 
 def v5_llm_scripts():
+    fs_cot = load_cot_module("classify_llm_few-shot-cot.py")
+    assert fs_cot.extract_classification("<scratchpad>x</scratchpad><classification> Carding </classification>") == "Carding"
+    assert fs_cot.extract_classification("Carding") == "ERROR_PARSING"
+    assert "--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---" in fs_cot.build_cot_prompt({}) \
+        and "<scratchpad>" in fs_cot.build_cot_prompt({}), "few-shot CoT prompt lost its examples or checklist"
     cot = load_cot_module()
     assert cot.extract_classification("<scratchpad>CVV matched</scratchpad>\n<classification>\n Carding \n</classification>") == "Carding"
     assert cot.extract_classification("<CLASSIFICATION>BIN_Testing</CLASSIFICATION>") == "BIN_Testing"
@@ -198,6 +203,8 @@ def v5_llm_scripts():
             f"{script}: temperature 0 not set on both engines"
         assert "eval_sample_ids.txt" in src, f"{script}: does not use the shared sample"
         assert "random.sample" not in src, f"{script}: draws its own random sample"
+        if "SAMPLE_FILE =" in src:
+            assert 'open(SAMPLE_FILE, "r")' in src and 'open(DATASET_FILE, "r")' in src, f"{script}: ignores DATASET"
 
 
 def v6_same_sample():
@@ -206,12 +213,25 @@ def v6_same_sample():
     dataset = json.load(open(os.path.join(ROOT, "synthetic_fraud_dataset.json")))
     labels = {r["raw_ml_features"]["transaction_id"]: r["raw_ml_features"]["fraud_category"] for r in dataset}
     assert Counter(labels[i] for i in ids) == Counter({c: 10 for c in CATEGORIES})
-    for s in STRATEGIES:
+    for s in STRATEGIES + ["few-shot-cot"]:
         for e in ENGINES:
             f = os.path.join(ROOT, f"llm_eval_log_{s}_{e}.csv")
             rows = list(csv.DictReader(open(f)))
             assert [r["transaction_id"] for r in rows] == ids, f"{f}: not the shared sample"
             assert all(r["true_label"] == labels[r["transaction_id"]] for r in rows), f"{f}: wrong true labels"
+
+    shifted_ids = open(os.path.join(ROOT, "shifted_sample_ids.txt")).read().split()
+    shifted = {r["raw_ml_features"]["transaction_id"]: r["raw_ml_features"]
+               for r in json.load(open(os.path.join(ROOT, "shifted_fraud_dataset.json")))}
+    assert len(set(shifted_ids)) == 50 and not set(shifted_ids) & set(ids)
+    assert Counter(shifted[i]["fraud_category"] for i in shifted_ids) == Counter({c: 10 for c in CATEGORIES})
+    assert all(shifted[i]["variant"] == "shifted" for i in shifted_ids), "shifted sample contains unshifted records"
+    for s in ["few-shot", "few-shot-cot"]:
+        for e in ENGINES:
+            f = os.path.join(ROOT, f"llm_eval_log_{s}_{e}_shifted.csv")
+            rows = list(csv.DictReader(open(f)))
+            assert [r["transaction_id"] for r in rows] == shifted_ids, f"{f}: not the shifted sample"
+            assert all(r["true_label"] == shifted[r["transaction_id"]]["fraud_category"] for r in rows), f"{f}: wrong true labels"
 
 
 def v7_narratives():
@@ -265,6 +285,13 @@ def v8_reports_match_data():
     assert f"as much as {slowest_cot:.0f}ms" in vp
     for e in ENGINES:  # the report says CoT is less accurate than few-shot
         assert grid[("cot", e)]["accuracy"] < grid[("few-shot", e)]["accuracy"], e
+    fs_cot = {}
+    for e in ENGINES:
+        rows = list(csv.DictReader(open(os.path.join(ROOT, f"llm_eval_log_few-shot-cot_{e}.csv"))))
+        fs_cot[e] = 100 * sum(r["true_label"] == r["predicted_label"] for r in rows) / len(rows)
+        # "without improving accuracy": few-shot + CoT is not above plain few-shot
+        assert fs_cot[e] <= grid[("few-shot", e)]["accuracy"], e
+    assert f"accuracy returns to {fs_cot['openai']:.0f}% on GPT-4o-mini and {fs_cot['anthropic']:.0f}% on Claude Haiku 4.5" in vp
 
     readme = open(os.path.join(ROOT, "README.md")).read()
     for s, label in [("zero-shot", "Zero-shot"), ("few-shot", "Few-shot (2 examples)"), ("cot", "Chain-of-thought")]:
@@ -278,6 +305,55 @@ def v8_reports_match_data():
     assert f"| Rule engine (baseline) | {hits}/50 = {hits * 2}% ·" in readme
     overall = 100 * sum(r["is_correct"] == "True" for r in rule_rows) / len(rule_rows)
     assert f"the rule engine scores {overall:.1f}%" in readme
+
+    # v1.1.0 section: few-shot + CoT and the shifted stress test
+    def cell(f):
+        rows = list(csv.DictReader(open(os.path.join(ROOT, f))))
+        acc = 100 * sum(r["true_label"] == r["predicted_label"] for r in rows) / len(rows)
+        lat = sum(float(r["latency_ms"]) for r in rows) / len(rows)
+        return f"{acc:.0f}% · {lat:,.0f} ms · ${sum(float(r['cost_usd']) for r in rows):.4f}"
+    for label, suffix, strat in [("Few-shot + CoT", "", "few-shot-cot"), ("Few-shot (shifted)", "_shifted", "few-shot"),
+                                 ("Few-shot + CoT (shifted)", "_shifted", "few-shot-cot")]:
+        row = f"| {label} | {cell(f'llm_eval_log_{strat}_openai{suffix}.csv')} | {cell(f'llm_eval_log_{strat}_anthropic{suffix}.csv')} |"
+        assert row in readme, f"README row out of date: {row}"
+
+    shifted_ids = open(os.path.join(ROOT, "shifted_sample_ids.txt")).read().split()
+    shifted_rules = {r["transaction_id"]: r for r in csv.DictReader(open(os.path.join(ROOT, "shifted_rule_engine_eval_log.csv")))}
+    hits = sum(shifted_rules[i]["is_correct"] == "True" for i in shifted_ids)
+    assert f"| Rule engine (frozen) | {hits}/50 = {hits * 2}% ·" in readme
+    variants = {r["raw_ml_features"]["transaction_id"]: r["raw_ml_features"]["variant"]
+                for r in json.load(open(os.path.join(ROOT, "shifted_fraud_dataset.json")))}
+    for vs, phrase in [(("base", "noisy"), "unshifted records right"), (("shifted",), "shifted ones")]:
+        rows = [r for i, r in shifted_rules.items() if variants[i] in vs]
+        ok = sum(r["is_correct"] == "True" for r in rows)
+        assert f"{ok:,} of {len(rows):,} {phrase}" in readme, f"README rule figures for {v} records"
+    overall = 100 * sum(r["is_correct"] == "True" for r in shifted_rules.values()) / len(shifted_rules)
+    assert f"overall accuracy on it ({overall:.0f}%)" in readme
+
+    acc = lambda f: 100 * sum(r["true_label"] == r["predicted_label"] for r in csv.DictReader(open(os.path.join(ROOT, f)))) / 50
+    fs_s = {e: acc(f"llm_eval_log_few-shot_{e}_shifted.csv") for e in ENGINES}
+    fscot_s = {e: acc(f"llm_eval_log_few-shot-cot_{e}_shifted.csv") for e in ENGINES}
+    lo, hi = min(list(fs_s.values()) + list(fscot_s.values())), max(list(fs_s.values()) + list(fscot_s.values()))
+    assert f"the four few-shot setups score {lo:.0f}-{hi:.0f}%" in readme
+    assert f"helped Claude Haiku 4.5 ({fs_s['anthropic']:.0f}% to {fscot_s['anthropic']:.0f}%)" in readme and fscot_s["anthropic"] > fs_s["anthropic"]
+    assert f"but not GPT-4o-mini ({fs_s['openai']:.0f}% to {fscot_s['openai']:.0f}%)" in readme and fscot_s["openai"] <= fs_s["openai"]
+    drops = sorted(grid[("few-shot", e)]["accuracy"] - grid[("cot", e)]["accuracy"] for e in ENGINES)
+    assert f"it cost {drops[0]:.0f}-{drops[1]:.0f} points" in readme
+    lat = sorted(float(r["latency_ms"]) for r in csv.DictReader(open(os.path.join(ROOT, "llm_eval_log_few-shot-cot_anthropic.csv"))))
+    assert f"its median is {(lat[24] + lat[25]) / 2:,.0f} ms" in readme and f"took {lat[-1] / 1000:.0f} s" in readme
+
+    # Per-category table: correct out of 10 for rules and the four shifted LLM runs
+    logs = ["llm_eval_log_few-shot_openai_shifted.csv", "llm_eval_log_few-shot_anthropic_shifted.csv",
+            "llm_eval_log_few-shot-cot_openai_shifted.csv", "llm_eval_log_few-shot-cot_anthropic_shifted.csv"]
+    preds = [{r["transaction_id"]: r for r in csv.DictReader(open(os.path.join(ROOT, f)))} for f in logs]
+    prefixes = {"Legitimate": "Legitimate:", "BIN_Testing": "BIN testing:", "Carding": "Carding:",
+                "Stolen_Card": "Stolen card:", "Synthetic_Identity": "Synthetic identity:"}
+    for cat, prefix in prefixes.items():
+        ids_cat = [i for i in shifted_ids if shifted_rules[i]["true_label"] == cat]
+        counts = [sum(shifted_rules[i]["is_correct"] == "True" for i in ids_cat)]
+        counts += [sum(p[i]["predicted_label"] == cat for i in ids_cat) for p in preds]
+        row = re.search(rf"^\| {re.escape(prefix)}[^|]*\| (.+) \|$", readme, re.M)
+        assert row and [int(x) for x in row.group(1).split(" | ")] == counts, f"README category row {cat}: want {counts}"
 
     # Committed outputs are current: rule log matches the engine, matrices match the logs
     import card_fraud_analyzer as c
@@ -315,7 +391,7 @@ def v8_reports_match_data():
     # Regenerating the reports from the committed data changes nothing
     tmp = tempfile.mkdtemp()
     for f in ["generate_reports.py", "performance_grid_analysis.json", "llm_eval_log_cot_openai.csv",
-              "llm_eval_log_cot_anthropic.csv"]:
+              "llm_eval_log_cot_anthropic.csv", "llm_eval_log_few-shot-cot_openai.csv", "llm_eval_log_few-shot-cot_anthropic.csv"]:
         shutil.copy(os.path.join(ROOT, f), tmp)
     r = run(tmp, "generate_reports.py")
     assert r.returncode == 0, r.stdout + r.stderr
@@ -323,8 +399,78 @@ def v8_reports_match_data():
         assert open(os.path.join(tmp, f)).read() == open(os.path.join(ROOT, f)).read(), f"{f} is stale"
 
 
+def v11_published_data_reproducible():
+    import dataset_generator as g
+    published = json.load(open(os.path.join(ROOT, "synthetic_fraud_dataset.json")))
+    for r in published:
+        assert g.enrich_for_llm(dict(r["raw_ml_features"]))["llm_reasoning_prompt"] == r["llm_reasoning_prompt"], \
+            f"{r['raw_ml_features']['transaction_id']}: narrative code no longer matches the published data"
+    # Default mode regenerates the same records (uuid IDs and timestamps excepted)
+    tmp = tempfile.mkdtemp()
+    shutil.copy(os.path.join(ROOT, "dataset_generator.py"), tmp)
+    assert run(tmp, "dataset_generator.py").returncode == 0
+    fresh = json.load(open(os.path.join(tmp, "synthetic_fraud_dataset.json")))
+    random_fields = {"transaction_id", "timestamp", "account_id", "device_fingerprint"}
+    strip = lambda r: ({k: v for k, v in r["raw_ml_features"].items() if k not in random_fields}, r["llm_reasoning_prompt"])
+    assert len(fresh) == len(published)
+    assert all(strip(a) == strip(b) for a, b in zip(published, fresh)), "default mode no longer reproduces the published dataset"
+
+
+def v10_shifted_set():
+    import card_fraud_analyzer as c
+    import dataset_generator as g
+
+    def shift(category, **kw):
+        raw = raw_record(fraud_category=category, **kw)["raw_ml_features"]
+        return g.generate_shifted_variant(dict(raw), category)
+
+    def rule(raw):
+        return c.rule_based_fallback_classifier(c.extract_features({"raw_ml_features": raw}))
+
+    # Each shift lands just past a frozen rule threshold (values from the rules in card_fraud_analyzer.py)
+    for _ in range(20):
+        r = shift("Legitimate", account_age_days=0)
+        assert 31 <= r["account_age_days"] <= 900 and rule(r) == "Stolen_Card"  # a gift order the rules flag
+        r = shift("BIN_Testing", velocity_pan_count_1m_ip=40, cvv_result="Mismatch", auth_response_code="N7 - CVV Mismatch",
+                  email_domain="temp-mail.org", account_age_days=0)
+        assert 6 <= r["velocity_pan_count_1m_ip"] <= 10 and rule(r) != "BIN_Testing"
+        r = shift("Carding", velocity_pan_count_1m_ip=12, auth_response_code="51 - Insufficient Funds",
+                  email_domain="temp-mail.org", account_age_days=1)
+        assert r["auth_response_code"] == "00 - Approved" and rule(r) != "Carding"
+        r = shift("Stolen_Card", shipping_zip="94105", account_age_days=400)
+        assert 15 <= r["account_age_days"] <= 30 and rule(r) != "Stolen_Card"
+        r = shift("Synthetic_Identity", identity_synthetic_score=0.9, email_domain="temp-mail.org", account_age_days=3)
+        assert 0.70 <= r["identity_synthetic_score"] <= 0.80 and r["email_domain"] in g.COMMON_EMAIL_DOMAINS
+        assert 5 <= r["account_age_days"] <= 13 and rule(r) != "Synthetic_Identity"
+        # A mainstream domain is never called disposable (the narrative bug fixed in v1.1.0)
+        story = g.enrich_for_llm(dict(r))["llm_reasoning_prompt"]["identity_profile"]
+        assert "disposable" not in story and r["email_domain"] in story, story
+
+    # Committed shifted data: narratives come from the code, rule log is current
+    shifted = json.load(open(os.path.join(ROOT, "shifted_fraud_dataset.json")))
+    tmp = tempfile.mkdtemp()
+    shutil.copy(os.path.join(ROOT, "dataset_generator.py"), tmp)
+    assert subprocess.run([sys.executable, "dataset_generator.py", "--shifted"], cwd=tmp, capture_output=True).returncode == 0
+    fresh = json.load(open(os.path.join(tmp, "shifted_fraud_dataset.json")))
+    random_fields = {"transaction_id", "timestamp", "account_id", "device_fingerprint"}
+    strip = lambda r: ({k: v for k, v in r["raw_ml_features"].items() if k not in random_fields}, r["llm_reasoning_prompt"])
+    assert len(fresh) == len(shifted) and all(strip(a) == strip(b) for a, b in zip(shifted, fresh)), \
+        "--shifted no longer reproduces the committed shifted set"
+    position = lambda data, ids: [[r["raw_ml_features"]["transaction_id"] for r in data].index(i) for i in ids]
+    assert position(shifted, open(os.path.join(ROOT, "shifted_sample_ids.txt")).read().split()) == \
+        position(fresh, open(os.path.join(tmp, "shifted_sample_ids.txt")).read().split()), "shifted sample not reproducible"
+    assert len(shifted) == 5000
+    for r in shifted:
+        raw = {k: v for k, v in r["raw_ml_features"].items() if k != "variant"}
+        assert g.enrich_for_llm(raw)["llm_reasoning_prompt"] == r["llm_reasoning_prompt"]
+    rows = list(csv.DictReader(open(os.path.join(ROOT, "shifted_rule_engine_eval_log.csv"))))
+    assert [r["predicted_label"] for r in rows] == [rule(r["raw_ml_features"]) for r in shifted], \
+        "shifted_rule_engine_eval_log.csv is stale"
+
+
 CHECKS = {"V1": v1_no_secrets, "V2": v2_rule_engine, "V3": v3_confusion_matrix, "V4": v4_performance_grid,
-          "V5": v5_llm_scripts, "V6": v6_same_sample, "V7": v7_narratives, "V8": v8_reports_match_data}
+          "V5": v5_llm_scripts, "V6": v6_same_sample, "V7": v7_narratives, "V8": v8_reports_match_data,
+          "V11": v11_published_data_reproducible, "V10": v10_shifted_set}
 
 if __name__ == "__main__":
     CHECKS[sys.argv[1]]()

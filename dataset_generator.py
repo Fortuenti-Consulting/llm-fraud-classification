@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, timezone
 import pandas as pd
 import numpy as np
 import json
+import sys
 from faker import Faker
 
 # Seeds make categories, amounts and other sampled fields reproducible.
@@ -15,6 +16,15 @@ random.seed(42)
 
 # Configuration
 NUM_SAMPLES = 5000
+NOISE_RATE = 0.12
+
+# Shifted stress-test set (--shifted): separate seed, plus a share of records
+# moved just past the thresholds of the frozen rule engine
+SHIFTED_SEED = 7
+SHIFT_RATE = 0.45
+
+COMMON_EMAIL_DOMAINS = ["gmail.com", "yahoo.com", "outlook.com", "icloud.com", "hotmail.com"]
+DISPOSABLE_EMAIL_DOMAINS = ["temp-mail.org", "guerrillamail.com", "10minutemail.com", "throwawaymail.com"]
 
 # Target distribution by category
 CLASS_DISTRIBUTION = {
@@ -47,20 +57,8 @@ def generate_raw_transaction(category: str) -> dict:
     currency = "USD"
     account_id = f"acc_{uuid.uuid4().hex[:8]}"
 
-    # Shared default lists
-    common_domains = [
-        "gmail.com",
-        "yahoo.com",
-        "outlook.com",
-        "icloud.com",
-        "hotmail.com",
-    ]
-    disposable_domains = [
-        "temp-mail.org",
-        "guerrillamail.com",
-        "10minutemail.com",
-        "throwawaymail.com",
-    ]
+    common_domains = COMMON_EMAIL_DOMAINS
+    disposable_domains = DISPOSABLE_EMAIL_DOMAINS
 
     # Category-specific raw signals
 
@@ -254,8 +252,8 @@ def generate_noisy_variant(raw: dict, category: str) -> dict:
     Changes 2-3 fields of a generated transaction to create harder edge cases,
     so a classifier cannot rely on one clean signal per category.
     """
-    common_domains = ["gmail.com", "yahoo.com", "outlook.com", "icloud.com", "hotmail.com"]
-    
+    common_domains = COMMON_EMAIL_DOMAINS
+
     if category == "Legitimate":
         # Suspicious Legitimate (e.g., buying a gift on VPN, new account)
         raw["proxy_vpn_flag"] = True
@@ -289,6 +287,43 @@ def generate_noisy_variant(raw: dict, category: str) -> dict:
         raw["email_domain"] = random.choice(common_domains)
         raw["identity_synthetic_score"] = round(random.uniform(0.40, 0.65), 3)
         
+    return raw
+
+
+def generate_shifted_variant(raw: dict, category: str) -> dict:
+    """
+    Shifted stress-test records. Each change moves a category just past a
+    threshold of the frozen rule engine in card_fraud_analyzer.py, the way an
+    attacker (or an unusual customer) would differ from the original data.
+    The rule engine fails these by construction; the question is whether
+    the LLM, which never saw the thresholds, still gets them right.
+    """
+    if category == "Legitimate":
+        # Gift order from an established account, shipped to another ZIP
+        raw["account_age_days"] = random.randint(31, 900)
+        raw["shipping_zip"] = fake.zipcode()
+
+    elif category == "BIN_Testing":
+        # Throttled bot: 6-10 card numbers a minute instead of 15-60
+        raw["velocity_pan_count_1m_ip"] = random.randint(6, 10)
+        raw["velocity_cvv_fail_count_5m_bin"] = random.randint(3, 10)
+        raw["session_duration_ms"] = random.randint(2000, 8000)
+
+    elif category == "Carding":
+        # A card from the list that still works: the small charge is approved
+        raw["auth_response_code"] = "00 - Approved"
+        raw["avs_result"] = "Zip Match"
+
+    elif category == "Stolen_Card":
+        # Takeover of a younger account (15-30 days instead of 180+)
+        raw["account_age_days"] = random.randint(15, 30)
+
+    elif category == "Synthetic_Identity":
+        # Better-built identity: mainstream email, score just under the alert level
+        raw["email_domain"] = random.choice(COMMON_EMAIL_DOMAINS)
+        raw["identity_synthetic_score"] = round(random.uniform(0.70, 0.80), 3)
+        raw["account_age_days"] = random.randint(5, 13)
+
     return raw
 
 
@@ -331,7 +366,9 @@ def enrich_for_llm(raw: dict) -> dict:
         account_story = "This is a brand-new guest checkout session with zero historical platform trust."
     elif raw["account_age_days"] < 14:
         if raw["identity_synthetic_score"] > 0.70:
-            account_story = f"Account is highly suspicious. Created {raw['account_age_days']} days ago using a disposable email ({raw['email_domain']}). Synthetic identity score is critically high ({raw['identity_synthetic_score']})."
+            email = (f"a disposable email ({raw['email_domain']})" if raw["email_domain"] in DISPOSABLE_EMAIL_DOMAINS
+                     else f"email domain {raw['email_domain']}")
+            account_story = f"Account is highly suspicious. Created {raw['account_age_days']} days ago using {email}. Synthetic identity score is critically high ({raw['identity_synthetic_score']})."
         else:
             account_story = f"Newly created account, active for only {raw['account_age_days']} days. Email domain is {raw['email_domain']}."
     else:
@@ -376,27 +413,45 @@ def enrich_for_llm(raw: dict) -> dict:
 
 
 if __name__ == "__main__":
-    print(f"Generating {NUM_SAMPLES} synthetic transactions. This may take a few seconds...")
-    
+    shifted = "--shifted" in sys.argv
+    if shifted:
+        Faker.seed(SHIFTED_SEED)
+        np.random.seed(SHIFTED_SEED)
+        random.seed(SHIFTED_SEED)
+    print(f"Generating {NUM_SAMPLES} {'shifted ' if shifted else ''}synthetic transactions. This may take a few seconds...")
+
     # Step 1: Sample transaction categories based on set weighted distribution
     sampled_types = [sample_fraud_category() for _ in range(NUM_SAMPLES)]
 
     # Step 2: Pass 1, raw fields plus noise
     raw_records = []
     noisy_count = 0
-    
+    shifted_count = 0
+
     for cat in sampled_types:
         # Generate the baseline transaction
         record = generate_raw_transaction(cat)
-        
+
+        # Shifted mode only: move a share of records past the rule thresholds,
+        # and record which variant each one is
+        if shifted and random.random() < SHIFT_RATE:
+            record = generate_shifted_variant(record, cat)
+            record["variant"] = "shifted"
+            shifted_count += 1
         # 12% of the time, perturb the fields to create a noisy edge-case
-        if random.random() < 0.12:
+        elif random.random() < NOISE_RATE:
             record = generate_noisy_variant(record, cat)
             noisy_count += 1
-            
+            if shifted:
+                record["variant"] = "noisy"
+        elif shifted:
+            record["variant"] = "base"
+
         raw_records.append(record)
-        
+
     print(f"Injected noise into {noisy_count} records (~{(noisy_count/NUM_SAMPLES)*100:.1f}% of total).")
+    if shifted:
+        print(f"Shifted {shifted_count} records (~{(shifted_count/NUM_SAMPLES)*100:.1f}% of total).")
 
     # Step 3: Pass 2, narratives for the LLM
     enriched_records = [enrich_for_llm(record) for record in raw_records]
@@ -407,10 +462,24 @@ if __name__ == "__main__":
     print(counts)
 
     # Export 1: nested JSON for the LLM scripts
-    json_filename = "synthetic_fraud_dataset.json"
+    json_filename = "shifted_fraud_dataset.json" if shifted else "synthetic_fraud_dataset.json"
     with open(json_filename, "w") as f:
         json.dump(enriched_records, f, indent=2)
     print(f"\nSaved nested LLM format to {json_filename}")
+
+    if shifted:
+        # LLM sample: 10 shifted records per category, so the test is about the shift
+        sample_rng = random.Random(SHIFTED_SEED)
+        sample_ids = []
+        for cat in CLASS_DISTRIBUTION:
+            pool = [r["raw_ml_features"]["transaction_id"] for r in enriched_records
+                    if r["raw_ml_features"]["fraud_category"] == cat and r["raw_ml_features"]["variant"] == "shifted"]
+            sample_ids.extend(sample_rng.sample(pool, 10))
+        sample_rng.shuffle(sample_ids)
+        with open("shifted_sample_ids.txt", "w") as f:
+            f.write("\n".join(sample_ids) + "\n")
+        print("Saved 50 shifted sample IDs to shifted_sample_ids.txt")
+        sys.exit(0)  # the flat CSV is only produced for the published dataset
 
     # Export 2: flat CSV for tabular ML (XGBoost/Random Forest)
     flat_records = []

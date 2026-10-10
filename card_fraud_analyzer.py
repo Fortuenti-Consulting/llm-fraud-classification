@@ -123,8 +123,12 @@ def evaluate_dataset(dataset, output_csv="rule_engine_eval_log.csv"):
     return results
 
 if __name__ == "__main__":
+    # Optional arguments: dataset path and output log, e.g.
+    # python3 card_fraud_analyzer.py shifted_fraud_dataset.json shifted_rule_engine_eval_log.csv
+    dataset_path = sys.argv[1] if len(sys.argv) > 1 else "synthetic_fraud_dataset.json"
+    output_csv = sys.argv[2] if len(sys.argv) > 2 else "rule_engine_eval_log.csv"
     try:
-        dataset = load_dataset("synthetic_fraud_dataset.json")
-        evaluate_dataset(dataset)
+        dataset = load_dataset(dataset_path)
+        evaluate_dataset(dataset, output_csv)
     except FileNotFoundError as e:
         sys.exit(f"Error: {e}")

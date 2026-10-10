@@ -15,6 +15,13 @@ best_fs_e = max(perf_data["few-shot"], key=lambda e: perf_data["few-shot"][e]["a
 best_fs = perf_data["few-shot"][best_fs_e]
 cot_slowest = max(perf_data["cot"].values(), key=lambda c: c["latency"])
 
+# Few-shot + CoT on the same 50 transactions (classify_llm_few-shot-cot.py)
+fs_cot_acc = {}
+for engine in ["openai", "anthropic"]:
+    with open(f"llm_eval_log_few-shot-cot_{engine}.csv", "r", encoding="utf-8") as f:
+        rows = list(csv.DictReader(f))
+    fs_cot_acc[engine] = 100 * sum(r["true_label"] == r["predicted_label"] for r in rows) / len(rows)
+
 # 2. VP report
 vp_report = f"""# Executive Brief: LLM Fraud Classification Pilot Study
 
@@ -24,7 +31,7 @@ We ran an n=50 pilot (10 transactions per category, the same 50 for every config
 ## Key Findings
 1. **LLMs are too slow for synchronous blocking.** The fastest configuration ({ENGINE_NAMES[fastest_e]}, {STRATEGY_NAMES[fastest_s]}) averaged {fastest['latency']:.0f}ms per transaction. Our synchronous blocking layer requires a sub-200ms response time.
 2. **Zero-Shot vs. Few-Shot:** LLMs need explicit examples to apply specialized fraud definitions. Adding 2 examples (Few-Shot) raised accuracy from {perf_data['zero-shot']['openai']['accuracy']:.0f}% to {perf_data['few-shot']['openai']['accuracy']:.0f}% on GPT-4o-mini and from {perf_data['zero-shot']['anthropic']['accuracy']:.0f}% to {perf_data['few-shot']['anthropic']['accuracy']:.0f}% on Claude Haiku 4.5. Peak accuracy: {best_fs['accuracy']:.0f}% ({ENGINE_NAMES[best_fs_e]}).
-3. **Chain-of-Thought (CoT) degrades performance:** Asking the model to reason step by step before classifying raised average latency to as much as {cot_slowest['latency']:.0f}ms, multiplied cost, and *reduced* accuracy compared with Few-Shot ({perf_data['cot']['openai']['accuracy']:.0f}% on GPT-4o-mini, {perf_data['cot']['anthropic']['accuracy']:.0f}% on Claude Haiku 4.5). The scratchpads show the models overthinking secondary signals. Caveat: the CoT prompt listed only the category names, without the definitions or examples, so part of the drop comes from that and not from step-by-step reasoning alone.
+3. **Chain-of-Thought (CoT) degrades performance:** Asking the model to reason step by step before classifying raised average latency to as much as {cot_slowest['latency']:.0f}ms, multiplied cost, and *reduced* accuracy compared with Few-Shot ({perf_data['cot']['openai']['accuracy']:.0f}% on GPT-4o-mini, {perf_data['cot']['anthropic']['accuracy']:.0f}% on Claude Haiku 4.5). The scratchpads show the models overthinking secondary signals. Caveat: the CoT prompt listed only the category names, without the definitions or examples. With them added (Few-Shot + CoT), accuracy returns to {fs_cot_acc['openai']:.0f}% on GPT-4o-mini and {fs_cot_acc['anthropic']:.0f}% on Claude Haiku 4.5, so most of the drop came from the missing definitions; the step-by-step reasoning itself added latency and cost without improving accuracy.
 
 ## Recommendations & Next Steps
 1. **Do not deploy LLMs in the synchronous path.**
