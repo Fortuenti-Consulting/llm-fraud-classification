@@ -1,0 +1,44 @@
+{
+    "zero-shot": {
+        "openai": {
+            "accuracy": 74.0,
+            "latency": 595.4056,
+            "cost": 0.0025049999999999994,
+            "status": "OK"
+        },
+        "anthropic": {
+            "accuracy": 74.0,
+            "latency": 640.1279999999999,
+            "cost": 0.020585000000000006,
+            "status": "OK"
+        }
+    },
+    "few-shot": {
+        "openai": {
+            "accuracy": 90.0,
+            "latency": 530.9691999999999,
+            "cost": 0.004015199999999999,
+            "status": "OK"
+        },
+        "anthropic": {
+            "accuracy": 92.0,
+            "latency": 664.1125999999999,
+            "cost": 0.03214,
+            "status": "OK"
+        }
+    },
+    "cot": {
+        "openai": {
+            "accuracy": 56.00000000000001,
+            "latency": 2045.4846,
+            "cost": 0.0092145,
+            "status": "OK"
+        },
+        "anthropic": {
+            "accuracy": 74.0,
+            "latency": 6457.839,
+            "cost": 0.16487,
+            "status": "OK"
+        }
+    }
+}

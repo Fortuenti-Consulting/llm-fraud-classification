@@ -1,0 +1,374 @@
+{
+    "per_file_analysis": {
+        "llm_eval_log_zero-shot_openai.csv": {
+            "total_records": 50,
+            "correct_predictions": 37,
+            "accuracy_percent": 74.0,
+            "raw_matrix": {
+                "Legitimate": {
+                    "Legitimate": 9,
+                    "BIN_Testing": 0,
+                    "Carding": 0,
+                    "Stolen_Card": 0,
+                    "Synthetic_Identity": 1
+                },
+                "BIN_Testing": {
+                    "Legitimate": 0,
+                    "BIN_Testing": 10,
+                    "Carding": 0,
+                    "Stolen_Card": 0,
+                    "Synthetic_Identity": 0
+                },
+                "Carding": {
+                    "Legitimate": 0,
+                    "BIN_Testing": 8,
+                    "Carding": 1,
+                    "Stolen_Card": 0,
+                    "Synthetic_Identity": 1
+                },
+                "Stolen_Card": {
+                    "Legitimate": 2,
+                    "BIN_Testing": 0,
+                    "Carding": 0,
+                    "Stolen_Card": 8,
+                    "Synthetic_Identity": 0
+                },
+                "Synthetic_Identity": {
+                    "Legitimate": 1,
+                    "BIN_Testing": 0,
+                    "Carding": 0,
+                    "Stolen_Card": 0,
+                    "Synthetic_Identity": 9
+                }
+            },
+            "greatest_asymmetric_confusion": {
+                "true_label": "Carding",
+                "predicted_label": "BIN_Testing",
+                "count_a_to_b": 8,
+                "count_b_to_a": 0,
+                "difference": 8
+            }
+        },
+        "llm_eval_log_zero-shot_anthropic.csv": {
+            "total_records": 50,
+            "correct_predictions": 37,
+            "accuracy_percent": 74.0,
+            "raw_matrix": {
+                "Legitimate": {
+                    "Legitimate": 9,
+                    "BIN_Testing": 0,
+                    "Carding": 0,
+                    "Stolen_Card": 1,
+                    "Synthetic_Identity": 0
+                },
+                "BIN_Testing": {
+                    "Legitimate": 0,
+                    "BIN_Testing": 10,
+                    "Carding": 0,
+                    "Stolen_Card": 0,
+                    "Synthetic_Identity": 0
+                },
+                "Carding": {
+                    "Legitimate": 0,
+                    "BIN_Testing": 9,
+                    "Carding": 1,
+                    "Stolen_Card": 0,
+                    "Synthetic_Identity": 0
+                },
+                "Stolen_Card": {
+                    "Legitimate": 2,
+                    "BIN_Testing": 0,
+                    "Carding": 0,
+                    "Stolen_Card": 8,
+                    "Synthetic_Identity": 0
+                },
+                "Synthetic_Identity": {
+                    "Legitimate": 1,
+                    "BIN_Testing": 0,
+                    "Carding": 0,
+                    "Stolen_Card": 0,
+                    "Synthetic_Identity": 9
+                }
+            },
+            "greatest_asymmetric_confusion": {
+                "true_label": "Carding",
+                "predicted_label": "BIN_Testing",
+                "count_a_to_b": 9,
+                "count_b_to_a": 0,
+                "difference": 9
+            }
+        },
+        "llm_eval_log_few-shot_openai.csv": {
+            "total_records": 50,
+            "correct_predictions": 45,
+            "accuracy_percent": 90.0,
+            "raw_matrix": {
+                "Legitimate": {
+                    "Legitimate": 9,
+                    "BIN_Testing": 0,
+                    "Carding": 0,
+                    "Stolen_Card": 0,
+                    "Synthetic_Identity": 1
+                },
+                "BIN_Testing": {
+                    "Legitimate": 0,
+                    "BIN_Testing": 10,
+                    "Carding": 0,
+                    "Stolen_Card": 0,
+                    "Synthetic_Identity": 0
+                },
+                "Carding": {
+                    "Legitimate": 0,
+                    "BIN_Testing": 0,
+                    "Carding": 9,
+                    "Stolen_Card": 0,
+                    "Synthetic_Identity": 1
+                },
+                "Stolen_Card": {
+                    "Legitimate": 2,
+                    "BIN_Testing": 0,
+                    "Carding": 0,
+                    "Stolen_Card": 8,
+                    "Synthetic_Identity": 0
+                },
+                "Synthetic_Identity": {
+                    "Legitimate": 1,
+                    "BIN_Testing": 0,
+                    "Carding": 0,
+                    "Stolen_Card": 0,
+                    "Synthetic_Identity": 9
+                }
+            },
+            "greatest_asymmetric_confusion": {
+                "true_label": "Stolen_Card",
+                "predicted_label": "Legitimate",
+                "count_a_to_b": 2,
+                "count_b_to_a": 0,
+                "difference": 2
+            }
+        },
+        "llm_eval_log_few-shot_anthropic.csv": {
+            "total_records": 50,
+            "correct_predictions": 46,
+            "accuracy_percent": 92.0,
+            "raw_matrix": {
+                "Legitimate": {
+                    "Legitimate": 9,
+                    "BIN_Testing": 0,
+                    "Carding": 0,
+                    "Stolen_Card": 1,
+                    "Synthetic_Identity": 0
+                },
+                "BIN_Testing": {
+                    "Legitimate": 0,
+                    "BIN_Testing": 10,
+                    "Carding": 0,
+                    "Stolen_Card": 0,
+                    "Synthetic_Identity": 0
+                },
+                "Carding": {
+                    "Legitimate": 0,
+                    "BIN_Testing": 0,
+                    "Carding": 10,
+                    "Stolen_Card": 0,
+                    "Synthetic_Identity": 0
+                },
+                "Stolen_Card": {
+                    "Legitimate": 2,
+                    "BIN_Testing": 0,
+                    "Carding": 0,
+                    "Stolen_Card": 8,
+                    "Synthetic_Identity": 0
+                },
+                "Synthetic_Identity": {
+                    "Legitimate": 1,
+                    "BIN_Testing": 0,
+                    "Carding": 0,
+                    "Stolen_Card": 0,
+                    "Synthetic_Identity": 9
+                }
+            },
+            "greatest_asymmetric_confusion": {
+                "true_label": "Stolen_Card",
+                "predicted_label": "Legitimate",
+                "count_a_to_b": 2,
+                "count_b_to_a": 1,
+                "difference": 1
+            }
+        },
+        "llm_eval_log_cot_openai.csv": {
+            "total_records": 50,
+            "correct_predictions": 28,
+            "accuracy_percent": 56.0,
+            "raw_matrix": {
+                "Legitimate": {
+                    "Legitimate": 9,
+                    "BIN_Testing": 0,
+                    "Carding": 0,
+                    "Stolen_Card": 1,
+                    "Synthetic_Identity": 0
+                },
+                "BIN_Testing": {
+                    "Legitimate": 0,
+                    "BIN_Testing": 2,
+                    "Carding": 8,
+                    "Stolen_Card": 0,
+                    "Synthetic_Identity": 0
+                },
+                "Carding": {
+                    "Legitimate": 0,
+                    "BIN_Testing": 0,
+                    "Carding": 2,
+                    "Stolen_Card": 0,
+                    "Synthetic_Identity": 8
+                },
+                "Stolen_Card": {
+                    "Legitimate": 2,
+                    "BIN_Testing": 0,
+                    "Carding": 2,
+                    "Stolen_Card": 6,
+                    "Synthetic_Identity": 0
+                },
+                "Synthetic_Identity": {
+                    "Legitimate": 1,
+                    "BIN_Testing": 0,
+                    "Carding": 0,
+                    "Stolen_Card": 0,
+                    "Synthetic_Identity": 9
+                }
+            },
+            "greatest_asymmetric_confusion": {
+                "true_label": "BIN_Testing",
+                "predicted_label": "Carding",
+                "count_a_to_b": 8,
+                "count_b_to_a": 0,
+                "difference": 8
+            }
+        },
+        "llm_eval_log_cot_anthropic.csv": {
+            "total_records": 50,
+            "correct_predictions": 37,
+            "accuracy_percent": 74.0,
+            "raw_matrix": {
+                "Legitimate": {
+                    "Legitimate": 9,
+                    "BIN_Testing": 0,
+                    "Carding": 0,
+                    "Stolen_Card": 1,
+                    "Synthetic_Identity": 0
+                },
+                "BIN_Testing": {
+                    "Legitimate": 0,
+                    "BIN_Testing": 10,
+                    "Carding": 0,
+                    "Stolen_Card": 0,
+                    "Synthetic_Identity": 0
+                },
+                "Carding": {
+                    "Legitimate": 0,
+                    "BIN_Testing": 8,
+                    "Carding": 2,
+                    "Stolen_Card": 0,
+                    "Synthetic_Identity": 0
+                },
+                "Stolen_Card": {
+                    "Legitimate": 2,
+                    "BIN_Testing": 0,
+                    "Carding": 1,
+                    "Stolen_Card": 7,
+                    "Synthetic_Identity": 0
+                },
+                "Synthetic_Identity": {
+                    "Legitimate": 1,
+                    "BIN_Testing": 0,
+                    "Carding": 0,
+                    "Stolen_Card": 0,
+                    "Synthetic_Identity": 9
+                }
+            },
+            "greatest_asymmetric_confusion": {
+                "true_label": "Carding",
+                "predicted_label": "BIN_Testing",
+                "count_a_to_b": 8,
+                "count_b_to_a": 0,
+                "difference": 8
+            }
+        }
+    },
+    "global_summary": {
+        "tightest_diagonal_winner": "llm_eval_log_few-shot_anthropic.csv",
+        "tightest_diagonal_count": 46,
+        "zero_error_cells": [
+            {
+                "true": "Legitimate",
+                "pred": "BIN_Testing"
+            },
+            {
+                "true": "Legitimate",
+                "pred": "Carding"
+            },
+            {
+                "true": "BIN_Testing",
+                "pred": "Legitimate"
+            },
+            {
+                "true": "BIN_Testing",
+                "pred": "Stolen_Card"
+            },
+            {
+                "true": "BIN_Testing",
+                "pred": "Synthetic_Identity"
+            },
+            {
+                "true": "Carding",
+                "pred": "Legitimate"
+            },
+            {
+                "true": "Carding",
+                "pred": "Stolen_Card"
+            },
+            {
+                "true": "Stolen_Card",
+                "pred": "BIN_Testing"
+            },
+            {
+                "true": "Stolen_Card",
+                "pred": "Synthetic_Identity"
+            },
+            {
+                "true": "Synthetic_Identity",
+                "pred": "BIN_Testing"
+            },
+            {
+                "true": "Synthetic_Identity",
+                "pred": "Carding"
+            },
+            {
+                "true": "Synthetic_Identity",
+                "pred": "Stolen_Card"
+            }
+        ],
+        "total_errors_by_pathway": {
+            "Legitimate_to_BIN_Testing": 0,
+            "Legitimate_to_Carding": 0,
+            "Legitimate_to_Stolen_Card": 4,
+            "Legitimate_to_Synthetic_Identity": 2,
+            "BIN_Testing_to_Legitimate": 0,
+            "BIN_Testing_to_Carding": 8,
+            "BIN_Testing_to_Stolen_Card": 0,
+            "BIN_Testing_to_Synthetic_Identity": 0,
+            "Carding_to_Legitimate": 0,
+            "Carding_to_BIN_Testing": 25,
+            "Carding_to_Stolen_Card": 0,
+            "Carding_to_Synthetic_Identity": 10,
+            "Stolen_Card_to_Legitimate": 12,
+            "Stolen_Card_to_BIN_Testing": 0,
+            "Stolen_Card_to_Carding": 3,
+            "Stolen_Card_to_Synthetic_Identity": 0,
+            "Synthetic_Identity_to_Legitimate": 6,
+            "Synthetic_Identity_to_BIN_Testing": 0,
+            "Synthetic_Identity_to_Carding": 0,
+            "Synthetic_Identity_to_Stolen_Card": 0
+        }
+    }
+}

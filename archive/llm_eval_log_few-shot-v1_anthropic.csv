@@ -1,0 +1,1851 @@
+transaction_id,engine_used,true_label,predicted_label,is_correct,latency_ms,prompt_tokens,completion_tokens,cost_usd,prompt_sent
+tx_75199bfd0e,ANTHROPIC,Carding,Carding,True,1164.07,651,6,0.000681,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A very low-value micro-purchase of USD 1.67."",
+  ""verification_outcome"": ""CVV matched, but the transaction was declined by the issuer (Code 05 - Do Not Honor - Insufficient Funds/Do Not Honor)."",
+  ""velocity_context"": ""High velocity: This session has rotated through 17 different cards in under a minute."",
+  ""identity_profile"": ""Newly created account, active for only 1 days. Email domain is 10minutemail.com."",
+  ""logistics_context"": ""High logistics risk: Billing ZIP (99871) matches the cardholder, but items are being shipped to a completely different ZIP (67368), consistent with drop-houses."",
+  ""behavior_and_network"": ""Severe bot signature: Checkout completed in an impossible 1206 milliseconds. Fields were programmatically injected bypassing standard keyboard events. Connection originated from a datacenter or residential proxy IP, masking the true origin.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_75d1c05b2d,ANTHROPIC,BIN_Testing,BIN_Testing,True,700.26,634,7,0.000669,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A USD 0.50 pre-authorization request designed to validate the card without a full charge."",
+  ""verification_outcome"": ""Authorization failed due to a CVV Mismatch (Code N7 - CVV Mismatch)."",
+  ""velocity_context"": ""Extreme velocity anomaly: This IP has attempted 40 distinct card numbers in the last 60 seconds, triggering massive CVV failures on BIN 480714."",
+  ""identity_profile"": ""This is a brand-new guest checkout session with zero historical platform trust."",
+  ""logistics_context"": ""No physical delivery address provided (digital/pre-auth transaction)."",
+  ""behavior_and_network"": ""Severe bot signature: Checkout completed in an impossible 321 milliseconds. Fields were programmatically injected bypassing standard keyboard events. Connection originated from a datacenter or residential proxy IP, masking the true origin.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_d37e86b955,ANTHROPIC,Stolen_Card,Stolen_Card,True,692.98,608,7,0.000643,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A standard order value of USD 1934.44 via Auth-and-Capture."",
+  ""verification_outcome"": ""Authorization approved. CVV and billing address checks passed successfully."",
+  ""velocity_context"": ""Normal velocity: Only 1-2 cards attempted from this IP recently."",
+  ""identity_profile"": ""Established user account, active for 866 days."",
+  ""logistics_context"": ""High logistics risk: Billing ZIP (74976) matches the cardholder, but items are being shipped to a completely different ZIP (11973), consistent with drop-houses."",
+  ""behavior_and_network"": ""Standard human behavior: Checkout took 37.9 seconds using Autofill. Connection originated from a datacenter or residential proxy IP, masking the true origin.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_7d41d315ea,ANTHROPIC,Legitimate,Legitimate,True,645.18,572,5,0.000597,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A standard order value of USD 39.79 via Auth-Only."",
+  ""verification_outcome"": ""Authorization approved. CVV and billing address checks passed successfully."",
+  ""velocity_context"": ""Normal velocity: Only 1-2 cards attempted from this IP recently."",
+  ""identity_profile"": ""Established user account, active for 460 days."",
+  ""logistics_context"": ""Low logistics risk: Billing and shipping ZIP codes match."",
+  ""behavior_and_network"": ""Standard human behavior: Checkout took 46.4 seconds using Manual Typing. Connection originated from a standard residential/mobile ISP.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_eb6a2083f8,ANTHROPIC,BIN_Testing,BIN_Testing,True,658.31,628,7,0.000663,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A very low-value micro-purchase of USD 0.50."",
+  ""verification_outcome"": ""Authorization failed due to a CVV Mismatch (Code N7 - CVV Mismatch)."",
+  ""velocity_context"": ""Extreme velocity anomaly: This IP has attempted 23 distinct card numbers in the last 60 seconds, triggering massive CVV failures on BIN 445643."",
+  ""identity_profile"": ""This is a brand-new guest checkout session with zero historical platform trust."",
+  ""logistics_context"": ""No physical delivery address provided (digital/pre-auth transaction)."",
+  ""behavior_and_network"": ""Severe bot signature: Checkout completed in an impossible 316 milliseconds. Fields were programmatically injected bypassing standard keyboard events. Connection originated from a datacenter or residential proxy IP, masking the true origin.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_5f9ccbcb34,ANTHROPIC,Carding,Carding,True,656.07,642,6,0.000672,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A very low-value micro-purchase of USD 1.73."",
+  ""verification_outcome"": ""CVV matched, but the transaction was declined by the issuer (Code 05 - Do Not Honor - Insufficient Funds/Do Not Honor)."",
+  ""velocity_context"": ""High velocity: This session has rotated through 18 different cards in under a minute."",
+  ""identity_profile"": ""This is a brand-new guest checkout session with zero historical platform trust."",
+  ""logistics_context"": ""High logistics risk: Billing ZIP (67511) matches the cardholder, but items are being shipped to a completely different ZIP (41362), consistent with drop-houses."",
+  ""behavior_and_network"": ""Severe bot signature: Checkout completed in an impossible 1500 milliseconds. Fields were programmatically injected bypassing standard keyboard events. Connection originated from a datacenter or residential proxy IP, masking the true origin.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_7fd0a727b8,ANTHROPIC,Synthetic_Identity,Synthetic_Identity,True,681.13,599,7,0.000634,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A standard order value of USD 529.36 via Auth-and-Capture."",
+  ""verification_outcome"": ""Authorization approved. CVV and billing address checks passed successfully."",
+  ""velocity_context"": ""Normal velocity: Only 1-2 cards attempted from this IP recently."",
+  ""identity_profile"": ""Account is highly suspicious. Created 10 days ago using a disposable email (temp-mail.org). Synthetic identity score is critically high (0.97)."",
+  ""logistics_context"": ""Low logistics risk: Billing and shipping ZIP codes match."",
+  ""behavior_and_network"": ""Standard human behavior: Checkout took 53.7 seconds using Manual Typing. Connection originated from a standard residential/mobile ISP.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_294981df75,ANTHROPIC,Legitimate,Legitimate,True,687.12,572,5,0.000597,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A standard order value of USD 460.65 via Auth-Only."",
+  ""verification_outcome"": ""Authorization approved. CVV and billing address checks passed successfully."",
+  ""velocity_context"": ""Normal velocity: Only 1-2 cards attempted from this IP recently."",
+  ""identity_profile"": ""Established user account, active for 360 days."",
+  ""logistics_context"": ""Low logistics risk: Billing and shipping ZIP codes match."",
+  ""behavior_and_network"": ""Standard human behavior: Checkout took 58.5 seconds using Manual Typing. Connection originated from a standard residential/mobile ISP.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_6371d8031a,ANTHROPIC,Stolen_Card,Stolen_Card,True,735.3,608,7,0.000643,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A standard order value of USD 1939.11 via Auth-and-Capture."",
+  ""verification_outcome"": ""Authorization approved. CVV and billing address checks passed successfully."",
+  ""velocity_context"": ""Normal velocity: Only 1-2 cards attempted from this IP recently."",
+  ""identity_profile"": ""Established user account, active for 318 days."",
+  ""logistics_context"": ""High logistics risk: Billing ZIP (86718) matches the cardholder, but items are being shipped to a completely different ZIP (40639), consistent with drop-houses."",
+  ""behavior_and_network"": ""Standard human behavior: Checkout took 46.3 seconds using Autofill. Connection originated from a datacenter or residential proxy IP, masking the true origin.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_15b8d62839,ANTHROPIC,Legitimate,Legitimate,True,639.18,576,5,0.000601,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A standard order value of USD 26.79 via Auth-and-Capture."",
+  ""verification_outcome"": ""Authorization approved. CVV and billing address checks passed successfully."",
+  ""velocity_context"": ""Normal velocity: Only 1-2 cards attempted from this IP recently."",
+  ""identity_profile"": ""Established user account, active for 144 days."",
+  ""logistics_context"": ""Low logistics risk: Billing and shipping ZIP codes match."",
+  ""behavior_and_network"": ""Standard human behavior: Checkout took 13.4 seconds using Autofill. Connection originated from a standard residential/mobile ISP.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_0e2467c785,ANTHROPIC,BIN_Testing,BIN_Testing,True,892.13,628,7,0.000663,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A very low-value micro-purchase of USD 0.50."",
+  ""verification_outcome"": ""Authorization failed due to a CVV Mismatch (Code N7 - CVV Mismatch)."",
+  ""velocity_context"": ""Extreme velocity anomaly: This IP has attempted 58 distinct card numbers in the last 60 seconds, triggering massive CVV failures on BIN 488792."",
+  ""identity_profile"": ""This is a brand-new guest checkout session with zero historical platform trust."",
+  ""logistics_context"": ""No physical delivery address provided (digital/pre-auth transaction)."",
+  ""behavior_and_network"": ""Severe bot signature: Checkout completed in an impossible 265 milliseconds. Fields were programmatically injected bypassing standard keyboard events. Connection originated from a datacenter or residential proxy IP, masking the true origin.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_4923b23013,ANTHROPIC,Carding,Carding,True,771.89,651,6,0.000681,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A very low-value micro-purchase of USD 0.92."",
+  ""verification_outcome"": ""CVV matched, but the transaction was declined by the issuer (Code 51 - Insufficient Funds - Insufficient Funds/Do Not Honor)."",
+  ""velocity_context"": ""High velocity: This session has rotated through 13 different cards in under a minute."",
+  ""identity_profile"": ""Newly created account, active for only 1 days. Email domain is 10minutemail.com."",
+  ""logistics_context"": ""High logistics risk: Billing ZIP (60306) matches the cardholder, but items are being shipped to a completely different ZIP (93905), consistent with drop-houses."",
+  ""behavior_and_network"": ""Severe bot signature: Checkout completed in an impossible 922 milliseconds. Fields were programmatically injected bypassing standard keyboard events. Connection originated from a datacenter or residential proxy IP, masking the true origin.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_2006569b7b,ANTHROPIC,Carding,Carding,True,888.55,642,6,0.000672,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A very low-value micro-purchase of USD 3.23."",
+  ""verification_outcome"": ""CVV matched, but the transaction was declined by the issuer (Code 05 - Do Not Honor - Insufficient Funds/Do Not Honor)."",
+  ""velocity_context"": ""High velocity: This session has rotated through 10 different cards in under a minute."",
+  ""identity_profile"": ""This is a brand-new guest checkout session with zero historical platform trust."",
+  ""logistics_context"": ""High logistics risk: Billing ZIP (97085) matches the cardholder, but items are being shipped to a completely different ZIP (81552), consistent with drop-houses."",
+  ""behavior_and_network"": ""Severe bot signature: Checkout completed in an impossible 1054 milliseconds. Fields were programmatically injected bypassing standard keyboard events. Connection originated from a datacenter or residential proxy IP, masking the true origin.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_12032563f3,ANTHROPIC,Synthetic_Identity,Synthetic_Identity,True,613.67,600,7,0.0006349999999999999,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A standard order value of USD 852.14 via Auth-and-Capture."",
+  ""verification_outcome"": ""Authorization approved. CVV and billing address checks passed successfully."",
+  ""velocity_context"": ""Normal velocity: Only 1-2 cards attempted from this IP recently."",
+  ""identity_profile"": ""Account is highly suspicious. Created 6 days ago using a disposable email (throwawaymail.com). Synthetic identity score is critically high (0.879)."",
+  ""logistics_context"": ""Low logistics risk: Billing and shipping ZIP codes match."",
+  ""behavior_and_network"": ""Standard human behavior: Checkout took 76.7 seconds using Manual Typing. Connection originated from a standard residential/mobile ISP.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_91c5002f8c,ANTHROPIC,BIN_Testing,BIN_Testing,True,697.99,628,7,0.000663,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A very low-value micro-purchase of USD 1.04."",
+  ""verification_outcome"": ""Authorization failed due to a CVV Mismatch (Code N7 - CVV Mismatch)."",
+  ""velocity_context"": ""Extreme velocity anomaly: This IP has attempted 22 distinct card numbers in the last 60 seconds, triggering massive CVV failures on BIN 418554."",
+  ""identity_profile"": ""This is a brand-new guest checkout session with zero historical platform trust."",
+  ""logistics_context"": ""No physical delivery address provided (digital/pre-auth transaction)."",
+  ""behavior_and_network"": ""Severe bot signature: Checkout completed in an impossible 541 milliseconds. Fields were programmatically injected bypassing standard keyboard events. Connection originated from a datacenter or residential proxy IP, masking the true origin.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_174d7e6850,ANTHROPIC,Stolen_Card,Stolen_Card,True,799.38,606,7,0.000641,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A standard order value of USD 220.35 via Auth-and-Capture."",
+  ""verification_outcome"": ""Authorization approved. CVV and billing address checks passed successfully."",
+  ""velocity_context"": ""Normal velocity: Only 1-2 cards attempted from this IP recently."",
+  ""identity_profile"": ""Established user account, active for 769 days."",
+  ""logistics_context"": ""High logistics risk: Billing ZIP (02431) matches the cardholder, but items are being shipped to a completely different ZIP (75532), consistent with drop-houses."",
+  ""behavior_and_network"": ""Standard human behavior: Checkout took 34.3 seconds using Manual Typing. Connection originated from a datacenter or residential proxy IP, masking the true origin.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_1f95723141,ANTHROPIC,Stolen_Card,Legitimate,False,1606.29,576,5,0.000601,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A standard order value of USD 410.75 via Auth-and-Capture."",
+  ""verification_outcome"": ""Authorization approved. CVV and billing address checks passed successfully."",
+  ""velocity_context"": ""Normal velocity: Only 1-2 cards attempted from this IP recently."",
+  ""identity_profile"": ""Established user account, active for 869 days."",
+  ""logistics_context"": ""Low logistics risk: Billing and shipping ZIP codes match."",
+  ""behavior_and_network"": ""Standard human behavior: Checkout took 26.8 seconds using Autofill. Connection originated from a standard residential/mobile ISP.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_e635682c51,ANTHROPIC,Stolen_Card,Stolen_Card,True,665.96,607,7,0.000642,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A standard order value of USD 591.58 via Auth-and-Capture."",
+  ""verification_outcome"": ""Authorization approved. CVV and billing address checks passed successfully."",
+  ""velocity_context"": ""Normal velocity: Only 1-2 cards attempted from this IP recently."",
+  ""identity_profile"": ""Established user account, active for 713 days."",
+  ""logistics_context"": ""High logistics risk: Billing ZIP (79512) matches the cardholder, but items are being shipped to a completely different ZIP (10651), consistent with drop-houses."",
+  ""behavior_and_network"": ""Standard human behavior: Checkout took 21.4 seconds using Autofill. Connection originated from a datacenter or residential proxy IP, masking the true origin.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_a31a49f231,ANTHROPIC,Synthetic_Identity,Synthetic_Identity,True,688.69,600,7,0.0006349999999999999,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A standard order value of USD 985.47 via Auth-and-Capture."",
+  ""verification_outcome"": ""Authorization approved. CVV and billing address checks passed successfully."",
+  ""velocity_context"": ""Normal velocity: Only 1-2 cards attempted from this IP recently."",
+  ""identity_profile"": ""Account is highly suspicious. Created 1 days ago using a disposable email (throwawaymail.com). Synthetic identity score is critically high (0.919)."",
+  ""logistics_context"": ""Low logistics risk: Billing and shipping ZIP codes match."",
+  ""behavior_and_network"": ""Standard human behavior: Checkout took 45.2 seconds using Manual Typing. Connection originated from a standard residential/mobile ISP.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_4aaaed1265,ANTHROPIC,Synthetic_Identity,Synthetic_Identity,True,899.11,600,7,0.0006349999999999999,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A standard order value of USD 612.51 via Auth-and-Capture."",
+  ""verification_outcome"": ""Authorization approved. CVV and billing address checks passed successfully."",
+  ""velocity_context"": ""Normal velocity: Only 1-2 cards attempted from this IP recently."",
+  ""identity_profile"": ""Account is highly suspicious. Created 8 days ago using a disposable email (guerrillamail.com). Synthetic identity score is critically high (0.92)."",
+  ""logistics_context"": ""Low logistics risk: Billing and shipping ZIP codes match."",
+  ""behavior_and_network"": ""Standard human behavior: Checkout took 67.4 seconds using Manual Typing. Connection originated from a standard residential/mobile ISP.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_28031c7935,ANTHROPIC,BIN_Testing,BIN_Testing,True,670.32,634,7,0.000669,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A USD 0.00 pre-authorization request designed to validate the card without a full charge."",
+  ""verification_outcome"": ""Authorization failed due to a CVV Mismatch (Code N7 - CVV Mismatch)."",
+  ""velocity_context"": ""Extreme velocity anomaly: This IP has attempted 16 distinct card numbers in the last 60 seconds, triggering massive CVV failures on BIN 548523."",
+  ""identity_profile"": ""This is a brand-new guest checkout session with zero historical platform trust."",
+  ""logistics_context"": ""No physical delivery address provided (digital/pre-auth transaction)."",
+  ""behavior_and_network"": ""Severe bot signature: Checkout completed in an impossible 498 milliseconds. Fields were programmatically injected bypassing standard keyboard events. Connection originated from a datacenter or residential proxy IP, masking the true origin.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_91506c86d5,ANTHROPIC,BIN_Testing,BIN_Testing,True,827.67,628,7,0.000663,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A very low-value micro-purchase of USD 0.50."",
+  ""verification_outcome"": ""Authorization failed due to a CVV Mismatch (Code N7 - CVV Mismatch)."",
+  ""velocity_context"": ""Extreme velocity anomaly: This IP has attempted 24 distinct card numbers in the last 60 seconds, triggering massive CVV failures on BIN 571883."",
+  ""identity_profile"": ""This is a brand-new guest checkout session with zero historical platform trust."",
+  ""logistics_context"": ""No physical delivery address provided (digital/pre-auth transaction)."",
+  ""behavior_and_network"": ""Severe bot signature: Checkout completed in an impossible 343 milliseconds. Fields were programmatically injected bypassing standard keyboard events. Connection originated from a datacenter or residential proxy IP, masking the true origin.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_a633fbd2ea,ANTHROPIC,Legitimate,Legitimate,True,820.57,575,5,0.0006,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A standard order value of USD 56.11 via Auth-and-Capture."",
+  ""verification_outcome"": ""Authorization approved. CVV and billing address checks passed successfully."",
+  ""velocity_context"": ""Normal velocity: Only 1-2 cards attempted from this IP recently."",
+  ""identity_profile"": ""Established user account, active for 949 days."",
+  ""logistics_context"": ""Low logistics risk: Billing and shipping ZIP codes match."",
+  ""behavior_and_network"": ""Standard human behavior: Checkout took 51.1 seconds using Manual Typing. Connection originated from a standard residential/mobile ISP.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_f54b6cf79a,ANTHROPIC,Carding,Carding,True,622.9,642,6,0.000672,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A very low-value micro-purchase of USD 3.41."",
+  ""verification_outcome"": ""CVV matched, but the transaction was declined by the issuer (Code 05 - Do Not Honor - Insufficient Funds/Do Not Honor)."",
+  ""velocity_context"": ""High velocity: This session has rotated through 5 different cards in under a minute."",
+  ""identity_profile"": ""This is a brand-new guest checkout session with zero historical platform trust."",
+  ""logistics_context"": ""High logistics risk: Billing ZIP (77252) matches the cardholder, but items are being shipped to a completely different ZIP (12300), consistent with drop-houses."",
+  ""behavior_and_network"": ""Severe bot signature: Checkout completed in an impossible 1180 milliseconds. Fields were programmatically injected bypassing standard keyboard events. Connection originated from a datacenter or residential proxy IP, masking the true origin.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_52044ce458,ANTHROPIC,BIN_Testing,BIN_Testing,True,686.42,634,7,0.000669,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A USD 1.00 pre-authorization request designed to validate the card without a full charge."",
+  ""verification_outcome"": ""Authorization failed due to a CVV Mismatch (Code N7 - CVV Mismatch)."",
+  ""velocity_context"": ""Extreme velocity anomaly: This IP has attempted 57 distinct card numbers in the last 60 seconds, triggering massive CVV failures on BIN 498543."",
+  ""identity_profile"": ""This is a brand-new guest checkout session with zero historical platform trust."",
+  ""logistics_context"": ""No physical delivery address provided (digital/pre-auth transaction)."",
+  ""behavior_and_network"": ""Severe bot signature: Checkout completed in an impossible 389 milliseconds. Fields were programmatically injected bypassing standard keyboard events. Connection originated from a datacenter or residential proxy IP, masking the true origin.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_48aceea7f1,ANTHROPIC,Carding,Carding,True,807.38,643,6,0.000673,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A very low-value micro-purchase of USD 0.90."",
+  ""verification_outcome"": ""CVV matched, but the transaction was declined by the issuer (Code 51 - Insufficient Funds - Insufficient Funds/Do Not Honor)."",
+  ""velocity_context"": ""High velocity: This session has rotated through 20 different cards in under a minute."",
+  ""identity_profile"": ""This is a brand-new guest checkout session with zero historical platform trust."",
+  ""logistics_context"": ""High logistics risk: Billing ZIP (73697) matches the cardholder, but items are being shipped to a completely different ZIP (04446), consistent with drop-houses."",
+  ""behavior_and_network"": ""Severe bot signature: Checkout completed in an impossible 1268 milliseconds. Fields were programmatically injected bypassing standard keyboard events. Connection originated from a datacenter or residential proxy IP, masking the true origin.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_2737906769,ANTHROPIC,Legitimate,Legitimate,True,730.58,576,5,0.000601,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A standard order value of USD 140.15 via Auth-and-Capture."",
+  ""verification_outcome"": ""Authorization approved. CVV and billing address checks passed successfully."",
+  ""velocity_context"": ""Normal velocity: Only 1-2 cards attempted from this IP recently."",
+  ""identity_profile"": ""Established user account, active for 249 days."",
+  ""logistics_context"": ""Low logistics risk: Billing and shipping ZIP codes match."",
+  ""behavior_and_network"": ""Standard human behavior: Checkout took 80.7 seconds using Autofill. Connection originated from a standard residential/mobile ISP.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_1fa84c122a,ANTHROPIC,Legitimate,Legitimate,True,685.18,575,5,0.0006,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A standard order value of USD 122.43 via Auth-and-Capture."",
+  ""verification_outcome"": ""Authorization approved. CVV and billing address checks passed successfully."",
+  ""velocity_context"": ""Normal velocity: Only 1-2 cards attempted from this IP recently."",
+  ""identity_profile"": ""Established user account, active for 736 days."",
+  ""logistics_context"": ""Low logistics risk: Billing and shipping ZIP codes match."",
+  ""behavior_and_network"": ""Standard human behavior: Checkout took 118.2 seconds using Manual Typing. Connection originated from a standard residential/mobile ISP.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_eec95f14cd,ANTHROPIC,Carding,Carding,True,654.28,649,6,0.0006789999999999999,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A very low-value micro-purchase of USD 0.61."",
+  ""verification_outcome"": ""CVV matched, but the transaction was declined by the issuer (Code 51 - Insufficient Funds - Insufficient Funds/Do Not Honor)."",
+  ""velocity_context"": ""High velocity: This session has rotated through 8 different cards in under a minute."",
+  ""identity_profile"": ""Newly created account, active for only 2 days. Email domain is temp-mail.org."",
+  ""logistics_context"": ""High logistics risk: Billing ZIP (81580) matches the cardholder, but items are being shipped to a completely different ZIP (82638), consistent with drop-houses."",
+  ""behavior_and_network"": ""Severe bot signature: Checkout completed in an impossible 627 milliseconds. Fields were programmatically injected bypassing standard keyboard events. Connection originated from a datacenter or residential proxy IP, masking the true origin.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_a09e257712,ANTHROPIC,Legitimate,Legitimate,True,772.81,576,5,0.000601,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A standard order value of USD 220.80 via Auth-and-Capture."",
+  ""verification_outcome"": ""Authorization approved. CVV and billing address checks passed successfully."",
+  ""velocity_context"": ""Normal velocity: Only 1-2 cards attempted from this IP recently."",
+  ""identity_profile"": ""Established user account, active for 563 days."",
+  ""logistics_context"": ""Low logistics risk: Billing and shipping ZIP codes match."",
+  ""behavior_and_network"": ""Standard human behavior: Checkout took 68.2 seconds using Autofill. Connection originated from a standard residential/mobile ISP.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_897f3dcd0f,ANTHROPIC,Carding,Carding,True,880.24,649,6,0.0006789999999999999,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A very low-value micro-purchase of USD 2.49."",
+  ""verification_outcome"": ""CVV matched, but the transaction was declined by the issuer (Code 05 - Do Not Honor - Insufficient Funds/Do Not Honor)."",
+  ""velocity_context"": ""High velocity: This session has rotated through 9 different cards in under a minute."",
+  ""identity_profile"": ""Newly created account, active for only 1 days. Email domain is temp-mail.org."",
+  ""logistics_context"": ""High logistics risk: Billing ZIP (22516) matches the cardholder, but items are being shipped to a completely different ZIP (64075), consistent with drop-houses."",
+  ""behavior_and_network"": ""Severe bot signature: Checkout completed in an impossible 1274 milliseconds. Fields were programmatically injected bypassing standard keyboard events. Connection originated from a datacenter or residential proxy IP, masking the true origin.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_73212d1b7b,ANTHROPIC,Stolen_Card,Stolen_Card,True,671.65,606,7,0.000641,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A standard order value of USD 186.04 via Auth-and-Capture."",
+  ""verification_outcome"": ""Authorization approved. CVV and billing address checks passed successfully."",
+  ""velocity_context"": ""Normal velocity: Only 1-2 cards attempted from this IP recently."",
+  ""identity_profile"": ""Established user account, active for 678 days."",
+  ""logistics_context"": ""High logistics risk: Billing ZIP (17001) matches the cardholder, but items are being shipped to a completely different ZIP (48469), consistent with drop-houses."",
+  ""behavior_and_network"": ""Standard human behavior: Checkout took 32.9 seconds using Manual Typing. Connection originated from a datacenter or residential proxy IP, masking the true origin.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_c5ce1c5b04,ANTHROPIC,BIN_Testing,BIN_Testing,True,664.67,634,7,0.000669,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A USD 0.00 pre-authorization request designed to validate the card without a full charge."",
+  ""verification_outcome"": ""Authorization failed due to a CVV Mismatch (Code N7 - CVV Mismatch)."",
+  ""velocity_context"": ""Extreme velocity anomaly: This IP has attempted 29 distinct card numbers in the last 60 seconds, triggering massive CVV failures on BIN 565938."",
+  ""identity_profile"": ""This is a brand-new guest checkout session with zero historical platform trust."",
+  ""logistics_context"": ""No physical delivery address provided (digital/pre-auth transaction)."",
+  ""behavior_and_network"": ""Severe bot signature: Checkout completed in an impossible 599 milliseconds. Fields were programmatically injected bypassing standard keyboard events. Connection originated from a datacenter or residential proxy IP, masking the true origin.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_dedd968edc,ANTHROPIC,BIN_Testing,BIN_Testing,True,650.54,634,7,0.000669,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A USD 1.00 pre-authorization request designed to validate the card without a full charge."",
+  ""verification_outcome"": ""Authorization failed due to a CVV Mismatch (Code N7 - CVV Mismatch)."",
+  ""velocity_context"": ""Extreme velocity anomaly: This IP has attempted 39 distinct card numbers in the last 60 seconds, triggering massive CVV failures on BIN 478258."",
+  ""identity_profile"": ""This is a brand-new guest checkout session with zero historical platform trust."",
+  ""logistics_context"": ""No physical delivery address provided (digital/pre-auth transaction)."",
+  ""behavior_and_network"": ""Severe bot signature: Checkout completed in an impossible 446 milliseconds. Fields were programmatically injected bypassing standard keyboard events. Connection originated from a datacenter or residential proxy IP, masking the true origin.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_87954827a6,ANTHROPIC,Legitimate,Stolen_Card,False,1444.38,610,7,0.000645,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A standard order value of USD 20.04 via Auth-and-Capture."",
+  ""verification_outcome"": ""Authorization approved. CVV and billing address checks passed successfully."",
+  ""velocity_context"": ""Normal velocity: Only 1-2 cards attempted from this IP recently."",
+  ""identity_profile"": ""This is a brand-new guest checkout session with zero historical platform trust."",
+  ""logistics_context"": ""High logistics risk: Billing ZIP (75614) matches the cardholder, but items are being shipped to a completely different ZIP (04103), consistent with drop-houses."",
+  ""behavior_and_network"": ""Standard human behavior: Checkout took 91.7 seconds using Autofill. Connection originated from a datacenter or residential proxy IP, masking the true origin.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_1c3046472e,ANTHROPIC,Synthetic_Identity,Synthetic_Identity,True,692.48,599,7,0.000634,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A standard order value of USD 832.37 via Auth-and-Capture."",
+  ""verification_outcome"": ""Authorization approved. CVV and billing address checks passed successfully."",
+  ""velocity_context"": ""Normal velocity: Only 1-2 cards attempted from this IP recently."",
+  ""identity_profile"": ""Account is highly suspicious. Created 8 days ago using a disposable email (temp-mail.org). Synthetic identity score is critically high (0.961)."",
+  ""logistics_context"": ""Low logistics risk: Billing and shipping ZIP codes match."",
+  ""behavior_and_network"": ""Standard human behavior: Checkout took 76.3 seconds using Manual Typing. Connection originated from a standard residential/mobile ISP.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_f8887bbf35,ANTHROPIC,BIN_Testing,BIN_Testing,True,667.98,628,7,0.000663,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A very low-value micro-purchase of USD 0.00."",
+  ""verification_outcome"": ""Authorization failed due to a CVV Mismatch (Code N7 - CVV Mismatch)."",
+  ""velocity_context"": ""Extreme velocity anomaly: This IP has attempted 21 distinct card numbers in the last 60 seconds, triggering massive CVV failures on BIN 490247."",
+  ""identity_profile"": ""This is a brand-new guest checkout session with zero historical platform trust."",
+  ""logistics_context"": ""No physical delivery address provided (digital/pre-auth transaction)."",
+  ""behavior_and_network"": ""Severe bot signature: Checkout completed in an impossible 562 milliseconds. Fields were programmatically injected bypassing standard keyboard events. Connection originated from a datacenter or residential proxy IP, masking the true origin.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_95915a9d3d,ANTHROPIC,Synthetic_Identity,Synthetic_Identity,True,691.24,599,7,0.000634,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A standard order value of USD 480.14 via Auth-and-Capture."",
+  ""verification_outcome"": ""Authorization approved. CVV and billing address checks passed successfully."",
+  ""velocity_context"": ""Normal velocity: Only 1-2 cards attempted from this IP recently."",
+  ""identity_profile"": ""Account is highly suspicious. Created 1 days ago using a disposable email (temp-mail.org). Synthetic identity score is critically high (0.901)."",
+  ""logistics_context"": ""Low logistics risk: Billing and shipping ZIP codes match."",
+  ""behavior_and_network"": ""Standard human behavior: Checkout took 53.3 seconds using Manual Typing. Connection originated from a standard residential/mobile ISP.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_8b37c4255b,ANTHROPIC,Synthetic_Identity,Synthetic_Identity,True,762.78,600,7,0.0006349999999999999,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A standard order value of USD 571.18 via Auth-and-Capture."",
+  ""verification_outcome"": ""Authorization approved. CVV and billing address checks passed successfully."",
+  ""velocity_context"": ""Normal velocity: Only 1-2 cards attempted from this IP recently."",
+  ""identity_profile"": ""Account is highly suspicious. Created 5 days ago using a disposable email (10minutemail.com). Synthetic identity score is critically high (0.839)."",
+  ""logistics_context"": ""Low logistics risk: Billing and shipping ZIP codes match."",
+  ""behavior_and_network"": ""Standard human behavior: Checkout took 79.3 seconds using Manual Typing. Connection originated from a standard residential/mobile ISP.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_3ed31898a3,ANTHROPIC,Synthetic_Identity,Synthetic_Identity,True,686.35,600,7,0.0006349999999999999,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A standard order value of USD 389.31 via Auth-and-Capture."",
+  ""verification_outcome"": ""Authorization approved. CVV and billing address checks passed successfully."",
+  ""velocity_context"": ""Normal velocity: Only 1-2 cards attempted from this IP recently."",
+  ""identity_profile"": ""Account is highly suspicious. Created 7 days ago using a disposable email (throwawaymail.com). Synthetic identity score is critically high (0.804)."",
+  ""logistics_context"": ""Low logistics risk: Billing and shipping ZIP codes match."",
+  ""behavior_and_network"": ""Standard human behavior: Checkout took 47.5 seconds using Manual Typing. Connection originated from a standard residential/mobile ISP.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_7d7ab22dd5,ANTHROPIC,Legitimate,Legitimate,True,639.59,575,5,0.0006,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A standard order value of USD 308.92 via Auth-and-Capture."",
+  ""verification_outcome"": ""Authorization approved. CVV and billing address checks passed successfully."",
+  ""velocity_context"": ""Normal velocity: Only 1-2 cards attempted from this IP recently."",
+  ""identity_profile"": ""Established user account, active for 912 days."",
+  ""logistics_context"": ""Low logistics risk: Billing and shipping ZIP codes match."",
+  ""behavior_and_network"": ""Standard human behavior: Checkout took 49.4 seconds using Manual Typing. Connection originated from a standard residential/mobile ISP.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_1495b3d227,ANTHROPIC,Synthetic_Identity,Synthetic_Identity,True,689.43,600,7,0.0006349999999999999,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A standard order value of USD 618.43 via Auth-and-Capture."",
+  ""verification_outcome"": ""Authorization approved. CVV and billing address checks passed successfully."",
+  ""velocity_context"": ""Normal velocity: Only 1-2 cards attempted from this IP recently."",
+  ""identity_profile"": ""Account is highly suspicious. Created 6 days ago using a disposable email (10minutemail.com). Synthetic identity score is critically high (0.951)."",
+  ""logistics_context"": ""Low logistics risk: Billing and shipping ZIP codes match."",
+  ""behavior_and_network"": ""Standard human behavior: Checkout took 84.7 seconds using Manual Typing. Connection originated from a standard residential/mobile ISP.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_6462990edf,ANTHROPIC,Stolen_Card,Stolen_Card,True,642.65,606,7,0.000641,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A standard order value of USD 959.02 via Auth-and-Capture."",
+  ""verification_outcome"": ""Authorization approved. CVV and billing address checks passed successfully."",
+  ""velocity_context"": ""Normal velocity: Only 1-2 cards attempted from this IP recently."",
+  ""identity_profile"": ""Established user account, active for 539 days."",
+  ""logistics_context"": ""High logistics risk: Billing ZIP (64344) matches the cardholder, but items are being shipped to a completely different ZIP (25595), consistent with drop-houses."",
+  ""behavior_and_network"": ""Standard human behavior: Checkout took 29.9 seconds using Manual Typing. Connection originated from a datacenter or residential proxy IP, masking the true origin.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_27f7024b6c,ANTHROPIC,Carding,Carding,True,638.0,651,6,0.000681,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A very low-value micro-purchase of USD 3.14."",
+  ""verification_outcome"": ""CVV matched, but the transaction was declined by the issuer (Code 51 - Insufficient Funds - Insufficient Funds/Do Not Honor)."",
+  ""velocity_context"": ""High velocity: This session has rotated through 11 different cards in under a minute."",
+  ""identity_profile"": ""Newly created account, active for only 2 days. Email domain is guerrillamail.com."",
+  ""logistics_context"": ""High logistics risk: Billing ZIP (46292) matches the cardholder, but items are being shipped to a completely different ZIP (32766), consistent with drop-houses."",
+  ""behavior_and_network"": ""Severe bot signature: Checkout completed in an impossible 1241 milliseconds. Fields were programmatically injected bypassing standard keyboard events. Connection originated from a datacenter or residential proxy IP, masking the true origin.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_7a79974560,ANTHROPIC,Stolen_Card,Stolen_Card,True,710.07,607,7,0.000642,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A standard order value of USD 957.29 via Auth-and-Capture."",
+  ""verification_outcome"": ""Authorization approved. CVV and billing address checks passed successfully."",
+  ""velocity_context"": ""Normal velocity: Only 1-2 cards attempted from this IP recently."",
+  ""identity_profile"": ""Established user account, active for 742 days."",
+  ""logistics_context"": ""High logistics risk: Billing ZIP (80888) matches the cardholder, but items are being shipped to a completely different ZIP (60388), consistent with drop-houses."",
+  ""behavior_and_network"": ""Standard human behavior: Checkout took 18.3 seconds using Autofill. Connection originated from a datacenter or residential proxy IP, masking the true origin.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_65c949d924,ANTHROPIC,Synthetic_Identity,Synthetic_Identity,True,666.06,600,7,0.0006349999999999999,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A standard order value of USD 547.53 via Auth-and-Capture."",
+  ""verification_outcome"": ""Authorization approved. CVV and billing address checks passed successfully."",
+  ""velocity_context"": ""Normal velocity: Only 1-2 cards attempted from this IP recently."",
+  ""identity_profile"": ""Account is highly suspicious. Created 10 days ago using a disposable email (throwawaymail.com). Synthetic identity score is critically high (0.823)."",
+  ""logistics_context"": ""Low logistics risk: Billing and shipping ZIP codes match."",
+  ""behavior_and_network"": ""Standard human behavior: Checkout took 61.1 seconds using Manual Typing. Connection originated from a standard residential/mobile ISP.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_5509baab1c,ANTHROPIC,Carding,Carding,True,666.04,651,6,0.000681,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A very low-value micro-purchase of USD 2.60."",
+  ""verification_outcome"": ""CVV matched, but the transaction was declined by the issuer (Code 51 - Insufficient Funds - Insufficient Funds/Do Not Honor)."",
+  ""velocity_context"": ""High velocity: This session has rotated through 14 different cards in under a minute."",
+  ""identity_profile"": ""Newly created account, active for only 1 days. Email domain is guerrillamail.com."",
+  ""logistics_context"": ""High logistics risk: Billing ZIP (49818) matches the cardholder, but items are being shipped to a completely different ZIP (33586), consistent with drop-houses."",
+  ""behavior_and_network"": ""Severe bot signature: Checkout completed in an impossible 1130 milliseconds. Fields were programmatically injected bypassing standard keyboard events. Connection originated from a datacenter or residential proxy IP, masking the true origin.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_68d7a53ceb,ANTHROPIC,Legitimate,Legitimate,True,698.3,573,5,0.000598,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A standard order value of USD 96.32 via Auth-Only."",
+  ""verification_outcome"": ""Authorization approved. CVV and billing address checks passed successfully."",
+  ""velocity_context"": ""Normal velocity: Only 1-2 cards attempted from this IP recently."",
+  ""identity_profile"": ""Established user account, active for 155 days."",
+  ""logistics_context"": ""Low logistics risk: Billing and shipping ZIP codes match."",
+  ""behavior_and_network"": ""Standard human behavior: Checkout took 44.4 seconds using Autofill. Connection originated from a standard residential/mobile ISP.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_55e83dbe62,ANTHROPIC,Stolen_Card,Stolen_Card,True,643.33,600,7,0.0006349999999999999,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A standard order value of USD 8.01 via Auth-and-Capture."",
+  ""verification_outcome"": ""Authorization approved. CVV and billing address checks passed successfully."",
+  ""velocity_context"": ""Normal velocity: Only 1-2 cards attempted from this IP recently."",
+  ""identity_profile"": ""Established user account, active for 584 days."",
+  ""logistics_context"": ""High logistics risk: Billing ZIP (43832) matches the cardholder, but items are being shipped to a completely different ZIP (31457), consistent with drop-houses."",
+  ""behavior_and_network"": ""Standard human behavior: Checkout took 47.1 seconds using Manual Typing. Connection originated from a standard residential/mobile ISP.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"
+tx_8fbe7f8e1a,ANTHROPIC,Stolen_Card,Stolen_Card,True,723.79,608,7,0.000643,"You are an expert financial fraud investigator analyzing a real-time transaction.
+Your task is to classify the transaction into exactly ONE of the following 5 categories based on the narrative provided.
+
+CATEGORIES & DEFINITIONS:
+1. Legitimate: A standard, valid transaction with no malicious intent.
+2. BIN_Testing: High-speed, automated micro-transactions guessing card numbers.
+3. Carding: Scripted low-value transactions validating stolen credentials.
+4. Stolen_Card: High-value unauthorized purchases using stolen card details.
+5. Synthetic_Identity: Transactions tied to newly fabricated identities.
+
+--- EXAMPLES FOR CLASSIFYING AUTOMATED ATTACKS ---
+Because BIN Testing and Carding look similar, use these exact rules:
+
+EXAMPLE 1
+Narrative Clues: ""Authorization failed due to a CVV Mismatch (Code N7)"" AND ""triggering massive CVV failures on BIN X""
+Correct Classification: BIN_Testing
+Reasoning: BIN Testing brute-forces the 3-digit CVV, resulting in explicit CVV Mismatches. It targets a single BIN prefix.
+
+EXAMPLE 2
+Narrative Clues: ""CVV matched, but the transaction was declined... (Code 51 - Insufficient Funds / Code 05 - Do Not Honor)"" AND ""rotated through X different cards""
+Correct Classification: Carding
+Reasoning: Carders possess stolen lists containing the real CVVs. The CVV matches, but the issuer declines it because the stolen card is empty or blocked. They rotate through many different cards, not a single BIN.
+--------------------------------------------------
+
+TRANSACTION NARRATIVE:
+{
+  ""amount_and_intent"": ""A standard order value of USD 2004.92 via Auth-and-Capture."",
+  ""verification_outcome"": ""Authorization approved. CVV and billing address checks passed successfully."",
+  ""velocity_context"": ""Normal velocity: Only 1-2 cards attempted from this IP recently."",
+  ""identity_profile"": ""Established user account, active for 480 days."",
+  ""logistics_context"": ""High logistics risk: Billing ZIP (86776) matches the cardholder, but items are being shipped to a completely different ZIP (52380), consistent with drop-houses."",
+  ""behavior_and_network"": ""Standard human behavior: Checkout took 34.0 seconds using Autofill. Connection originated from a datacenter or residential proxy IP, masking the true origin.""
+}
+
+INSTRUCTIONS:
+Evaluate the narrative and return ONLY the exact category name from the list above. Do not include explanations, punctuation, or extra text.
+"

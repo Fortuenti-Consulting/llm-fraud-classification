@@ -1,0 +1,178 @@
+import os
+import re
+import json
+import time
+import pandas as pd
+import httpx2
+from dotenv import load_dotenv
+from openai import OpenAI
+from anthropic import Anthropic
+
+# Load API keys from the .env file next to this script
+script_dir = os.path.dirname(os.path.abspath(__file__))
+env_path = os.path.join(script_dir, '.env')
+load_dotenv(dotenv_path=env_path, override=True)
+
+# 1. Engine configuration
+ENGINE_CHOICE = os.getenv("ENGINE", "OPENAI").upper()  # ENGINE=ANTHROPIC python3 <script>
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
+
+if not OPENAI_API_KEY or not ANTHROPIC_API_KEY:
+    raise ValueError(f"Missing API keys. Looked for .env at: {env_path}")
+
+OPENAI_MODEL = "gpt-4o-mini"
+ANTHROPIC_MODEL = "claude-haiku-4-5-20251001"
+
+# USD per million tokens
+PRICING = {
+    "gpt-4o-mini": {"input": 0.150, "output": 0.600},
+    "claude-haiku-4-5-20251001": {"input": 1.00, "output": 5.00}
+}
+
+# trust_env=False ignores any system proxy settings
+openai_client = OpenAI(api_key=OPENAI_API_KEY, http_client=httpx2.Client(trust_env=False))
+anthropic_client = Anthropic(api_key=ANTHROPIC_API_KEY, base_url="https://api.anthropic.com", http_client=httpx2.Client(trust_env=False))
+
+# 2. Chain-of-thought prompt
+def build_cot_prompt(narrative_dict: dict) -> str:
+    """Asks for a checklist-driven analysis in <scratchpad> and the label in <classification>."""
+    prompt = f"""You are an expert financial fraud investigator analyzing a real-time transaction.
+
+First, write out your step-by-step analysis inside <scratchpad> tags using the following checklist:
+1. Cryptographic Signals: Did the transaction fail with a CVV Mismatch, fail with Insufficient Funds, or Authorize successfully?
+2. Velocity Profile: Does the narrative explicitly mention targeting a specific "BIN", rotating through different cards, or is velocity normal?
+3. Identity Risk: Is the synthetic identity score critically high, and was a disposable email used?
+4. Logistics Risk: Do the billing and shipping ZIP codes match, or is this a drop-house pattern?
+
+After you complete your scratchpad analysis, return the final classification inside <classification> tags.
+Choose EXACTLY ONE category: [Legitimate, BIN_Testing, Carding, Stolen_Card, Synthetic_Identity].
+
+TRANSACTION NARRATIVE:
+{json.dumps(narrative_dict, indent=2)}
+
+INSTRUCTIONS:
+Think step-by-step in the <scratchpad>, then provide your final label in <classification>.
+WARNING: Your classification MUST be exactly one of the 5 approved strings: Legitimate, BIN_Testing, Carding, Stolen_Card, or Synthetic_Identity. Do not invent new categories like "Drop_House" or "Logistics_Risk".
+"""
+    return prompt
+
+# 3. Label extraction
+def extract_classification(llm_response: str) -> str:
+    """Returns the text inside <classification>...</classification>, or ERROR_PARSING if the tags are missing."""
+    match = re.search(r"<classification>\s*(.*?)\s*</classification>", llm_response, re.IGNORECASE | re.DOTALL)
+
+    if match:
+        return match.group(1).strip()
+    else:
+        print("WARNING: Model failed to use <classification> tags!")
+        return "ERROR_PARSING"
+
+# 4. LLM call, cost and latency
+def classify_with_llm(prompt: str, engine: str):
+    start_time = time.perf_counter()
+
+    if engine == "OPENAI":
+        active_model = OPENAI_MODEL
+        response = openai_client.chat.completions.create(
+            model=active_model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.0,
+            max_tokens=300  # room for the scratchpad
+        )
+        raw_response_text = response.choices[0].message.content.strip()
+        prompt_tokens = response.usage.prompt_tokens
+        completion_tokens = response.usage.completion_tokens
+
+    elif engine == "ANTHROPIC":
+        active_model = ANTHROPIC_MODEL
+        response = anthropic_client.messages.create(
+            model=active_model,
+            messages=[{"role": "user", "content": prompt}],
+            extra_body={"temperature": 0.0},  # SDK 1.x no longer takes temperature as an argument
+            max_tokens=800  # room for the scratchpad
+        )
+        raw_response_text = response.content[0].text.strip()
+        prompt_tokens = response.usage.input_tokens
+        completion_tokens = response.usage.output_tokens
+
+    else:
+        raise ValueError(f"Unsupported engine: {engine}")
+
+    latency_ms = (time.perf_counter() - start_time) * 1000
+    cost = (
+        (prompt_tokens / 1_000_000) * PRICING[active_model]["input"] +
+        (completion_tokens / 1_000_000) * PRICING[active_model]["output"]
+    )
+
+    predicted_label = extract_classification(raw_response_text)
+
+    return predicted_label, raw_response_text, prompt_tokens, completion_tokens, cost, latency_ms
+
+# 5. Main
+if __name__ == "__main__":
+    print("Loading synthetic_fraud_dataset.json...")
+    with open("synthetic_fraud_dataset.json", "r") as f:
+        dataset = json.load(f)
+
+    # Every strategy is scored on the same 50 transactions (10 per category)
+    with open("eval_sample_ids.txt", "r") as f:
+        sample_ids = f.read().split()
+    records_by_id = {r["raw_ml_features"]["transaction_id"]: r for r in dataset}
+    sampled_records = [records_by_id[tx_id] for tx_id in sample_ids]
+
+    correct_predictions = 0
+    total_cost = 0.0
+    results_log = []
+
+    print(f"Loaded {len(sampled_records)} records. Starting CoT classification via {ENGINE_CHOICE}...\n")
+
+    for i, record in enumerate(sampled_records, 1):
+        true_label = record["raw_ml_features"]["fraud_category"]
+        narrative = record["llm_reasoning_prompt"]
+        tx_id = record["raw_ml_features"]["transaction_id"]
+
+        prompt = build_cot_prompt(narrative)
+
+        try:
+            predicted_label, raw_text, p_tok, c_tok, call_cost, latency_ms = classify_with_llm(prompt, ENGINE_CHOICE)
+
+            total_cost += call_cost
+            is_correct = (predicted_label == true_label)
+            if is_correct:
+                correct_predictions += 1
+
+            print(f"[{i}/{len(sampled_records)}] {tx_id} | True: {true_label} | Pred: {predicted_label} | Correct: {is_correct} | {latency_ms:.0f}ms")
+
+            results_log.append({
+                "transaction_id": tx_id,
+                "engine_used": ENGINE_CHOICE,
+                "true_label": true_label,
+                "predicted_label": predicted_label,
+                "is_correct": is_correct,
+                "latency_ms": round(latency_ms, 2),
+                "cost_usd": call_cost,
+                "cot_output": raw_text
+            })
+
+        except Exception as e:
+            print(f"Error classifying {tx_id}: {e}")
+
+    # 6. Summary
+    # Failed API calls count as incorrect: the denominator is the full sample
+    df_results = pd.DataFrame(results_log)
+    accuracy = (correct_predictions / len(sampled_records)) * 100
+
+    print("\n" + "="*45)
+    print(f"CHAIN OF THOUGHT EVALUATION: {ENGINE_CHOICE}")
+    print("="*45)
+    print(f"Accuracy:        {accuracy:.1f}% ({correct_predictions}/{len(sampled_records)})")
+    print(f"Total Cost:      ${total_cost:.5f}")
+    print(f"Avg Latency:     {df_results['latency_ms'].mean():.0f} ms")
+    print(f"p95 Latency:     {df_results['latency_ms'].quantile(0.95):.0f} ms")
+    print("="*45)
+
+    output_file = f"llm_eval_log_cot_{ENGINE_CHOICE.lower()}.csv"
+    df_results.to_csv(output_file, index=False)
+    print(f"\nDetailed log with reasoning saved to {output_file}")
