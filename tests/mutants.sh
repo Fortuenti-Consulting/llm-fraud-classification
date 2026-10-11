@@ -35,6 +35,8 @@ mutate "narrative calls any email domain disposable" dataset_generator.py 's/if 
 mutate "default mode consumes an extra random number" dataset_generator.py 's/if shifted and random\.random\(\) < SHIFT_RATE:/if random.random() < SHIFT_RATE and shifted:/' V11
 mutate "README shifted category table out of date" README.md 's/\| 0 \| 0 \| 0 \| 1 \| 6 \|/| 0 | 0 | 0 | 1 | 7 |/' V8
 mutate "shifted seed changed after publishing" dataset_generator.py 's/SHIFTED_SEED = 7/SHIFTED_SEED = 8/' V10
+mutate "playground saved with stale outputs" playground.ipynb 's/88 of    88 labeled correctly/87 of    88 labeled correctly/' V12
+mutate "playground live API call switched on by default" playground.ipynb 's/RUN_LIVE_CALL = False/RUN_LIVE_CALL = True/' V12
 mutate "grid cell reads the wrong engine's log" cost-accuracy_analysis.py 's/llm_eval_log_\{strat\}_\{eng\}\.csv/llm_eval_log_{strat}_openai.csv/' V4
 
 echo "survivors: $survived"

@@ -1,3 +1,23 @@
+"""
+Step 1 of the experiment: build the made-up payments.
+
+Creates 5,000 fake card payments in five categories (92% legitimate, 2% each
+of four fraud types). Every payment is stored two ways:
+  - raw_ml_features: the fields a bank or store system would record, such as
+    the amount, the security-code result or how many cards were tried per minute
+  - llm_reasoning_prompt: six short sentences describing those fields, which
+    is what the AI models read
+About 12% of payments get a few fields changed on purpose so the data has hard
+cases: a real customer on a VPN, a bot that types like a person, and so on.
+
+How to run (from the project folder):
+  python3 dataset_generator.py            rebuilds synthetic_fraud_dataset.json and .csv
+  python3 dataset_generator.py --shifted  builds the shifted stress-test set instead
+
+Things to try: change CLASS_DISTRIBUTION or NOISE_RATE below and see how the
+rule engine (card_fraud_analyzer.py) copes. Regenerating creates new
+transaction IDs, so the published model results will no longer line up.
+"""
 import random
 import uuid
 from datetime import datetime, timedelta, timezone
@@ -37,7 +57,7 @@ CLASS_DISTRIBUTION = {
 
 
 def sample_fraud_category():
-    """Samples a category based on target class imbalance."""
+    """Picks a category with the odds in CLASS_DISTRIBUTION."""
     categories = list(CLASS_DISTRIBUTION.keys())
     probabilities = list(CLASS_DISTRIBUTION.values())
     return np.random.choice(categories, p=probabilities)
@@ -60,7 +80,16 @@ def generate_raw_transaction(category: str) -> dict:
     common_domains = COMMON_EMAIL_DOMAINS
     disposable_domains = DISPOSABLE_EMAIL_DOMAINS
 
-    # Category-specific raw signals
+    # Category-specific raw signals. Payment terms used below:
+    #   mcc          merchant category code, the type of store (5411 = grocery)
+    #   bin_num      first 6 digits of the card number, which identify the bank that issued it
+    #   cvv_result   whether the 3-digit security code matched
+    #   avs_result   whether the billing address matched (address verification)
+    #   auth_code    the bank's answer: 00 approved, 05 do not honor, 51 insufficient funds,
+    #                N7 security code mismatch
+    #   velocity     how many different cards (pan_velocity) or failed security codes
+    #                (cvv_fail_velocity) came from the same connection in a short window
+    #   synth_score  0-1 score from an identity check; high means the identity looks fabricated
 
     if category == "Legitimate":
         # 80% under $150, 15% up to $500, 5% high-value up to $3500
@@ -329,9 +358,10 @@ def generate_shifted_variant(raw: dict, category: str) -> dict:
 
 def enrich_for_llm(raw: dict) -> dict:
     """
-    Pass 2: deterministic enrichment.
-    Translates the raw numerical/categorical values into short natural-language
-    narratives that the LLM classifiers read instead of the raw fields.
+    Turns one payment's raw fields into the six sentences the models read.
+    Each sentence is chosen by a hand-written threshold, and the wording
+    ("High logistics risk", "critically high") nudges the models; the README
+    shows how much.
     """
     
     # 1. Amount narrative
@@ -420,10 +450,10 @@ if __name__ == "__main__":
         random.seed(SHIFTED_SEED)
     print(f"Generating {NUM_SAMPLES} {'shifted ' if shifted else ''}synthetic transactions. This may take a few seconds...")
 
-    # Step 1: Sample transaction categories based on set weighted distribution
+    # Step 1: pick a category for each of the 5,000 records
     sampled_types = [sample_fraud_category() for _ in range(NUM_SAMPLES)]
 
-    # Step 2: Pass 1, raw fields plus noise
+    # Step 2: raw fields, then noise or shift
     raw_records = []
     noisy_count = 0
     shifted_count = 0
@@ -453,7 +483,7 @@ if __name__ == "__main__":
     if shifted:
         print(f"Shifted {shifted_count} records (~{(shifted_count/NUM_SAMPLES)*100:.1f}% of total).")
 
-    # Step 3: Pass 2, narratives for the LLM
+    # Step 3: the six sentences the LLM reads
     enriched_records = [enrich_for_llm(record) for record in raw_records]
 
     # Print the final distribution

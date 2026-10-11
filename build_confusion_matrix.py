@@ -1,3 +1,16 @@
+"""
+Count which labels each model run mixes up.
+
+For each of the six main result logs it builds a confusion matrix: a table
+where rows are the true labels and columns are what the model answered.
+Numbers on the diagonal are right answers; every other cell is a specific
+mistake, such as 8 carding payments answered as BIN testing.
+
+It also reports the most one-sided mix-up in each run and the label pairs that
+no run ever confused. Results go to confusion_matrix_analysis.json.
+
+How to run (from the project folder): python3 build_confusion_matrix.py
+"""
 import os
 import sys
 import csv
@@ -141,7 +154,7 @@ for filename in files_to_analyze:
     if max_asym_diff > 0:
         print(f">> GREATEST ASYMMETRIC CONFUSION: '{asym_a}' misclassified as '{asym_b}' ({a_to_b_val} times), but '{asym_b}' misclassified as '{asym_a}' only ({b_to_a_val} times).")
     else:
-        print(">> GREATEST ASYMMETRIC CONFUSION: None (Error distribution is completely symmetric or zero).")
+        print(">> GREATEST ASYMMETRIC CONFUSION: None (errors are symmetric or zero).")
 
     print("\n\n")
 
@@ -163,16 +176,16 @@ for filename in files_to_analyze:
 
 # Comparison across all runs
 print(f"{'='*115}")
-print("GLOBAL COMPARATIVE ANALYSIS ACROSS ALL STRATEGIES AND TOOLS")
+print("ACROSS ALL RUNS")
 print(f"{'='*115}\n")
 
 # 1. Tightest Diagonal
-print(f"1. TIGHTEST DIAGONAL STRATEGY & TOOL:")
+print("1. Most correct answers:")
 print(f"   Winner: {best_file_name}")
 print(f"   Score: {best_diagonal_count} correct classifications on the main diagonal.\n")
 
 # 2. Off-diagonal cells with zero errors in every run
-print("2. ZERO-ERROR OFF-DIAGONAL CELLS (Never misclassified across any tested model/strategy):")
+print("2. Label pairs no run ever confused:")
 zero_error_pairs = []
 for label_pair, err_sum in global_off_diagonal_counts.items():
     if err_sum == 0:
@@ -183,7 +196,7 @@ if zero_error_pairs:
     for pair in zero_error_pairs:
         print(f"   • True: '{pair['true']}'  -->  Predicted: '{pair['pred']}' (0 errors across all logs)")
 else:
-    print("   • None (Every off-diagonal cell experienced at least 1 error in some run).")
+    print("   • None (every mix-up happened at least once).")
 
 # Populate global summary for JSON
 output_data["global_summary"] = {

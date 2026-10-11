@@ -1,3 +1,20 @@
+"""
+The rule engine: the non-AI baseline.
+
+Five hand-written if-then rules label each payment, checked in order (see
+rule_based_fallback_classifier below). The rules run in a tiny fraction of a
+millisecond and cost nothing, which is the bar the AI models are measured against.
+
+How to run (from the project folder):
+  python3 card_fraud_analyzer.py
+      scores the rules on all 5,000 payments and writes rule_engine_eval_log.csv
+  python3 card_fraud_analyzer.py shifted_fraud_dataset.json shifted_rule_engine_eval_log.csv
+      does the same on the shifted stress-test set
+
+Things to try: on your own copy, change a number in one of the rules (the 10
+in rule 1, for example) and run it again. The playground notebook lets you do
+this in the browser.
+"""
 import json
 import csv
 import os
@@ -8,7 +25,7 @@ from collections import Counter
 DISPOSABLE_EMAIL_DOMAINS = {"temp-mail.org", "guerrillamail.com", "10minutemail.com", "throwawaymail.com"}
 
 def load_dataset(dataset_path="synthetic_fraud_dataset.json"):
-    """Loads the synthetic fraud dataset."""
+    """Reads the nested JSON written by dataset_generator.py."""
     if not os.path.exists(dataset_path):
         raise FileNotFoundError(f"Could not find dataset at {dataset_path}")
     with open(dataset_path, "r", encoding="utf-8") as f:
@@ -40,8 +57,8 @@ def extract_features(record):
 
 def rule_based_fallback_classifier(features):
     """
-    Deterministic rule engine serving as a sub-5ms fallback/benchmark baseline.
-    Rules follow the domain definitions worked out during prompt engineering.
+    The five rules, checked in order; the first match wins. Thresholds match
+    the category descriptions used in the prompts.
     """
     # 1. BIN Testing: High velocity + explicit CVV mismatch
     if features["card_velocity_60s"] > 10 and not features["cvv_match"]:

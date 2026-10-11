@@ -1,3 +1,19 @@
+"""
+Ask an AI model to label each payment: few-shot prompt plus chain-of-thought.
+
+The few-shot prompt (definitions and both worked examples) followed by the same
+reasoning checklist as classify_llm_chain-of-thought.py. Comparing this with
+the plain few-shot run shows what the step-by-step reasoning adds on its own.
+
+Needs an OpenAI and an Anthropic API key in a .env file (copy .env.example).
+A run on Claude costs about 20-25 cents because the replies are long.
+
+How to run (from the project folder):
+  python3 classify_llm_few-shot-cot.py                     asks GPT-4o-mini (OpenAI)
+  ENGINE=ANTHROPIC python3 classify_llm_few-shot-cot.py    asks Claude Haiku 4.5
+  DATASET=shifted python3 classify_llm_few-shot-cot.py     uses the shifted stress-test set
+Output: llm_eval_log_few-shot-cot_<engine>[_shifted].csv
+"""
 import os
 import re
 import json
@@ -145,7 +161,7 @@ if __name__ == "__main__":
     with open(DATASET_FILE, "r") as f:
         dataset = json.load(f)
 
-    # Every strategy is scored on the same 50 transactions (10 per category)
+    # 50 transactions, 10 per category, from the sample file for this dataset
     with open(SAMPLE_FILE, "r") as f:
         sample_ids = f.read().split()
     records_by_id = {r["raw_ml_features"]["transaction_id"]: r for r in dataset}

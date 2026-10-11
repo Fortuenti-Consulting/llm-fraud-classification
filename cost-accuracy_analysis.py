@@ -1,3 +1,14 @@
+"""
+Summarize accuracy, speed and cost for every prompt style and model.
+
+Reads the six main result logs and prints one table: accuracy (share of right
+answers), average time per answer in milliseconds, and the total cost of the
+50 questions in US dollars. It then names the most accurate setup, the cheapest
+one within 5 points of it, and the weakest prompt style.
+Results go to performance_grid_analysis.json.
+
+How to run (from the project folder): python3 cost-accuracy_analysis.py
+"""
 import os
 import csv
 import json
@@ -45,7 +56,7 @@ for strat in strategies:
             grid[strat][eng]["status"] = "OK"
 
 print("\n" + "=" * 90)
-print(f"{'LLM ARCHITECTURE PERFORMANCE GRID':^90}")
+print(f"{'ACCURACY, LATENCY AND COST BY PROMPT STYLE AND MODEL':^90}")
 print("=" * 90)
 
 print(f"{'':15} | {'OPENAI (GPT-4o-mini)':^33} | {'ANTHROPIC (Claude Haiku 4.5)':^33}")
@@ -80,10 +91,10 @@ if cells:
     top_s, top_e, top = max(cells, key=lambda c: c[2]["accuracy"])
     eco_s, eco_e, eco = min((c for c in cells if c[2]["accuracy"] >= top["accuracy"] - 5), key=lambda c: c[2]["cost"])
     worst = min(strategies, key=lambda s: sum(grid[s][e]["accuracy"] for e in engines))
-    print(">> ARCHITECTURE RECOMMENDATION:")
-    print(f"   - For MAX ACCURACY:    {names[top_e]} + {top_s} ({top['accuracy']:.0f}%)")
-    print(f"   - For MAX ECONOMY:     {names[eco_e]} + {eco_s} ({eco['accuracy']:.0f}%, ${eco['cost']:.4f} per 50)")
-    print(f"   - AVOID:               {worst} (lowest mean accuracy across engines)\n")
+    print(">> PICKS:")
+    print(f"   - Most accurate:            {names[top_e]} + {top_s} ({top['accuracy']:.0f}%)")
+    print(f"   - Cheapest within 5 points: {names[eco_e]} + {eco_s} ({eco['accuracy']:.0f}%, ${eco['cost']:.4f} per 50)")
+    print(f"   - Weakest prompt style:     {worst} (lowest average accuracy across the two models)\n")
 
 output_filename = "performance_grid_analysis.json"
 with open(output_filename, "w", encoding="utf-8") as json_file:

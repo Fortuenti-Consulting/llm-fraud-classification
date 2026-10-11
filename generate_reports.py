@@ -1,3 +1,15 @@
+"""
+Write the two reports from the results.
+
+VP_Report.md is a one-page summary for a decision maker. Engineer_Report.md
+lists every chain-of-thought mistake with the payments involved and the reason
+behind it. All numbers are read from the result files, so the reports stay
+correct when results change; only the root-cause sentences in ROOT_CAUSES are
+written by hand, from reading the models' scratchpads.
+
+How to run (from the project folder, after cost-accuracy_analysis.py):
+  python3 generate_reports.py
+"""
 import csv
 import json
 from collections import defaultdict
@@ -7,7 +19,7 @@ with open("performance_grid_analysis.json", "r") as f:
     perf_data = json.load(f)
 
 ENGINE_NAMES = {"openai": "GPT-4o-mini", "anthropic": "Claude Haiku 4.5"}
-STRATEGY_NAMES = {"zero-shot": "Zero-Shot", "few-shot": "Few-Shot", "cot": "Chain-of-Thought"}
+STRATEGY_NAMES = {"zero-shot": "zero-shot", "few-shot": "few-shot", "cot": "chain-of-thought"}
 
 cells = [(s, e, perf_data[s][e]) for s in perf_data for e in perf_data[s]]
 fastest_s, fastest_e, fastest = min(cells, key=lambda c: c[2]["latency"])
@@ -22,22 +34,41 @@ for engine in ["openai", "anthropic"]:
         rows = list(csv.DictReader(f))
     fs_cot_acc[engine] = 100 * sum(r["true_label"] == r["predicted_label"] for r in rows) / len(rows)
 
+# Rule engine on the same 50, and the shifted stress test (50 records built to slip past the rules)
+def sample_hits(log, ids_file):
+    with open(ids_file) as f:
+        ids = set(f.read().split())
+    with open(log, encoding="utf-8") as f:
+        return sum(r["is_correct"] == "True" for r in csv.DictReader(f) if r["transaction_id"] in ids)
+
+rule_hits = sample_hits("rule_engine_eval_log.csv", "eval_sample_ids.txt")
+shifted_rule_hits = sample_hits("shifted_rule_engine_eval_log.csv", "shifted_sample_ids.txt")
+shifted_acc = {}
+for strategy in ["few-shot", "few-shot-cot"]:
+    for engine in ["openai", "anthropic"]:
+        with open(f"llm_eval_log_{strategy}_{engine}_shifted.csv", encoding="utf-8") as f:
+            rows = list(csv.DictReader(f))
+        shifted_acc[(strategy, engine)] = 100 * sum(r["true_label"] == r["predicted_label"] for r in rows) / len(rows)
+best_shifted = max(shifted_acc, key=shifted_acc.get)
+best_shifted_style = "reasoning step by step" if best_shifted[0] == "few-shot-cot" else "few-shot"
+
 # 2. VP report
-vp_report = f"""# Executive Brief: LLM Fraud Classification Pilot Study
+vp_report = f"""# LLM fraud classification: summary for decision makers
 
-## Overview & Scope
-We ran an n=50 pilot (10 transactions per category, the same 50 for every configuration) to evaluate Large Language Models (LLMs) for real-time transaction fraud classification. The goal was to understand if LLMs could accurately classify transactions into 5 categories from narratives built on categorical and behavioral signals, and whether their latency supports synchronous blocking.
+## What was tested
+Two language models, GPT-4o-mini and Claude Haiku 4.5, labeled 50 made-up card payments (10 per category, the same 50 for every setup) using three prompt styles. Two questions: can they sort a short text description of a payment into 5 categories, and are they fast enough to block a payment while it is being made? All data is synthetic; read the caveats in the README before applying any of these numbers to real traffic.
 
-## Key Findings
-1. **LLMs are too slow for synchronous blocking.** The fastest configuration ({ENGINE_NAMES[fastest_e]}, {STRATEGY_NAMES[fastest_s]}) averaged {fastest['latency']:.0f}ms per transaction. Our synchronous blocking layer requires a sub-200ms response time.
-2. **Zero-Shot vs. Few-Shot:** LLMs need explicit examples to apply specialized fraud definitions. Adding 2 examples (Few-Shot) raised accuracy from {perf_data['zero-shot']['openai']['accuracy']:.0f}% to {perf_data['few-shot']['openai']['accuracy']:.0f}% on GPT-4o-mini and from {perf_data['zero-shot']['anthropic']['accuracy']:.0f}% to {perf_data['few-shot']['anthropic']['accuracy']:.0f}% on Claude Haiku 4.5. Peak accuracy: {best_fs['accuracy']:.0f}% ({ENGINE_NAMES[best_fs_e]}).
-3. **Chain-of-Thought (CoT) degrades performance:** Asking the model to reason step by step before classifying raised average latency to as much as {cot_slowest['latency']:.0f}ms, multiplied cost, and *reduced* accuracy compared with Few-Shot ({perf_data['cot']['openai']['accuracy']:.0f}% on GPT-4o-mini, {perf_data['cot']['anthropic']['accuracy']:.0f}% on Claude Haiku 4.5). The scratchpads show the models overthinking secondary signals. Caveat: the CoT prompt listed only the category names, without the definitions or examples. With them added (Few-Shot + CoT), accuracy returns to {fs_cot_acc['openai']:.0f}% on GPT-4o-mini and {fs_cot_acc['anthropic']:.0f}% on Claude Haiku 4.5, so most of the drop came from the missing definitions; the step-by-step reasoning itself added latency and cost without improving accuracy.
+## Findings
+1. **Too slow to block payments in real time.** The fastest setup ({ENGINE_NAMES[fastest_e]}, {STRATEGY_NAMES[fastest_s]}) averaged {fastest['latency']:.0f}ms per transaction. A decision to block a card payment usually has to come back in under 200ms.
+2. **Two examples closed most of the gap.** Adding 2 worked examples to the prompt (few-shot) raised accuracy from {perf_data['zero-shot']['openai']['accuracy']:.0f}% to {perf_data['few-shot']['openai']['accuracy']:.0f}% on GPT-4o-mini and from {perf_data['zero-shot']['anthropic']['accuracy']:.0f}% to {perf_data['few-shot']['anthropic']['accuracy']:.0f}% on Claude Haiku 4.5. Best result: {best_fs['accuracy']:.0f}% ({ENGINE_NAMES[best_fs_e]}). A short list of hand-written rules got {rule_hits} of the same 50 right in well under a millisecond.
+3. **Asking the model to reason step by step did not pay off on this sample.** Latency rose to as much as {cot_slowest['latency']:.0f}ms, cost multiplied, and accuracy fell below few-shot ({perf_data['cot']['openai']['accuracy']:.0f}% on GPT-4o-mini, {perf_data['cot']['anthropic']['accuracy']:.0f}% on Claude Haiku 4.5). The written reasoning shows the models dwelling on secondary signals. One caveat: that prompt listed only the category names, without the definitions or examples. With them added (few-shot + chain-of-thought), accuracy returns to {fs_cot_acc['openai']:.0f}% on GPT-4o-mini and {fs_cot_acc['anthropic']:.0f}% on Claude Haiku 4.5, so most of the drop came from the missing definitions. The reasoning step itself added time and cost without improving accuracy here.
+4. **When the fraud changed, the models held up better than the rules.** On 50 payments built to slip past the rules, the rules got {shifted_rule_hits} right, as designed. The four few-shot setups scored {min(shifted_acc.values()):.0f}-{max(shifted_acc.values()):.0f}%, best with {ENGINE_NAMES[best_shifted[1]]} {best_shifted_style} ({shifted_acc[best_shifted]:.0f}%). Rules are fast and cheap but only catch what someone already thought of.
 
-## Recommendations & Next Steps
-1. **Do not deploy LLMs in the synchronous path.**
-2. **Proceed to Traditional ML:** Use the insights from this pilot to engineer features for a traditional Machine Learning model (e.g., XGBoost or Random Forest), which can meet the sub-200ms latency requirement.
-3. **Expand Evaluation:** Scale testing from 50 samples to a larger dataset (10,000+) to train and validate the traditional ML layer.
-4. **Potential Asynchronous Use Case:** The Few-Shot prompt can run as an asynchronous "shadow" pipeline that writes human-readable narratives for the fraud review team after the ML model blocks a transaction.
+## What to do next
+1. Keep LLMs out of the real-time blocking path.
+2. Turn the signals this pilot surfaced (card checks, velocity, account age, shipping address) into features for a conventional model such as XGBoost or a random forest, trained and tested on real labeled transactions. Such a model can answer in under 200ms.
+3. Before trusting any model or rule set, test it on cases built to break it, the way the shifted set does here.
+4. Possible side use: run the few-shot prompt after the fact, as a "shadow" pipeline that writes a plain-language explanation for the fraud review team once a transaction has been blocked.
 """
 
 # 3. Engineer report
@@ -55,7 +86,7 @@ ROOT_CAUSES = {
         "hard to tell apart from a stolen card; a gift shipped to another ZIP looks the same.",
     ("anthropic", "Stolen_Card", "Carding"):
         "Established account, clean authorization, drop-house shipping. The scratchpad rules out Stolen_Card because "
-        "verification passed, then uses Carding for a stolen card used to buy goods shipped to a drop-house. Without definitions in the "
+        "verification passed, then calls it Carding, meaning a stolen card buying goods for a drop-house. Without definitions in the "
         "prompt, the model's own meaning of Carding wins.",
     ("anthropic", "Stolen_Card", "Legitimate"):
         "Noisy stolen-card records: billing and shipping ZIPs match, no proxy, normal velocity, established account. "
@@ -93,8 +124,8 @@ for engine in ["anthropic", "openai"]:
     errors[engine] = sorted(pathways.items(), key=lambda p: (-len(p[1]), p[0]))
 
 total_errors = sum(len(ids) for engine in errors for _, ids in errors[engine])
-engineer_report = f"""# Engineering Failure Analysis: Chain-of-Thought Misclassifications
-**Scope:** Root-cause analysis of all {total_errors} Chain-of-Thought misclassifications in the n=50 pilot, using the model scratchpads in `llm_eval_log_cot_openai.csv` and `llm_eval_log_cot_anthropic.csv`.
+engineer_report = f"""# Chain-of-thought errors, one by one
+All {total_errors} wrong answers from the two chain-of-thought runs on the 50-transaction sample (the prompt without category definitions), with the reason for each, read from the models' scratchpads in `llm_eval_log_cot_openai.csv` and `llm_eval_log_cot_anthropic.csv`. The few-shot + chain-of-thought runs added in v1.1.0 are not broken down here.
 """
 for engine in ["anthropic", "openai"]:
     n = sum(len(ids) for _, ids in errors[engine])
@@ -107,8 +138,8 @@ for engine in ["anthropic", "openai"]:
             engineer_report += f"* **Root cause:** {note}\n"
 
 engineer_report += """
-## Next Steps for ML Pipeline
-The models' failure to weigh conflicting signals (e.g., velocity vs. identity) shows that free-text reasoning drifts. The raw signals (account age, velocity count, CVV match, ZIP mismatch) should become tabular features so a model such as XGBoost can learn how they interact.
+## What this means for the next model
+When two signals pointed different ways (high card velocity but a brand-new account, say), the models did not weigh them the same way twice. The raw signals (account age, velocity count, CVV match, ZIP mismatch) belong in a table as features, so a model such as XGBoost can learn how they combine.
 """
 
 # 4. Write reports to disk

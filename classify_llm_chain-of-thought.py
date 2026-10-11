@@ -1,3 +1,23 @@
+"""
+Ask an AI model to label each payment, using a chain-of-thought prompt.
+
+Chain-of-thought means the model first writes out its reasoning, following a
+four-point checklist, inside <scratchpad> tags, and then gives its label inside
+<classification> tags. The script pulls the label out of the reply and saves
+the full reasoning so you can read how the model got to its answer.
+
+This prompt lists the label names but not their definitions or examples. That
+turned out to matter: classify_llm_few-shot-cot.py runs the same checklist
+with the definitions and examples added.
+
+Needs an OpenAI and an Anthropic API key in a .env file (copy .env.example).
+A run on Claude costs about 16 cents because the replies are long.
+
+How to run (from the project folder):
+  python3 classify_llm_chain-of-thought.py                    asks GPT-4o-mini (OpenAI)
+  ENGINE=ANTHROPIC python3 classify_llm_chain-of-thought.py   asks Claude Haiku 4.5
+Output: llm_eval_log_cot_<engine>.csv (the reasoning is in the cot_output column)
+"""
 import os
 import re
 import json

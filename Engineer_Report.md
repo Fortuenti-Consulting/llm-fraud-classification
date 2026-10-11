@@ -1,5 +1,5 @@
-# Engineering Failure Analysis: Chain-of-Thought Misclassifications
-**Scope:** Root-cause analysis of all 35 Chain-of-Thought misclassifications in the n=50 pilot, using the model scratchpads in `llm_eval_log_cot_openai.csv` and `llm_eval_log_cot_anthropic.csv`.
+# Chain-of-thought errors, one by one
+All 35 wrong answers from the two chain-of-thought runs on the 50-transaction sample (the prompt without category definitions), with the reason for each, read from the models' scratchpads in `llm_eval_log_cot_openai.csv` and `llm_eval_log_cot_anthropic.csv`. The few-shot + chain-of-thought runs added in v1.1.0 are not broken down here.
 
 ## Claude Haiku 4.5 (13 errors)
 
@@ -17,7 +17,7 @@
 
 ### Stolen_Card predicted as Carding (1)
 * **Transactions:** `tx_73212d1b7b`
-* **Root cause:** Established account, clean authorization, drop-house shipping. The scratchpad rules out Stolen_Card because verification passed, then uses Carding for a stolen card used to buy goods shipped to a drop-house. Without definitions in the prompt, the model's own meaning of Carding wins.
+* **Root cause:** Established account, clean authorization, drop-house shipping. The scratchpad rules out Stolen_Card because verification passed, then calls it Carding, meaning a stolen card buying goods for a drop-house. Without definitions in the prompt, the model's own meaning of Carding wins.
 
 ### Synthetic_Identity predicted as Legitimate (1)
 * **Transactions:** `tx_b1f4d05a77`
@@ -49,5 +49,5 @@
 * **Transactions:** `tx_b1f4d05a77`
 * **Root cause:** Same sleeper account as the Claude Haiku 4.5 error: the synthetic identity score is not in the narrative.
 
-## Next Steps for ML Pipeline
-The models' failure to weigh conflicting signals (e.g., velocity vs. identity) shows that free-text reasoning drifts. The raw signals (account age, velocity count, CVV match, ZIP mismatch) should become tabular features so a model such as XGBoost can learn how they interact.
+## What this means for the next model
+When two signals pointed different ways (high card velocity but a brand-new account, say), the models did not weigh them the same way twice. The raw signals (account age, velocity count, CVV match, ZIP mismatch) belong in a table as features, so a model such as XGBoost can learn how they combine.

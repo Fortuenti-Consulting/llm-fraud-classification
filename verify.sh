@@ -4,7 +4,7 @@
 set -u
 cd "$(dirname "$0")"
 rc=0
-python3 -c "import pandas, openai, anthropic, httpx2, faker, dotenv" 2>/dev/null \
+python3 -c "import pandas, openai, anthropic, httpx2, faker, dotenv, nbclient, nbformat" 2>/dev/null \
   || { echo "VERIFY_ENV_UNAVAILABLE python deps missing (pip install -r requirements.txt)"; exit 1; }
 
 check() { # id, command...  — prints PASS/FAIL id; output shown only on failure
@@ -14,7 +14,7 @@ check() { # id, command...  — prints PASS/FAIL id; output shown only on failur
   if out=$("$@" 2>&1); then echo "PASS $id"; else echo "FAIL $id"; printf '%s\n' "$out" | tail -15; rc=1; fi
 }
 
-for id in V1 V2 V3 V4 V5 V6 V7 V8 V10 V11; do
+for id in V1 V2 V3 V4 V5 V6 V7 V8 V10 V11 V12; do
   check "$id" python3 tests/test_pipeline.py "$id"
 done
 

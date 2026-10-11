@@ -1,4 +1,9 @@
-"""Checks behind ./verify.sh. Usage: python3 tests/test_pipeline.py V2
+"""Automated checks behind ./verify.sh. Usage: python3 tests/test_pipeline.py V2
+
+Each function checks one item of the "## Verify" list in CLAUDE.md: that no key
+is published, that the analysis code gives the right answers on small inputs
+worked out by hand, and that every number in the README and reports matches the
+result files.
 
 Expected values are worked out by hand from the inputs written here,
 never copied from the scripts' own output.
@@ -44,8 +49,25 @@ def v1_no_secrets():
             for n, line in enumerate(fh, 1):
                 m = patterns.search(line)
                 if m:
-                    hits.append(f"{f}:{n}: {m.group(0)[:12]}...")
+                    hits.append(f"{f}:{n}")  # location only; never echo the matched text
     assert not hits, "possible secrets or personal data:\n" + "\n".join(hits[:10])
+
+    history = subprocess.run(["git", "log", "--all", "-p", "--no-color"], cwd=ROOT,
+                             capture_output=True, text=True, errors="ignore").stdout
+    assert not re.search(r"sk-[A-Za-z0-9_-]{20,}|sk-" "ant-|AIza[0-9A-Za-z_-]{30}|ghp_[A-Za-z0-9]{20}|github_" "pat_"
+                         r"|BEGIN [A-Z ]*PRIVATE KEY", history), "a key-like string appears in git history"
+
+    # The real key values in the local .env must not appear in any commit or publishable file.
+    # Values are never printed; a failure names only where the leak is.
+    env_path = os.path.join(ROOT, ".env")
+    if os.path.exists(env_path):
+        values = [line.split("=", 1)[1].strip().strip("'\"") for line in open(env_path)
+                  if "=" in line and not line.lstrip().startswith("#")]
+        values = [v for v in values if len(v) >= 20]
+        assert not any(v in history for v in values), "a value from .env appears in git history"
+        for f in files:
+            text = open(os.path.join(ROOT, f), encoding="utf-8", errors="ignore").read()
+            assert not any(v in text for v in values), f"a value from .env appears in {f}"
 
 
 def raw_record(**overrides):
@@ -292,6 +314,10 @@ def v8_reports_match_data():
         # "without improving accuracy": few-shot + CoT is not above plain few-shot
         assert fs_cot[e] <= grid[("few-shot", e)]["accuracy"], e
     assert f"accuracy returns to {fs_cot['openai']:.0f}% on GPT-4o-mini and {fs_cot['anthropic']:.0f}% on Claude Haiku 4.5" in vp
+    shifted_runs = [100 * sum(r["true_label"] == r["predicted_label"] for r in csv.DictReader(open(os.path.join(ROOT, f)))) / 50
+                    for f in [f"llm_eval_log_{s}_{e}_shifted.csv" for s in ["few-shot", "few-shot-cot"] for e in ENGINES]]
+    assert f"The four few-shot setups scored {min(shifted_runs):.0f}-{max(shifted_runs):.0f}%" in vp
+    assert "All data is synthetic" in vp and "Our " not in vp
 
     readme = open(os.path.join(ROOT, "README.md")).read()
     for s, label in [("zero-shot", "Zero-shot"), ("few-shot", "Few-shot (2 examples)"), ("cot", "Chain-of-thought")]:
@@ -326,7 +352,7 @@ def v8_reports_match_data():
     for vs, phrase in [(("base", "noisy"), "unshifted records right"), (("shifted",), "shifted ones")]:
         rows = [r for i, r in shifted_rules.items() if variants[i] in vs]
         ok = sum(r["is_correct"] == "True" for r in rows)
-        assert f"{ok:,} of {len(rows):,} {phrase}" in readme, f"README rule figures for {v} records"
+        assert f"{ok:,} of {len(rows):,} {phrase}" in readme, f"README rule figures for {vs} records"
     overall = 100 * sum(r["is_correct"] == "True" for r in shifted_rules.values()) / len(shifted_rules)
     assert f"overall accuracy on it ({overall:.0f}%)" in readme
 
@@ -391,7 +417,10 @@ def v8_reports_match_data():
     # Regenerating the reports from the committed data changes nothing
     tmp = tempfile.mkdtemp()
     for f in ["generate_reports.py", "performance_grid_analysis.json", "llm_eval_log_cot_openai.csv",
-              "llm_eval_log_cot_anthropic.csv", "llm_eval_log_few-shot-cot_openai.csv", "llm_eval_log_few-shot-cot_anthropic.csv"]:
+              "llm_eval_log_cot_anthropic.csv", "llm_eval_log_few-shot-cot_openai.csv", "llm_eval_log_few-shot-cot_anthropic.csv",
+              "rule_engine_eval_log.csv", "shifted_rule_engine_eval_log.csv", "eval_sample_ids.txt", "shifted_sample_ids.txt",
+              "llm_eval_log_few-shot_openai_shifted.csv", "llm_eval_log_few-shot_anthropic_shifted.csv",
+              "llm_eval_log_few-shot-cot_openai_shifted.csv", "llm_eval_log_few-shot-cot_anthropic_shifted.csv"]:
         shutil.copy(os.path.join(ROOT, f), tmp)
     r = run(tmp, "generate_reports.py")
     assert r.returncode == 0, r.stdout + r.stderr
@@ -468,9 +497,44 @@ def v10_shifted_set():
         "shifted_rule_engine_eval_log.csv is stale"
 
 
+def v12_playground():
+    import nbformat
+    from nbclient import NotebookClient
+    committed = nbformat.read(os.path.join(ROOT, "playground.ipynb"), as_version=4)
+    outputs = lambda nb: ["".join(o.get("text", "") for o in c.outputs) for c in nb.cells if c.cell_type == "code"]
+    assert all(outputs(committed)), "playground.ipynb has a code cell without saved output"
+    fresh = nbformat.read(os.path.join(ROOT, "playground.ipynb"), as_version=4)
+    NotebookClient(fresh, timeout=300, kernel_name="python3", resources={"metadata": {"path": ROOT}}).execute()
+    assert outputs(fresh) == outputs(committed), "playground.ipynb outputs are stale: re-execute and save it"
+    # Section 4 promises a payment the model got wrong; the live-call box must stay off by default
+    src = "".join(c.source for c in committed.cells if c.cell_type == "code")
+    tx = re.search(r'cot_rows\["(tx_[0-9a-f]{10})"\]', src).group(1)
+    row = {r["transaction_id"]: r for r in csv.DictReader(open(os.path.join(ROOT, "llm_eval_log_cot_openai.csv")))}[tx]
+    assert row["true_label"] != row["predicted_label"], f"{tx} is not a mistake in the CoT log"
+    assert "RUN_LIVE_CALL = False" in src and "getpass" in src
+    # pip only runs inside Colab, so verify.sh never installs anything locally
+    live = src[src.index("if RUN_LIVE_CALL:"):]
+    assert live.index("getpass.getpass") < live.index('if "google.colab" in sys.modules:') < live.index("pip")
+
+    # The prose matches the rules and the data it describes
+    text = "".join(c.source for c in committed.cells if c.cell_type == "markdown")
+    rules_src = open(os.path.join(ROOT, "card_fraud_analyzer.py")).read()
+    for prose, code in [("More than 10 different cards", '["card_velocity_60s"] > 10'), ("More than 5 cards", '["card_velocity_60s"] > 5'),
+                        ("above 0.80", '["synthetic_identity_score"] > 0.80'), ("younger than 14 days", '["account_age_days"] < 14'),
+                        ("older than 30 days", '["account_age_days"] > 30')]:
+        assert prose in text and code in rules_src, f"notebook rule text out of sync: {prose}"
+    import card_fraud_analyzer as c
+    shifted = [r for r in json.load(open(os.path.join(ROOT, "shifted_fraud_dataset.json"))) if r["raw_ml_features"]["variant"] == "shifted"]
+    legit = sum(r["raw_ml_features"]["fraud_category"] == "Legitimate" for r in shifted)
+    assert f"all {legit:,} of those real customers" in text
+    bots = [c.extract_features(r) for r in shifted if r["raw_ml_features"]["fraud_category"] == "BIN_Testing"]
+    caught = sum(f["card_velocity_60s"] > 5 and not f["cvv_match"] for f in bots)
+    assert f"go from 0 to {caught} of {len(bots)}" in text
+
+
 CHECKS = {"V1": v1_no_secrets, "V2": v2_rule_engine, "V3": v3_confusion_matrix, "V4": v4_performance_grid,
           "V5": v5_llm_scripts, "V6": v6_same_sample, "V7": v7_narratives, "V8": v8_reports_match_data,
-          "V11": v11_published_data_reproducible, "V10": v10_shifted_set}
+          "V11": v11_published_data_reproducible, "V12": v12_playground, "V10": v10_shifted_set}
 
 if __name__ == "__main__":
     CHECKS[sys.argv[1]]()

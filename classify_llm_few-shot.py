@@ -1,3 +1,23 @@
+"""
+Ask an AI model to label each payment, using a few-shot prompt.
+
+Few-shot means the zero-shot prompt plus a few worked examples. Here there are
+two, both about the pair the models confuse most: BIN testing (guessing card
+numbers) and carding (trying a list of stolen cards). This was the most
+accurate prompt style on the original sample.
+
+Needs an OpenAI and an Anthropic API key in a .env file (copy .env.example).
+One run costs a few cents at most.
+
+How to run (from the project folder):
+  python3 classify_llm_few-shot.py                     asks GPT-4o-mini (OpenAI)
+  ENGINE=ANTHROPIC python3 classify_llm_few-shot.py    asks Claude Haiku 4.5
+  DATASET=shifted python3 classify_llm_few-shot.py     uses the shifted stress-test set
+Output: llm_eval_log_few-shot_<engine>[_shifted].csv
+
+Things to try: edit the text in build_few_shot_prompt (add a third example,
+reword a definition) and rerun to see how much the wording changes the results.
+"""
 import os
 from dotenv import load_dotenv
 import json
@@ -129,7 +149,7 @@ if __name__ == "__main__":
     with open(DATASET_FILE, "r") as f:
         dataset = json.load(f)
 
-    # Every strategy is scored on the same 50 transactions (10 per category)
+    # 50 transactions, 10 per category, from the sample file for this dataset
     with open(SAMPLE_FILE, "r") as f:
         sample_ids = f.read().split()
     records_by_id = {r["raw_ml_features"]["transaction_id"]: r for r in dataset}

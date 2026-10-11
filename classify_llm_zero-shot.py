@@ -1,3 +1,20 @@
+"""
+Ask an AI model to label each payment, using a zero-shot prompt.
+
+Zero-shot means the prompt gives the model the five label definitions and the
+payment description, with no worked examples. The model answers with one
+label. For each of the 50 payments in eval_sample_ids.txt the script records
+the answer, whether it was right, how long the call took, how many tokens it
+used and what it cost.
+
+Needs an OpenAI and an Anthropic API key in a .env file (copy .env.example).
+One run costs a few cents at most.
+
+How to run (from the project folder):
+  python3 classify_llm_zero-shot.py                    asks GPT-4o-mini (OpenAI)
+  ENGINE=ANTHROPIC python3 classify_llm_zero-shot.py   asks Claude Haiku 4.5
+Output: llm_eval_log_zero-shot_<engine>.csv
+"""
 import os
 from dotenv import load_dotenv
 import json
